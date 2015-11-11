@@ -779,7 +779,7 @@ class OGLES20Renderer : public Renderer
 		this->DrawLine(p1, p2, c, thickness);
 	}
 	virtual void flush() override { /* Nothing to flush */}
-	virtual UString getName() override { return "OGL2.0 Renderer"; }
+	virtual UString getName() override { return "Highly-Experimental GLES2.0 Renderer"; }
 	virtual sp<Surface> getDefaultSurface() override { return this->defaultSurface; }
 
 	void BindProgram(sp<Program> p)
