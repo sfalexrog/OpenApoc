@@ -6,13 +6,13 @@
 #include <memory>
 #include <array>
 
-namespace
-{
+//namespace
+//{
 /* Workaround MSVC not liking int64_t being defined here and in allegro */
 #define GLEXT_64_TYPES_DEFINED
 #include "framework/render/gles20/gles_2_0.hpp"
 #include "framework/render/gles20/gles_2_0.inl"
-} // anonymous namespace
+//} // anonymous namespace
 
 namespace
 {
@@ -143,7 +143,8 @@ const char *RGBProgram_vertexSource = {
     "  if (flipY) gl_Position = vec4((tmpPos.x*2.0), -(tmpPos.y*2.0),0.0,1.0);\n"
     "  else gl_Position = vec4((tmpPos.x*2.0), (tmpPos.y*2.0),0.0,1.0);\n"
     "}\n"};
-const char *RGBProgram_fragmentSource = {"#version 100\n"
+const char *RGBProgram_fragmentSource = { "#version 100\n"
+										 "precision mediump float;\n"
                                          "varying vec2 texcoord;\n"
                                          "uniform sampler2D tex;\n"
                                          "void main() {\n"
@@ -212,6 +213,7 @@ const char *PaletteProgram_vertexSource = {
     "  else gl_Position = vec4((tmpPos.x*2.0), (tmpPos.y*2.0),0.0,1.0);\n"
     "}\n"};
 const char *PaletteProgram_fragmentSource = {"#version 100\n"
+											 "precision mediump float;\n"
                                              "varying vec2 texcoord;\n"
                                              "uniform sampler2D tex;\n"
                                              "uniform sampler2D pal;\n"
@@ -278,6 +280,7 @@ const char *SolidColourProgram_vertexSource = {
     "  else gl_Position = vec4((tmpPos.x*2.0), (tmpPos.y*2.0),0.0,1.0);\n"
     "}\n"};
 const char *SolidColourProgram_fragmentSource = {"#version 100\n"
+												 "precision mediump float;\n"
                                                  "uniform vec4 colour;\n"
                                                  "void main() {\n"
                                                  " gl_FragColor = colour;\n"
@@ -922,6 +925,6 @@ class OGLES20RendererFactory : public OpenApoc::RendererFactory
 	}
 };
 
-OpenApoc::RendererRegister<OGLES20RendererFactory> register_at_load_gl_2_0_renderer("GL_2_0");
+OpenApoc::RendererRegister<OGLES20RendererFactory> register_at_load_gles_2_0_renderer("GLES_2_0");
 
 }; // anonymous namespace
