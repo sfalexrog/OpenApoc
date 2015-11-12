@@ -21,6 +21,12 @@
 #include <allegro5/allegro_windows.h>
 #endif
 
+#ifdef OPENAPOC_GLES
+
+#include "framework/render/gles20/EGLContext.h"
+
+#endif /*OPENAPOC_GLES*/
+
 using namespace OpenApoc;
 
 namespace
@@ -383,7 +389,11 @@ void Framework::Run()
 			p->ProgramStages.Current()->Render();
 			{
 				TraceObj flipObj("Flip");
+#ifndef OPENAPOC_GLES
 				al_flip_display();
+#else
+				GLContext::GetInstance()->Swap();
+#endif
 			}
 		}
 		if (this->dumpEvents)
@@ -650,6 +660,12 @@ void Framework::Display_Initialise()
 		;
 		exit(1);
 	}
+
+#ifdef OPENAPOC_GLES
+	// FIXME: This is very, very Windows-specific.
+	// Then again, GLContext should not be needed in the future (allegro should take care of EGL)
+	GLContext::GetInstance()->Init(al_get_win_window_handle(p->screen));
+#endif
 
 	al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
 
