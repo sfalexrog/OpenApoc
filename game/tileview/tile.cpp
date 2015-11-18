@@ -5,6 +5,7 @@
 #include "game/tileview/tileobject_projectile.h"
 #include "game/city/projectile.h"
 #include "game/tileview/tileobject_vehicle.h"
+#include "game/tileview/tileobject_shadow.h"
 #include "game/city/vehicle.h"
 #include "game/tileview/tileobject_scenery.h"
 #include "game/city/scenery.h"
@@ -16,7 +17,8 @@
 namespace OpenApoc
 {
 
-TileMap::TileMap(Framework &fw, Vec3<int> size) : fw(fw), size(size)
+TileMap::TileMap(Framework &fw, Vec3<int> size, std::vector<std::set<TileObject::Type>> layerMap)
+    : layerMap(layerMap), fw(fw), size(size)
 {
 	tiles.reserve(size.z * size.y * size.z);
 	for (int z = 0; z < size.z; z++)
@@ -25,8 +27,22 @@ TileMap::TileMap(Framework &fw, Vec3<int> size) : fw(fw), size(size)
 		{
 			for (int x = 0; x < size.x; x++)
 			{
-				tiles.emplace_back(*this, Vec3<int>{x, y, z});
+				tiles.emplace_back(*this, Vec3<int>{x, y, z}, this->getLayerCount());
 			}
+		}
+	}
+
+	// Quick sanity check of the layer map:
+	std::set<TileObject::Type> seenTypes;
+	for (auto &typesInLayer : layerMap)
+	{
+		for (auto &type : typesInLayer)
+		{
+			if (seenTypes.find(type) != seenTypes.end())
+			{
+				LogError("Type %d appears in multiple layers", (int)type);
+			}
+			seenTypes.insert(type);
 		}
 	}
 }
@@ -48,7 +64,10 @@ Tile *TileMap::getTile(Vec3<float> pos) { return getTile(pos.x, pos.y, pos.z); }
 
 TileMap::~TileMap() {}
 
-Tile::Tile(TileMap &map, Vec3<int> position) : map(map), position(position) {}
+Tile::Tile(TileMap &map, Vec3<int> position, int layerCount)
+    : map(map), position(position), drawnObjects(layerCount)
+{
+}
 
 namespace
 {
@@ -233,7 +252,7 @@ std::list<Tile *> TileMap::findShortestPath(Vec3<int> origin, Vec3<int> destinat
 	return getPathToNode(visitedTiles, closestNodeSoFar);
 }
 
-sp<TileObjectProjectile> TileMap::addObjectToMap(sp<Projectile> projectile)
+void TileMap::addObjectToMap(sp<Projectile> projectile)
 {
 	if (projectile->tileObject)
 	{
@@ -244,15 +263,17 @@ sp<TileObjectProjectile> TileMap::addObjectToMap(sp<Projectile> projectile)
 	sp<TileObjectProjectile> obj(new TileObjectProjectile(*this, projectile));
 	obj->setPosition(projectile->getPosition());
 	projectile->tileObject = obj;
-
-	return obj;
 }
 
-sp<TileObjectVehicle> TileMap::addObjectToMap(sp<Vehicle> vehicle)
+void TileMap::addObjectToMap(sp<Vehicle> vehicle)
 {
 	if (vehicle->tileObject)
 	{
 		LogError("Vehicle already has tile object");
+	}
+	if (vehicle->shadowObject)
+	{
+		LogError("Vehicle already has shadow object");
 	}
 	// FIXME: std::make_shared<> doesn't work for private (but accessible due to friend)
 	// constructors?
@@ -260,10 +281,12 @@ sp<TileObjectVehicle> TileMap::addObjectToMap(sp<Vehicle> vehicle)
 	obj->setPosition(vehicle->getPosition());
 	vehicle->tileObject = obj;
 
-	return obj;
+	sp<TileObjectShadow> shadow(new TileObjectShadow(*this, vehicle));
+	shadow->setPosition(vehicle->getPosition());
+	vehicle->shadowObject = shadow;
 }
 
-sp<TileObjectScenery> TileMap::addObjectToMap(sp<Scenery> scenery)
+void TileMap::addObjectToMap(sp<Scenery> scenery)
 {
 	if (scenery->tileObject)
 	{
@@ -274,11 +297,9 @@ sp<TileObjectScenery> TileMap::addObjectToMap(sp<Scenery> scenery)
 	sp<TileObjectScenery> obj(new TileObjectScenery(*this, scenery));
 	obj->setPosition(scenery->getPosition());
 	scenery->tileObject = obj;
-
-	return obj;
 }
 
-sp<TileObjectDoodad> TileMap::addObjectToMap(sp<Doodad> doodad)
+void TileMap::addObjectToMap(sp<Doodad> doodad)
 {
 	if (doodad->tileObject)
 	{
@@ -289,7 +310,21 @@ sp<TileObjectDoodad> TileMap::addObjectToMap(sp<Doodad> doodad)
 	sp<TileObjectDoodad> obj(new TileObjectDoodad(*this, doodad));
 	obj->setPosition(doodad->getPosition());
 	doodad->tileObject = obj;
-
-	return obj;
 }
+
+int TileMap::getLayer(TileObject::Type type) const
+{
+	for (int i = 0; i < this->layerMap.size(); i++)
+	{
+		if (this->layerMap[i].find(type) != this->layerMap[i].end())
+		{
+			return i;
+		}
+	}
+	LogError("No layer matching object type %d", (int)type);
+	return 0;
+}
+
+int TileMap::getLayerCount() const { return this->layerMap.size(); }
+
 }; // namespace OpenApoc

@@ -22,7 +22,15 @@
 namespace OpenApoc
 {
 
-City::City(Framework &fw, GameState &state) : fw(fw), map(fw, fw.rules->getCitySize())
+// An ordered list of the types drawn in each layer
+// Within the same layer these are ordered by a calculated z based on the 'center' position
+static std::vector<std::set<TileObject::Type>> layerMap = {
+    // Draw all scenery first, then put stuff on top of that
+    {TileObject::Type::Scenery, TileObject::Type::Doodad},
+    {TileObject::Type::Projectile, TileObject::Type::Vehicle, TileObject::Type::Shadow},
+};
+
+City::City(Framework &fw, GameState &state) : fw(fw), map(fw, fw.rules->getCitySize(), layerMap)
 {
 	Trace::start("City::buildings");
 	for (auto &def : fw.rules->getBuildingDefs())
@@ -68,7 +76,7 @@ City::City(Framework &fw, GameState &state) : fw(fw), map(fw, fw.rules->getCityS
 
 				auto &cityTileDef = fw.rules->getSceneryTileDef(tileID);
 				auto scenery = std::make_shared<Scenery>(cityTileDef, Vec3<int>{x, y, z}, bld);
-				auto tile = map.addObjectToMap(scenery);
+				map.addObjectToMap(scenery);
 				if (cityTileDef.getOverlaySprite())
 				{
 					// FIXME: Bit of a hack to make the overlay always be at the 'top' of the tile -
@@ -76,7 +84,7 @@ City::City(Framework &fw, GameState &state) : fw(fw), map(fw, fw.rules->getCityS
 					scenery->overlayDoodad = std::make_shared<StaticDoodad>(
 					    cityTileDef.getOverlaySprite(), scenery->getPosition(),
 					    cityTileDef.getImageOffset());
-					auto doodadTileObject = map.addObjectToMap(scenery->overlayDoodad);
+					map.addObjectToMap(scenery->overlayDoodad);
 				}
 				this->scenery.insert(scenery);
 			}
@@ -323,7 +331,7 @@ void City::update(GameState &state, unsigned int ticks)
 sp<Doodad> City::placeDoodad(DoodadDef &def, Vec3<float> position)
 {
 	auto doodad = std::make_shared<AnimatedDoodad>(def, position);
-	auto doodadTileObject = map.addObjectToMap(doodad);
+	map.addObjectToMap(doodad);
 	this->doodads.insert(doodad);
 	return doodad;
 }

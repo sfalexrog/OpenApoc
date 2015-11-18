@@ -276,6 +276,9 @@
     <ClCompile Include="framework\render\gles20\ogles_2_0_renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="game\tileview\tileobject_shadow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="framework\render\gles20\EGLContext.cpp">
       <Filter>Source Files\EGLContext</Filter>
     </ClCompile>
@@ -570,6 +573,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="framework\trace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\tileview\tileobject_shadow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="framework\render\gles20\gles_2_0.hpp">
