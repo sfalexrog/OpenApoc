@@ -127,7 +127,7 @@ static void* AndroidGetProcAddress(const char* name)
 {
 	if (!eglLib)
 	{
-		AndroidLoadEglLib()
+		AndroidLoadEglLib();
 	}
 	return dlsym(eglLib, name);
 }

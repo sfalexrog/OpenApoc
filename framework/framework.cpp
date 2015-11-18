@@ -1,4 +1,5 @@
 #include "library/sp.h"
+#include "library/sp.h"
 
 #include "framework/framework.h"
 #include "game/boot.h"
@@ -392,7 +393,11 @@ void Framework::Run()
 #ifndef OPENAPOC_GLES
 				al_flip_display();
 #else
+				#ifdef _MSC_VER
 				GLContext::GetInstance()->Swap();
+				#else
+				al_flip_display();
+				#endif
 #endif
 			}
 		}
@@ -664,7 +669,9 @@ void Framework::Display_Initialise()
 #ifdef OPENAPOC_GLES
 	// FIXME: This is very, very Windows-specific.
 	// Then again, GLContext should not be needed in the future (allegro should take care of EGL)
+#ifdef _MSC_VER
 	GLContext::GetInstance()->Init(al_get_win_window_handle(p->screen));
+#endif
 #endif
 
 	al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);

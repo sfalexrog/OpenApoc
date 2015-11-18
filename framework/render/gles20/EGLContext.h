@@ -5,7 +5,7 @@
 #include "gles_2_0.hpp"
 
 #if defined(__ANDROID__)
-typedef 
+
 #elif defined(_WIN32)
 
 #endif
