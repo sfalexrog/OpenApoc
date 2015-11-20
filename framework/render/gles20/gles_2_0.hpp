@@ -2,10 +2,11 @@
 #define FUNCTION_CPP_GENERATED_HEADEROPENGLES_HPP
 
 
+
 #if defined(__glew_h__) || defined(__GLEW_H__)
 #error Attempt to include auto-generated header after including glew.h
 #endif
-#if defined(__gl_h_) || defined(__GL_H__) || defined(__gl2_h_)
+#if defined(__gl_h_) || defined(__GL_H__)
 #error Attempt to include auto-generated header after including gl.h
 #endif
 #if defined(__glext_h_) || defined(__GLEXT_H_) || defined(__gl2ext_h_)
@@ -21,7 +22,6 @@
 #define __glew_h__
 #define __GLEW_H__
 #define __gl_h_
-#define __gl2_h_
 #define __GL_H__
 #define __glext_h_
 #define __gl2ext_h_
@@ -110,31 +110,48 @@ typedef unsigned __int64 uint64_t;
 #endif
 #endif
 
-/* use khronos-provided typedefs */
-
 #include "khrplatform.h"
 
+typedef signed   char          khronos_int8_t;
+typedef unsigned char          khronos_uint8_t;
 typedef void             GLvoid;
+
 typedef char             GLchar;
+
 typedef unsigned int     GLenum;
+
 typedef unsigned char    GLboolean;
+
 typedef unsigned int     GLbitfield;
+
 typedef khronos_int8_t   GLbyte;
+
 typedef short            GLshort;
+
 typedef int              GLint;
+
 typedef int              GLsizei;
+
 typedef khronos_uint8_t  GLubyte;
+
 typedef unsigned short   GLushort;
+
 typedef unsigned int     GLuint;
+
 typedef khronos_float_t  GLfloat;
+
 typedef khronos_float_t  GLclampf;
+
 typedef khronos_int32_t  GLfixed;
+
 typedef khronos_intptr_t GLintptr;
+
 typedef khronos_ssize_t  GLsizeiptr;
 
 
 namespace gl
 {
+
 
 namespace exts
 {
@@ -152,8 +169,9 @@ namespace exts
     private:
         bool m_isLoaded;
         int m_numMissing;
-	};
+    };
 } // namespace exts
+
 
 enum
 {
@@ -462,148 +480,150 @@ enum
 
 };
 
-	extern void (CODEGEN_FUNCPTR *ActiveTexture)(GLenum texture);
-	extern void (CODEGEN_FUNCPTR *AttachShader)(GLuint program, GLuint shader);
-	extern void (CODEGEN_FUNCPTR *BindAttribLocation)(GLuint program, GLuint index, const GLchar* name);
-	extern void (CODEGEN_FUNCPTR *BindBuffer)(GLenum target, GLuint buffer);
-	extern void (CODEGEN_FUNCPTR *BindFramebuffer)(GLenum target, GLuint framebuffer);
-	extern void (CODEGEN_FUNCPTR *BindRenderbuffer)(GLenum target, GLuint renderbuffer);
-	extern void (CODEGEN_FUNCPTR *BindTexture)(GLenum target, GLuint texture);
-	extern void (CODEGEN_FUNCPTR *BlendColor)(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
-	extern void (CODEGEN_FUNCPTR *BlendEquation)(GLenum mode);
-	extern void (CODEGEN_FUNCPTR *BlendEquationSeparate)(GLenum modeRGB, GLenum modeAlpha);
-	extern void (CODEGEN_FUNCPTR *BlendFunc)(GLenum sfactor, GLenum dfactor);
-	extern void (CODEGEN_FUNCPTR *BlendFuncSeparate)(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
-	extern void (CODEGEN_FUNCPTR *BufferData)(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage);
-	extern void (CODEGEN_FUNCPTR *BufferSubData)(GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid* data);
-	extern GLenum (CODEGEN_FUNCPTR *CheckFramebufferStatus)(GLenum target);
-	extern void (CODEGEN_FUNCPTR *Clear)(GLbitfield mask);
-	extern void (CODEGEN_FUNCPTR *ClearColor)(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
-	extern void (CODEGEN_FUNCPTR *ClearDepthf)(GLclampf depth);
-	extern void (CODEGEN_FUNCPTR *ClearStencil)(GLint s);
-	extern void (CODEGEN_FUNCPTR *ColorMask)(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
-	extern void (CODEGEN_FUNCPTR *CompileShader)(GLuint shader);
-	extern void (CODEGEN_FUNCPTR *CompressedTexImage2D)(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const GLvoid* data);
-	extern void (CODEGEN_FUNCPTR *CompressedTexSubImage2D)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const GLvoid* data);
-	extern void (CODEGEN_FUNCPTR *CopyTexImage2D)(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border);
-	extern void (CODEGEN_FUNCPTR *CopyTexSubImage2D)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height);
-	extern GLuint (CODEGEN_FUNCPTR *CreateProgram)(void);
-	extern GLuint (CODEGEN_FUNCPTR *CreateShader)(GLenum type);
-	extern void (CODEGEN_FUNCPTR *CullFace)(GLenum mode);
-	extern void (CODEGEN_FUNCPTR *DeleteBuffers)(GLsizei n, const GLuint* buffers);
-	extern void (CODEGEN_FUNCPTR *DeleteFramebuffers)(GLsizei n, const GLuint* framebuffers);
-	extern void (CODEGEN_FUNCPTR *DeleteProgram)(GLuint program);
-	extern void (CODEGEN_FUNCPTR *DeleteRenderbuffers)(GLsizei n, const GLuint* renderbuffers);
-	extern void (CODEGEN_FUNCPTR *DeleteShader)(GLuint shader);
-	extern void (CODEGEN_FUNCPTR *DeleteTextures)(GLsizei n, const GLuint* textures);
-	extern void (CODEGEN_FUNCPTR *DepthFunc)(GLenum func);
-	extern void (CODEGEN_FUNCPTR *DepthMask)(GLboolean flag);
-	extern void (CODEGEN_FUNCPTR *DepthRangef)(GLclampf zNear, GLclampf zFar);
-	extern void (CODEGEN_FUNCPTR *DetachShader)(GLuint program, GLuint shader);
-	extern void (CODEGEN_FUNCPTR *Disable)(GLenum cap);
-	extern void (CODEGEN_FUNCPTR *DisableVertexAttribArray)(GLuint index);
-	extern void (CODEGEN_FUNCPTR *DrawArrays)(GLenum mode, GLint first, GLsizei count);
-	extern void (CODEGEN_FUNCPTR *DrawElements)(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices);
-	extern void (CODEGEN_FUNCPTR *Enable)(GLenum cap);
-	extern void (CODEGEN_FUNCPTR *EnableVertexAttribArray)(GLuint index);
-	extern void (CODEGEN_FUNCPTR *Finish)(void);
-	extern void (CODEGEN_FUNCPTR *Flush)(void);
-	extern void (CODEGEN_FUNCPTR *FramebufferRenderbuffer)(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
-	extern void (CODEGEN_FUNCPTR *FramebufferTexture2D)(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
-	extern void (CODEGEN_FUNCPTR *FrontFace)(GLenum mode);
-	extern void (CODEGEN_FUNCPTR *GenBuffers)(GLsizei n, GLuint* buffers);
-	extern void (CODEGEN_FUNCPTR *GenerateMipmap)(GLenum target);
-	extern void (CODEGEN_FUNCPTR *GenFramebuffers)(GLsizei n, GLuint* framebuffers);
-	extern void (CODEGEN_FUNCPTR *GenRenderbuffers)(GLsizei n, GLuint* renderbuffers);
-	extern void (CODEGEN_FUNCPTR *GenTextures)(GLsizei n, GLuint* textures);
-	extern void (CODEGEN_FUNCPTR *GetActiveAttrib)(GLuint program, GLuint index, GLsizei bufsize, GLsizei* length, GLint* size, GLenum* type, GLchar* name);
-	extern void (CODEGEN_FUNCPTR *GetActiveUniform)(GLuint program, GLuint index, GLsizei bufsize, GLsizei* length, GLint* size, GLenum* type, GLchar* name);
-	extern void (CODEGEN_FUNCPTR *GetAttachedShaders)(GLuint program, GLsizei maxcount, GLsizei* count, GLuint* shaders);
-	extern GLint (CODEGEN_FUNCPTR *GetAttribLocation)(GLuint program, const GLchar* name);
-	extern void (CODEGEN_FUNCPTR *GetBooleanv)(GLenum pname, GLboolean* params);
-	extern void (CODEGEN_FUNCPTR *GetBufferParameteriv)(GLenum target, GLenum pname, GLint* params);
-	extern GLenum (CODEGEN_FUNCPTR *GetError)(void);
-	extern void (CODEGEN_FUNCPTR *GetFloatv)(GLenum pname, GLfloat* params);
-	extern void (CODEGEN_FUNCPTR *GetFramebufferAttachmentParameteriv)(GLenum target, GLenum attachment, GLenum pname, GLint* params);
-	extern void (CODEGEN_FUNCPTR *GetIntegerv)(GLenum pname, GLint* params);
-	extern void (CODEGEN_FUNCPTR *GetProgramiv)(GLuint program, GLenum pname, GLint* params);
-	extern void (CODEGEN_FUNCPTR *GetProgramInfoLog)(GLuint program, GLsizei bufsize, GLsizei* length, GLchar* infolog);
-	extern void (CODEGEN_FUNCPTR *GetRenderbufferParameteriv)(GLenum target, GLenum pname, GLint* params);
-	extern void (CODEGEN_FUNCPTR *GetShaderiv)(GLuint shader, GLenum pname, GLint* params);
-	extern void (CODEGEN_FUNCPTR *GetShaderInfoLog)(GLuint shader, GLsizei bufsize, GLsizei* length, GLchar* infolog);
-	extern void (CODEGEN_FUNCPTR *GetShaderPrecisionFormat)(GLenum shadertype, GLenum precisiontype, GLint* range, GLint* precision);
-	extern void (CODEGEN_FUNCPTR *GetShaderSource)(GLuint shader, GLsizei bufsize, GLsizei* length, GLchar* source);
-	extern const GLubyte* (CODEGEN_FUNCPTR *GetString)(GLenum name);
-	extern void (CODEGEN_FUNCPTR *GetTexParameterfv)(GLenum target, GLenum pname, GLfloat* params);
-	extern void (CODEGEN_FUNCPTR *GetTexParameteriv)(GLenum target, GLenum pname, GLint* params);
-	extern void (CODEGEN_FUNCPTR *GetUniformfv)(GLuint program, GLint location, GLfloat* params);
-	extern void (CODEGEN_FUNCPTR *GetUniformiv)(GLuint program, GLint location, GLint* params);
-	extern GLint (CODEGEN_FUNCPTR *GetUniformLocation)(GLuint program, const GLchar* name);
-	extern void (CODEGEN_FUNCPTR *GetVertexAttribfv)(GLuint index, GLenum pname, GLfloat* params);
-	extern void (CODEGEN_FUNCPTR *GetVertexAttribiv)(GLuint index, GLenum pname, GLint* params);
-	extern void (CODEGEN_FUNCPTR *GetVertexAttribPointerv)(GLuint index, GLenum pname, GLvoid** pointer);
-	extern void (CODEGEN_FUNCPTR *Hint)(GLenum target, GLenum mode);
-	extern GLboolean (CODEGEN_FUNCPTR *IsBuffer)(GLuint buffer);
-	extern GLboolean (CODEGEN_FUNCPTR *IsEnabled)(GLenum cap);
-	extern GLboolean (CODEGEN_FUNCPTR *IsFramebuffer)(GLuint framebuffer);
-	extern GLboolean (CODEGEN_FUNCPTR *IsProgram)(GLuint program);
-	extern GLboolean (CODEGEN_FUNCPTR *IsRenderbuffer)(GLuint renderbuffer);
-	extern GLboolean (CODEGEN_FUNCPTR *IsShader)(GLuint shader);
-	extern GLboolean (CODEGEN_FUNCPTR *IsTexture)(GLuint texture);
-	extern void (CODEGEN_FUNCPTR *LineWidth)(GLfloat width);
-	extern void (CODEGEN_FUNCPTR *LinkProgram)(GLuint program);
-	extern void (CODEGEN_FUNCPTR *PixelStorei)(GLenum pname, GLint param);
-	extern void (CODEGEN_FUNCPTR *PolygonOffset)(GLfloat factor, GLfloat units);
-	extern void (CODEGEN_FUNCPTR *ReadPixels)(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels);
-	extern void (CODEGEN_FUNCPTR *ReleaseShaderCompiler)(void);
-	extern void (CODEGEN_FUNCPTR *RenderbufferStorage)(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
-	extern void (CODEGEN_FUNCPTR *SampleCoverage)(GLclampf value, GLboolean invert);
-	extern void (CODEGEN_FUNCPTR *Scissor)(GLint x, GLint y, GLsizei width, GLsizei height);
-	extern void (CODEGEN_FUNCPTR *ShaderBinary)(GLsizei n, const GLuint* shaders, GLenum binaryformat, const GLvoid* binary, GLsizei length);
-	extern void (CODEGEN_FUNCPTR *ShaderSource)(GLuint shader, GLsizei count, const GLchar* const* string, const GLint* length);
-	extern void (CODEGEN_FUNCPTR *StencilFunc)(GLenum func, GLint ref, GLuint mask);
-	extern void (CODEGEN_FUNCPTR *StencilFuncSeparate)(GLenum face, GLenum func, GLint ref, GLuint mask);
-	extern void (CODEGEN_FUNCPTR *StencilMask)(GLuint mask);
-	extern void (CODEGEN_FUNCPTR *StencilMaskSeparate)(GLenum face, GLuint mask);
-	extern void (CODEGEN_FUNCPTR *StencilOp)(GLenum fail, GLenum zfail, GLenum zpass);
-	extern void (CODEGEN_FUNCPTR *StencilOpSeparate)(GLenum face, GLenum fail, GLenum zfail, GLenum zpass);
-	extern void (CODEGEN_FUNCPTR *TexImage2D)(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid* pixels);
-	extern void (CODEGEN_FUNCPTR *TexParameterf)(GLenum target, GLenum pname, GLfloat param);
-	extern void (CODEGEN_FUNCPTR *TexParameterfv)(GLenum target, GLenum pname, const GLfloat* params);
-	extern void (CODEGEN_FUNCPTR *TexParameteri)(GLenum target, GLenum pname, GLint param);
-	extern void (CODEGEN_FUNCPTR *TexParameteriv)(GLenum target, GLenum pname, const GLint* params);
-	extern void (CODEGEN_FUNCPTR *TexSubImage2D)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* pixels);
-	extern void (CODEGEN_FUNCPTR *Uniform1f)(GLint location, GLfloat x);
-	extern void (CODEGEN_FUNCPTR *Uniform1fv)(GLint location, GLsizei count, const GLfloat* v);
-	extern void (CODEGEN_FUNCPTR *Uniform1i)(GLint location, GLint x);
-	extern void (CODEGEN_FUNCPTR *Uniform1iv)(GLint location, GLsizei count, const GLint* v);
-	extern void (CODEGEN_FUNCPTR *Uniform2f)(GLint location, GLfloat x, GLfloat y);
-	extern void (CODEGEN_FUNCPTR *Uniform2fv)(GLint location, GLsizei count, const GLfloat* v);
-	extern void (CODEGEN_FUNCPTR *Uniform2i)(GLint location, GLint x, GLint y);
-	extern void (CODEGEN_FUNCPTR *Uniform2iv)(GLint location, GLsizei count, const GLint* v);
-	extern void (CODEGEN_FUNCPTR *Uniform3f)(GLint location, GLfloat x, GLfloat y, GLfloat z);
-	extern void (CODEGEN_FUNCPTR *Uniform3fv)(GLint location, GLsizei count, const GLfloat* v);
-	extern void (CODEGEN_FUNCPTR *Uniform3i)(GLint location, GLint x, GLint y, GLint z);
-	extern void (CODEGEN_FUNCPTR *Uniform3iv)(GLint location, GLsizei count, const GLint* v);
-	extern void (CODEGEN_FUNCPTR *Uniform4f)(GLint location, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
-	extern void (CODEGEN_FUNCPTR *Uniform4fv)(GLint location, GLsizei count, const GLfloat* v);
-	extern void (CODEGEN_FUNCPTR *Uniform4i)(GLint location, GLint x, GLint y, GLint z, GLint w);
-	extern void (CODEGEN_FUNCPTR *Uniform4iv)(GLint location, GLsizei count, const GLint* v);
-	extern void (CODEGEN_FUNCPTR *UniformMatrix2fv)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-	extern void (CODEGEN_FUNCPTR *UniformMatrix3fv)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-	extern void (CODEGEN_FUNCPTR *UniformMatrix4fv)(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-	extern void (CODEGEN_FUNCPTR *UseProgram)(GLuint program);
-	extern void (CODEGEN_FUNCPTR *ValidateProgram)(GLuint program);
-	extern void (CODEGEN_FUNCPTR *VertexAttrib1f)(GLuint indx, GLfloat x);
-	extern void (CODEGEN_FUNCPTR *VertexAttrib1fv)(GLuint indx, const GLfloat* values);
-	extern void (CODEGEN_FUNCPTR *VertexAttrib2f)(GLuint indx, GLfloat x, GLfloat y);
-	extern void (CODEGEN_FUNCPTR *VertexAttrib2fv)(GLuint indx, const GLfloat* values);
-	extern void (CODEGEN_FUNCPTR *VertexAttrib3f)(GLuint indx, GLfloat x, GLfloat y, GLfloat z);
-	extern void (CODEGEN_FUNCPTR *VertexAttrib3fv)(GLuint indx, const GLfloat* values);
-	extern void (CODEGEN_FUNCPTR *VertexAttrib4f)(GLuint indx, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
-	extern void (CODEGEN_FUNCPTR *VertexAttrib4fv)(GLuint indx, const GLfloat* values);
-	extern void (CODEGEN_FUNCPTR *VertexAttribPointer)(GLuint indx, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* ptr);
-	extern void (CODEGEN_FUNCPTR *Viewport)(GLint x, GLint y, GLsizei width, GLsizei height);
+
+	void ActiveTexture(GLenum texture);
+	void AttachShader(GLuint program, GLuint shader);
+	void BindAttribLocation(GLuint program, GLuint index, const GLchar* name);
+	void BindBuffer(GLenum target, GLuint buffer);
+	void BindFramebuffer(GLenum target, GLuint framebuffer);
+	void BindRenderbuffer(GLenum target, GLuint renderbuffer);
+	void BindTexture(GLenum target, GLuint texture);
+	void BlendColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
+	void BlendEquation(GLenum mode);
+	void BlendEquationSeparate(GLenum modeRGB, GLenum modeAlpha);
+	void BlendFunc(GLenum sfactor, GLenum dfactor);
+	void BlendFuncSeparate(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
+	void BufferData(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage);
+	void BufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid* data);
+	GLenum CheckFramebufferStatus(GLenum target);
+	void Clear(GLbitfield mask);
+	void ClearColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
+	void ClearDepthf(GLclampf depth);
+	void ClearStencil(GLint s);
+	void ColorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
+	void CompileShader(GLuint shader);
+	void CompressedTexImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const GLvoid* data);
+	void CompressedTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const GLvoid* data);
+	void CopyTexImage2D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border);
+	void CopyTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height);
+	GLuint CreateProgram(void);
+	GLuint CreateShader(GLenum type);
+	void CullFace(GLenum mode);
+	void DeleteBuffers(GLsizei n, const GLuint* buffers);
+	void DeleteFramebuffers(GLsizei n, const GLuint* framebuffers);
+	void DeleteProgram(GLuint program);
+	void DeleteRenderbuffers(GLsizei n, const GLuint* renderbuffers);
+	void DeleteShader(GLuint shader);
+	void DeleteTextures(GLsizei n, const GLuint* textures);
+	void DepthFunc(GLenum func);
+	void DepthMask(GLboolean flag);
+	void DepthRangef(GLclampf zNear, GLclampf zFar);
+	void DetachShader(GLuint program, GLuint shader);
+	void Disable(GLenum cap);
+	void DisableVertexAttribArray(GLuint index);
+	void DrawArrays(GLenum mode, GLint first, GLsizei count);
+	void DrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices);
+	void Enable(GLenum cap);
+	void EnableVertexAttribArray(GLuint index);
+	void Finish(void);
+	void Flush(void);
+	void FramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+	void FramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+	void FrontFace(GLenum mode);
+	void GenBuffers(GLsizei n, GLuint* buffers);
+	void GenerateMipmap(GLenum target);
+	void GenFramebuffers(GLsizei n, GLuint* framebuffers);
+	void GenRenderbuffers(GLsizei n, GLuint* renderbuffers);
+	void GenTextures(GLsizei n, GLuint* textures);
+	void GetActiveAttrib(GLuint program, GLuint index, GLsizei bufsize, GLsizei* length, GLint* size, GLenum* type, GLchar* name);
+	void GetActiveUniform(GLuint program, GLuint index, GLsizei bufsize, GLsizei* length, GLint* size, GLenum* type, GLchar* name);
+	void GetAttachedShaders(GLuint program, GLsizei maxcount, GLsizei* count, GLuint* shaders);
+	GLint GetAttribLocation(GLuint program, const GLchar* name);
+	void GetBooleanv(GLenum pname, GLboolean* params);
+	void GetBufferParameteriv(GLenum target, GLenum pname, GLint* params);
+	GLenum GetError(void);
+	void GetFloatv(GLenum pname, GLfloat* params);
+	void GetFramebufferAttachmentParameteriv(GLenum target, GLenum attachment, GLenum pname, GLint* params);
+	void GetIntegerv(GLenum pname, GLint* params);
+	void GetProgramiv(GLuint program, GLenum pname, GLint* params);
+	void GetProgramInfoLog(GLuint program, GLsizei bufsize, GLsizei* length, GLchar* infolog);
+	void GetRenderbufferParameteriv(GLenum target, GLenum pname, GLint* params);
+	void GetShaderiv(GLuint shader, GLenum pname, GLint* params);
+	void GetShaderInfoLog(GLuint shader, GLsizei bufsize, GLsizei* length, GLchar* infolog);
+	void GetShaderPrecisionFormat(GLenum shadertype, GLenum precisiontype, GLint* range, GLint* precision);
+	void GetShaderSource(GLuint shader, GLsizei bufsize, GLsizei* length, GLchar* source);
+	const GLubyte* GetString(GLenum name);
+	void GetTexParameterfv(GLenum target, GLenum pname, GLfloat* params);
+	void GetTexParameteriv(GLenum target, GLenum pname, GLint* params);
+	void GetUniformfv(GLuint program, GLint location, GLfloat* params);
+	void GetUniformiv(GLuint program, GLint location, GLint* params);
+	GLint GetUniformLocation(GLuint program, const GLchar* name);
+	void GetVertexAttribfv(GLuint index, GLenum pname, GLfloat* params);
+	void GetVertexAttribiv(GLuint index, GLenum pname, GLint* params);
+	void GetVertexAttribPointerv(GLuint index, GLenum pname, GLvoid** pointer);
+	void Hint(GLenum target, GLenum mode);
+	GLboolean IsBuffer(GLuint buffer);
+	GLboolean IsEnabled(GLenum cap);
+	GLboolean IsFramebuffer(GLuint framebuffer);
+	GLboolean IsProgram(GLuint program);
+	GLboolean IsRenderbuffer(GLuint renderbuffer);
+	GLboolean IsShader(GLuint shader);
+	GLboolean IsTexture(GLuint texture);
+	void LineWidth(GLfloat width);
+	void LinkProgram(GLuint program);
+	void PixelStorei(GLenum pname, GLint param);
+	void PolygonOffset(GLfloat factor, GLfloat units);
+	void ReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels);
+	void ReleaseShaderCompiler(void);
+	void RenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+	void SampleCoverage(GLclampf value, GLboolean invert);
+	void Scissor(GLint x, GLint y, GLsizei width, GLsizei height);
+	void ShaderBinary(GLsizei n, const GLuint* shaders, GLenum binaryformat, const GLvoid* binary, GLsizei length);
+	void ShaderSource(GLuint shader, GLsizei count, const GLchar** string, const GLint* length);
+	void StencilFunc(GLenum func, GLint ref, GLuint mask);
+	void StencilFuncSeparate(GLenum face, GLenum func, GLint ref, GLuint mask);
+	void StencilMask(GLuint mask);
+	void StencilMaskSeparate(GLenum face, GLuint mask);
+	void StencilOp(GLenum fail, GLenum zfail, GLenum zpass);
+	void StencilOpSeparate(GLenum face, GLenum fail, GLenum zfail, GLenum zpass);
+	void TexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid* pixels);
+	void TexParameterf(GLenum target, GLenum pname, GLfloat param);
+	void TexParameterfv(GLenum target, GLenum pname, const GLfloat* params);
+	void TexParameteri(GLenum target, GLenum pname, GLint param);
+	void TexParameteriv(GLenum target, GLenum pname, const GLint* params);
+	void TexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* pixels);
+	void Uniform1f(GLint location, GLfloat x);
+	void Uniform1fv(GLint location, GLsizei count, const GLfloat* v);
+	void Uniform1i(GLint location, GLint x);
+	void Uniform1iv(GLint location, GLsizei count, const GLint* v);
+	void Uniform2f(GLint location, GLfloat x, GLfloat y);
+	void Uniform2fv(GLint location, GLsizei count, const GLfloat* v);
+	void Uniform2i(GLint location, GLint x, GLint y);
+	void Uniform2iv(GLint location, GLsizei count, const GLint* v);
+	void Uniform3f(GLint location, GLfloat x, GLfloat y, GLfloat z);
+	void Uniform3fv(GLint location, GLsizei count, const GLfloat* v);
+	void Uniform3i(GLint location, GLint x, GLint y, GLint z);
+	void Uniform3iv(GLint location, GLsizei count, const GLint* v);
+	void Uniform4f(GLint location, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
+	void Uniform4fv(GLint location, GLsizei count, const GLfloat* v);
+	void Uniform4i(GLint location, GLint x, GLint y, GLint z, GLint w);
+	void Uniform4iv(GLint location, GLsizei count, const GLint* v);
+	void UniformMatrix2fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+	void UniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+	void UniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+	void UseProgram(GLuint program);
+	void ValidateProgram(GLuint program);
+	void VertexAttrib1f(GLuint indx, GLfloat x);
+	void VertexAttrib1fv(GLuint indx, const GLfloat* values);
+	void VertexAttrib2f(GLuint indx, GLfloat x, GLfloat y);
+	void VertexAttrib2fv(GLuint indx, const GLfloat* values);
+	void VertexAttrib3f(GLuint indx, GLfloat x, GLfloat y, GLfloat z);
+	void VertexAttrib3fv(GLuint indx, const GLfloat* values);
+	void VertexAttrib4f(GLuint indx, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
+	void VertexAttrib4fv(GLuint indx, const GLfloat* values);
+	void VertexAttribPointer(GLuint indx, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* ptr);
+	void Viewport(GLint x, GLint y, GLsizei width, GLsizei height);
+
 
 namespace sys
 {
