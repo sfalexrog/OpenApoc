@@ -33,6 +33,16 @@
 
 #endif
 
+#ifdef ANDROID
+#include <android/log.h>
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, "OpenApoc", __VA_ARGS__)
+#define LOGDV(fmt, ap) __android_log_vprint(ANDROID_LOG_DEBUG, "OpenApoc", fmt, ap)
+#define LOGW(...) __android_log_print(ANDROID_LOG_WARN, "OpenApoc", __VA_ARGS__)
+#define LOGWV(fmt, ap) __android_log_vprint(ANDROID_LOG_WARN, "OpenApoc", fmt, ap)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "OpenApoc", __VA_ARGS__)
+#define LOGEV(fmt, ap) __android_log_vprint(ANDROID_LOG_ERROR, "OpenApoc", fmt, ap)
+#endif
+
 #define MAX_SYMBOL_LENGTH 1000
 
 namespace OpenApoc
@@ -149,11 +159,12 @@ void Log(LogLevel level, UString prefix, UString format, ...)
 #ifdef UNIT_TEST
 		outFile = stderr;
 #else
-		outFile = fopen(LOGFILE, "w");
+		outFile = fopen("/sdcard/openapoc/data/" LOGFILE, "w");
 		if (!outFile)
 		{
 			// No log file, have to hope stderr goes somewhere useful
 			fprintf(stderr, "Failed to open logfile \"%s\"\n", LOGFILE);
+			LOGE("Failed to open logfile \"%s\"\n", LOGFILE);
 			return;
 		}
 #endif
@@ -176,6 +187,10 @@ void Log(LogLevel level, UString prefix, UString format, ...)
 	va_start(arglist, format);
 	fprintf(outFile, "%s %llu %s: ", level_prefix, clockns, prefix.c_str());
 	vfprintf(outFile, format.c_str(), arglist);
+#ifdef ANDROID
+	LOGD("%s %llu %s: ", level_prefix, clockns, prefix.c_str());
+	LOGDV(format.c_str(), arglist);
+#endif
 	// On error print a backtrace to the log file
 	if (level == LogLevel::Error)
 		print_backtrace(outFile);
