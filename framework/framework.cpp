@@ -58,10 +58,10 @@ static std::map<UString, UString> defaultConfig = {
 #endif
     {"Language", "en_gb"},
     {"GameRules", "XCOMAPOC.XML"},
-    {"Resource.LocalDataDir", "./data"},
-    {"Resource.SystemDataDir", DATA_DIRECTORY},
-    {"Resource.LocalCDPath", "./data/cd.iso"},
-    {"Resource.SystemCDPath", DATA_DIRECTORY "/cd.iso"},
+    {"Resource.LocalDataDir", "/sdcard/openapoc/data"},
+    {"Resource.SystemDataDir", "/sdcard/openapoc"},
+    {"Resource.LocalCDPath", "/sdcard/openapoc/cd.iso"},
+    {"Resource.SystemCDPath", "/sdcard/openapoc/cd.iso"},
     {"Visual.Renderers", RENDERERS},
     {"Audio.Backends", "allegro:null"},
     {"Audio.GlobalGain", "20"},
@@ -303,6 +303,10 @@ Framework::Framework(const UString programName, const std::vector<UString> cmdli
 	al_register_event_source(p->eventAllegro, al_get_display_event_source(p->screen));
 	al_register_event_source(p->eventAllegro, al_get_keyboard_event_source());
 	al_register_event_source(p->eventAllegro, al_get_mouse_event_source());
+#ifdef ANDROID
+	al_install_touch_input();
+	al_register_event_source(p->eventAllegro, al_get_touch_input_event_source());
+#endif
 }
 
 Framework::~Framework()
@@ -607,6 +611,40 @@ void Framework::TranslateAllegroEvents()
 				fwE->Data.Display.Active = false;
 				PushEvent(fwE);
 				break;
+				// TODO: Actually register touches as touches, not as mouse events.
+			case ALLEGRO_EVENT_TOUCH_BEGIN:
+				LogInfo("ALLEGRO_TOUCH_BEGIN");
+				fwE = new Event();
+				fwE->Type = EVENT_MOUSE_DOWN;
+				fwE->Data.Mouse.Button = 1;
+				fwE->Data.Mouse.X = e.touch.x;
+				fwE->Data.Mouse.Y = e.touch.y;
+				fwE->Data.Mouse.DeltaX = e.touch.dx;
+				fwE->Data.Mouse.DeltaY = e.touch.dy;
+				PushEvent(fwE);
+				break;
+			case ALLEGRO_EVENT_TOUCH_END:
+				LogInfo("ALLEGRO_TOUCH_END");
+				fwE = new Event();
+				fwE->Type = EVENT_MOUSE_UP;
+				fwE->Data.Mouse.Button = 1;
+				fwE->Data.Mouse.X = e.touch.x;
+				fwE->Data.Mouse.Y = e.touch.y;
+				fwE->Data.Mouse.DeltaX = e.touch.dx;
+				fwE->Data.Mouse.DeltaY = e.touch.dy;
+				PushEvent(fwE);
+				break;
+			case ALLEGRO_EVENT_TOUCH_MOVE:
+				LogInfo("ALLEGRO_TOUCH_MOVE");
+				fwE = new Event();
+				fwE->Type = EVENT_MOUSE_MOVE;
+				fwE->Data.Mouse.Button = 1;
+				fwE->Data.Mouse.X = e.touch.x;
+				fwE->Data.Mouse.Y = e.touch.y;
+				fwE->Data.Mouse.DeltaX = e.touch.dx;
+				fwE->Data.Mouse.DeltaY = e.touch.dy;
+				PushEvent(fwE);
+				break;
 			default:
 				fwE = new Event();
 				fwE->Type = EVENT_UNDEFINED;
@@ -636,12 +674,16 @@ void Framework::Display_Initialise()
 	TRACE_FN;
 	LogInfo("Init display");
 	int display_flags = ALLEGRO_OPENGL;
+#ifdef OPENAPOC_GLES
+	display_flags |= ALLEGRO_OPENGL_ES_PROFILE | ALLEGRO_PROGRAMMABLE_PIPELINE;
+#else
 #ifdef ALLEGRO_OPENGL_CORE
 	display_flags |= ALLEGRO_OPENGL_CORE;
 #endif
 
 #if ALLEGRO_VERSION > 5 || (ALLEGRO_VERSION == 5 && ALLEGRO_SUB_VERSION >= 1)
 	display_flags |= ALLEGRO_OPENGL_3_0 | ALLEGRO_PROGRAMMABLE_PIPELINE;
+#endif
 #endif
 
 	int scrW = Settings->getInt("Visual.ScreenWidth");
