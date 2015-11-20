@@ -7,6 +7,8 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_physfs.h>
 
+#include <string>
+
 using namespace OpenApoc;
 
 namespace
@@ -24,6 +26,13 @@ class AllegroImageLoader : public OpenApoc::ImageLoader
 
 	virtual sp<OpenApoc::Image> loadImage(UString path) override
 	{
+#ifdef ANDROID
+		if (path.str().find(".PNG") != std::string::npos)
+		{
+			LogInfo("Allegro loader is not allowed to touch my .PNGs!");
+			return nullptr;
+		}
+#endif
 		ALLEGRO_BITMAP *bmp = al_load_bitmap(path.c_str());
 		if (!bmp)
 		{
@@ -64,7 +73,7 @@ class AllegroImageLoaderFactory : public OpenApoc::ImageLoaderFactory
 	virtual OpenApoc::ImageLoader *create() override { return new AllegroImageLoader(); }
 	virtual ~AllegroImageLoaderFactory() {}
 };
-
+//#ifndef ANDROID
 OpenApoc::ImageLoaderRegister<AllegroImageLoaderFactory> register_at_load_allegro_image("allegro");
-
+//#endif
 }; // anonymous namespace
