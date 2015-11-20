@@ -11,7 +11,7 @@
 /* Workaround MSVC not liking int64_t being defined here and in allegro */
 #define GLEXT_64_TYPES_DEFINED
 #include "framework/render/gles20/gles_2_0.hpp"
-#include "framework/render/gles20/gles_2_0.inl"
+//#include "framework/render/gles20/gles_2_0.inl"
 //} // anonymous namespace
 
 namespace
@@ -33,6 +33,7 @@ class Program
 		gl::CompileShader(shader);
 		GLint compileStatus;
 		gl::GetShaderiv(shader, gl::COMPILE_STATUS, &compileStatus);
+		LogInfo("Shader compilation status: %d", compileStatus);
 		if (compileStatus == gl::TRUE_)
 			return shader;
 
@@ -74,6 +75,7 @@ class Program
 
 		GLint linkStatus;
 		gl::GetProgramiv(prog, gl::LINK_STATUS, &linkStatus);
+		LogInfo("Program linking status: %d", linkStatus);
 		if (linkStatus == gl::TRUE_)
 			return;
 
@@ -532,6 +534,8 @@ class FBOData : public RendererImageData
 		               NULL);
 		gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::NEAREST);
 		gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::NEAREST);
+		gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE);
+		gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE);
 
 		gl::GenFramebuffers(1, &this->fbo);
 		BindFramebuffer f(this->fbo);
@@ -562,6 +566,8 @@ class GLRGBImage : public RendererImageData
 		BindTexture b(this->texID);
 		gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::NEAREST);
 		gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::NEAREST);
+		gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE);
+		gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE);
 		gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGBA, parent->size.x, parent->size.y, 0, gl::RGBA,
 		               gl::UNSIGNED_BYTE, l.getData());
 	}
@@ -580,6 +586,8 @@ class GLPalette : public RendererImageData
 		BindTexture b(this->texID);
 		gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::NEAREST);
 		gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::NEAREST);
+		gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE);
+		gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE);
 		gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGBA, parent->colours.size(), 1, 0, gl::RGBA,
 		               gl::UNSIGNED_BYTE, parent->colours.data());
 	}
@@ -600,6 +608,8 @@ class GLPaletteImage : public RendererImageData
 		UnpackAlignment align(1);
 		gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::NEAREST);
 		gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::NEAREST);
+		gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE);
+		gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE);
 		// FIXME: GLES2.0 doesn't have gl::RED, gl::GREEN or gl::BLUE texture formats,
 		// replacing them with gl::LUMINANCE might have side effects.
 		gl::TexImage2D(gl::TEXTURE_2D, 0, /*1*/ gl::LUMINANCE, parent->size.x, parent->size.y, 0, /*gl::RED,*/
