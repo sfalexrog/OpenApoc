@@ -58,10 +58,10 @@ static std::map<UString, UString> defaultConfig = {
 #endif
     {"Language", "en_gb"},
     {"GameRules", "XCOMAPOC.XML"},
-    {"Resource.LocalDataDir", "/sdcard/openapoc/data"},
-    {"Resource.SystemDataDir", "/sdcard/openapoc"},
-    {"Resource.LocalCDPath", "/sdcard/openapoc/cd.iso"},
-    {"Resource.SystemCDPath", "/sdcard/openapoc/cd.iso"},
+    {"Resource.LocalDataDir", "/storage/emulated/0/openapoc/data"},
+    {"Resource.SystemDataDir", "/storage/emulated/0/openapoc"},
+    {"Resource.LocalCDPath", "/storage/emulated/0/openapoc/cd.iso"},
+    {"Resource.SystemCDPath", "/storage/emulated/0/openapoc/cd.iso"},
     {"Visual.Renderers", RENDERERS},
     {"Audio.Backends", "allegro:null"},
     {"Audio.GlobalGain", "20"},
@@ -303,6 +303,7 @@ Framework::Framework(const UString programName, const std::vector<UString> cmdli
 	al_register_event_source(p->eventAllegro, al_get_display_event_source(p->screen));
 	al_register_event_source(p->eventAllegro, al_get_keyboard_event_source());
 	al_register_event_source(p->eventAllegro, al_get_mouse_event_source());
+	// TODO: Check if it's safe to remove the #ifdef?
 #ifdef ANDROID
 	al_install_touch_input();
 	al_register_event_source(p->eventAllegro, al_get_touch_input_event_source());
@@ -613,36 +614,36 @@ void Framework::TranslateAllegroEvents()
 				break;
 				// TODO: Actually register touches as touches, not as mouse events.
 			case ALLEGRO_EVENT_TOUCH_BEGIN:
-				LogInfo("ALLEGRO_TOUCH_BEGIN");
 				fwE = new Event();
-				fwE->Type = EVENT_MOUSE_DOWN;
-				fwE->Data.Mouse.Button = 1;
-				fwE->Data.Mouse.X = e.touch.x;
-				fwE->Data.Mouse.Y = e.touch.y;
-				fwE->Data.Mouse.DeltaX = e.touch.dx;
-				fwE->Data.Mouse.DeltaY = e.touch.dy;
+				fwE->Type = EVENT_FINGER_DOWN;
+				fwE->Data.Finger.Id = e.touch.id;
+				fwE->Data.Finger.IsPrimary = e.touch.primary;
+				fwE->Data.Finger.X = e.touch.x;
+				fwE->Data.Finger.Y = e.touch.y;
+				fwE->Data.Finger.DeltaX = e.touch.dx;
+				fwE->Data.Finger.DeltaY = e.touch.dy;
 				PushEvent(fwE);
 				break;
 			case ALLEGRO_EVENT_TOUCH_END:
-				LogInfo("ALLEGRO_TOUCH_END");
 				fwE = new Event();
-				fwE->Type = EVENT_MOUSE_UP;
-				fwE->Data.Mouse.Button = 1;
-				fwE->Data.Mouse.X = e.touch.x;
-				fwE->Data.Mouse.Y = e.touch.y;
-				fwE->Data.Mouse.DeltaX = e.touch.dx;
-				fwE->Data.Mouse.DeltaY = e.touch.dy;
+				fwE->Type = EVENT_FINGER_UP;
+				fwE->Data.Finger.Id = e.touch.id;
+				fwE->Data.Finger.IsPrimary = e.touch.primary;
+				fwE->Data.Finger.X = e.touch.x;
+				fwE->Data.Finger.Y = e.touch.y;
+				fwE->Data.Finger.DeltaX = e.touch.dx;
+				fwE->Data.Finger.DeltaY = e.touch.dy;
 				PushEvent(fwE);
 				break;
 			case ALLEGRO_EVENT_TOUCH_MOVE:
-				LogInfo("ALLEGRO_TOUCH_MOVE");
 				fwE = new Event();
-				fwE->Type = EVENT_MOUSE_MOVE;
-				fwE->Data.Mouse.Button = 1;
-				fwE->Data.Mouse.X = e.touch.x;
-				fwE->Data.Mouse.Y = e.touch.y;
-				fwE->Data.Mouse.DeltaX = e.touch.dx;
-				fwE->Data.Mouse.DeltaY = e.touch.dy;
+				fwE->Type = EVENT_FINGER_MOVE;
+				fwE->Data.Finger.Id = e.touch.id;
+				fwE->Data.Finger.IsPrimary = e.touch.primary;
+				fwE->Data.Finger.X = e.touch.x;
+				fwE->Data.Finger.Y = e.touch.y;
+				fwE->Data.Finger.DeltaX = e.touch.dx;
+				fwE->Data.Finger.DeltaY = e.touch.dy;
 				PushEvent(fwE);
 				break;
 			default:
