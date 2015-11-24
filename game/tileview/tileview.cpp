@@ -136,8 +136,19 @@ void TileView::EventOccurred(Event *e)
 		// FIXME: Review this code for sanity
 		if (e->Data.Finger.IsPrimary)
 		{
-			offsetX += e->Data.Finger.DeltaX;
-			offsetY += e->Data.Finger.DeltaY;
+			Vec2<float> deltaPos(e->Data.Finger.DeltaX, e->Data.Finger.DeltaY);
+			if (this->viewMode == TileViewMode::Isometric)
+			{
+				deltaPos.x /= isoTileSize.x;
+				deltaPos.y /= isoTileSize.y;
+			}
+			else
+			{
+				deltaPos.x /= stratTileSize.x;
+				deltaPos.y /= stratTileSize.y;
+			}
+			Vec2<float> newPos = this->centerPos - deltaPos;
+			this->setScreenCenterTile(newPos);
 		}
 	}
 	if (fw.gamecore->DebugModeEnabled && selectionChanged)
