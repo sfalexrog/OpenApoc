@@ -56,13 +56,12 @@ void CityView::Render()
 			Vec3<float> prevPos = vTile->getPosition();
 			for (auto *tile : path)
 			{
+				auto screenOffset = this->getScreenOffset();
 				Vec3<float> pos = tile->position;
 				Vec2<float> screenPosA = this->tileToScreenCoords(prevPos);
-				screenPosA.x += this->offsetX;
-				screenPosA.y += this->offsetY;
+				screenPosA += screenOffset;
 				Vec2<float> screenPosB = this->tileToScreenCoords(pos);
-				screenPosB.x += this->offsetX;
-				screenPosB.y += this->offsetY;
+				screenPosB += screenOffset;
 
 				fw.renderer->drawLine(screenPosA, screenPosB, Colour{255, 0, 0, 128});
 
@@ -239,6 +238,14 @@ void CityView::EventOccurred(Event *e)
 				s->repair(*fw.state);
 				fw.state->city->fallingScenery.erase(s);
 			}
+		}
+		else if (this->getViewMode() == TileViewMode::Strategy && e->Type == EVENT_MOUSE_DOWN &&
+		         e->Data.Mouse.Button == 2)
+		{
+			Vec2<float> screenOffset = {this->getScreenOffset().x, this->getScreenOffset().y};
+			auto clickTile = this->screenToTileCoords(
+			    Vec2<float>{e->Data.Mouse.X, e->Data.Mouse.Y} - screenOffset, 0.0f);
+			this->setScreenCenterTile({clickTile.x, clickTile.y});
 		}
 		else
 		{
