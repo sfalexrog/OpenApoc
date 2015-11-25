@@ -294,6 +294,33 @@ UString Event::toString()
 			ss << " dw=" << this->Data.Mouse.WheelHorizontal;
 			ss << " button=" << this->Data.Mouse.Button;
 			break;
+		case EVENT_FINGER_DOWN:
+			ss << " type=FINGER_DOWN";
+			ss << " x=" << this->Data.Finger.X;
+			ss << " y=" << this->Data.Finger.Y;
+			ss << " dx=" << this->Data.Finger.DeltaX;
+			ss << " dy=" << this->Data.Finger.DeltaY;
+			ss << " id=" << this->Data.Finger.Id;
+			ss << " primary=" << this->Data.Finger.IsPrimary;
+			break;
+		case EVENT_FINGER_UP:
+			ss << " type=FINGER_UP";
+			ss << " x=" << this->Data.Finger.X;
+			ss << " y=" << this->Data.Finger.Y;
+			ss << " dx=" << this->Data.Finger.DeltaX;
+			ss << " dy=" << this->Data.Finger.DeltaY;
+			ss << " id=" << this->Data.Finger.Id;
+			ss << " primary=" << this->Data.Finger.IsPrimary;
+			break;
+		case EVENT_FINGER_MOVE:
+			ss << " type=FINGER_MOVE";
+			ss << " x=" << this->Data.Finger.X;
+			ss << " y=" << this->Data.Finger.Y;
+			ss << " dx=" << this->Data.Finger.DeltaX;
+			ss << " dy=" << this->Data.Finger.DeltaY;
+			ss << " id=" << this->Data.Finger.Id;
+			ss << " primary=" << this->Data.Finger.IsPrimary;
+			break;
 		case EVENT_WINDOW_RESIZE:
 			ss << " type=WINDOW_RESIZE";
 			ss << " w=" << this->Data.Display.Width;

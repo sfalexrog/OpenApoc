@@ -131,6 +131,14 @@ void TileView::EventOccurred(Event *e)
 				scrollRight = false;
 				break;
 		}
+	} else if (e->Type == EVENT_FINGER_MOVE)
+	{
+		// FIXME: Review this code for sanity
+		if (e->Data.Finger.IsPrimary)
+		{
+			offsetX += e->Data.Finger.DeltaX;
+			offsetY += e->Data.Finger.DeltaY;
+		}
 	}
 	if (fw.gamecore->DebugModeEnabled && selectionChanged)
 	{
