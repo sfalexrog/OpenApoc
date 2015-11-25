@@ -70,7 +70,7 @@ class Framework
 	void ProcessEvents();
 	void PushEvent(Event *e);
 	void DumpEvent(Event *e);
-	void TranslateAllegroEvents();
+	void TranslateSDLEvents();
 	void ReadRecordedEvents();
 	void ShutdownFramework();
 	bool IsShuttingDown();

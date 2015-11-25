@@ -170,7 +170,9 @@ Framework::Framework(const UString programName, const std::vector<UString> cmdli
 	TRACE_FN;
 	LogInfo("Starting framework");
 	PHYSFS_init(programName.c_str());
-
+#ifdef ANDROID
+	SDL_SetHint(SDL_HINT_ANDROID_SEPARATE_MOUSE_AND_TOUCH, "1");
+#endif
 	// Initialize subsystems separately?
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
 	{
@@ -459,7 +461,7 @@ void Framework::ProcessEvents()
 	if (this->replayEvents)
 		ReadRecordedEvents();
 	else
-		TranslateAllegroEvents();
+		TranslateSDLEvents();
 
 	//al_lock_mutex(p->eventMutex);
 
@@ -508,10 +510,18 @@ void Framework::DumpEvent(Event *e)
 	this->eventStream << e->toString().str() << "\n";
 }
 
-void Framework::TranslateAllegroEvents()
+void Framework::TranslateSDLEvents()
 {
 	SDL_Event e;
 	Event *fwE;
+
+	// FIXME: That's not the right way to figure out the primary finger!
+	int primaryFingerID = -1;
+	SDL_Finger *primaryFinger = SDL_GetTouchFinger(SDL_GetTouchDevice(0), 0);
+	if (primaryFinger)
+	{
+		primaryFingerID = primaryFinger->id;
+	}
 
 	while (SDL_PollEvent(&e))
 	{
@@ -614,6 +624,39 @@ void Framework::TranslateAllegroEvents()
 				fwE->Data.Mouse.Button = SDL_BUTTON(e.button.button);
 				PushEvent(fwE);
 				break;
+			case SDL_FINGERDOWN:
+				fwE = new Event();
+				fwE->Type = EVENT_FINGER_DOWN;
+				fwE->Data.Finger.X = e.tfinger.x * Display_GetWidth();
+				fwE->Data.Finger.Y = e.tfinger.y * Display_GetHeight();
+				fwE->Data.Finger.DeltaX = e.tfinger.dx * Display_GetWidth();
+				fwE->Data.Finger.DeltaY = e.tfinger.dy * Display_GetHeight();
+				fwE->Data.Finger.Id = e.tfinger.fingerId;
+				fwE->Data.Finger.IsPrimary = e.tfinger.fingerId == primaryFingerID; // FIXME: Try to remember the ID of the first touching finger!
+				PushEvent(fwE);
+				break;
+			case SDL_FINGERUP:
+				fwE = new Event();
+				fwE->Type = EVENT_FINGER_UP;
+				fwE->Data.Finger.X = e.tfinger.x * Display_GetWidth();
+				fwE->Data.Finger.Y = e.tfinger.y * Display_GetHeight();
+				fwE->Data.Finger.DeltaX = e.tfinger.dx * Display_GetWidth();
+				fwE->Data.Finger.DeltaY = e.tfinger.dy * Display_GetHeight();
+				fwE->Data.Finger.Id = e.tfinger.fingerId;
+				fwE->Data.Finger.IsPrimary = e.tfinger.fingerId == primaryFingerID; // FIXME: Try to remember the ID of the first touching finger!
+				PushEvent(fwE);
+				break;
+			case SDL_FINGERMOTION:
+				fwE = new Event();
+				fwE->Type = EVENT_FINGER_MOVE;
+				fwE->Data.Finger.X = e.tfinger.x * Display_GetWidth();
+				fwE->Data.Finger.Y = e.tfinger.y * Display_GetHeight();
+				fwE->Data.Finger.DeltaX = e.tfinger.dx * Display_GetWidth();
+				fwE->Data.Finger.DeltaY = e.tfinger.dy * Display_GetHeight();
+				fwE->Data.Finger.Id = e.tfinger.fingerId;
+				fwE->Data.Finger.IsPrimary = e.tfinger.fingerId == primaryFingerID; // FIXME: Try to remember the ID of the first touching finger!
+				PushEvent(fwE);
+				break;
 			case SDL_WINDOWEVENT:
 				// Window events get special treatment
 				switch (e.window.event)
@@ -666,6 +709,7 @@ void Framework::TranslateAllegroEvents()
 						SDL_PushEvent(&e);
 						break;
 				}
+				break;
 			/*case ALLEGRO_EVENT_DISPLAY_RESIZE:
 				fwE = new Event();
 				fwE->Type = EVENT_WINDOW_RESIZE;
