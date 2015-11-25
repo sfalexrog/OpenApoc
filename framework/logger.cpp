@@ -148,9 +148,6 @@ static std::chrono::time_point<std::chrono::high_resolution_clock> timeInit =
 
 void Log(LogLevel level, UString prefix, UString format, ...)
 {
-	#ifdef __ANDROID__
-
-	#endif
 	bool exit_app = false;
 	const char *level_prefix;
 	auto timeNow = std::chrono::high_resolution_clock::now();
