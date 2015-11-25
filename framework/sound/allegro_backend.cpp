@@ -1,3 +1,4 @@
+#if 0 // TODO: Make an SDL audio backend
 #include "library/sp.h"
 #include "framework/sound_interface.h"
 #include "framework/logger.h"
@@ -367,3 +368,5 @@ class AllegroSoundBackendFactory : public SoundBackendFactory
 SoundBackendRegister<AllegroSoundBackendFactory> load_at_init_allegro_sound("allegro");
 
 }; // anonymous namespace
+
+#endif

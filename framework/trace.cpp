@@ -82,7 +82,7 @@ TraceManager::~TraceManager()
 {
 	assert(OpenApoc::Trace::enabled);
 
-	std::ofstream outFile("openapoc_trace.json");
+	std::ofstream outFile("/sdcard/openapoc/data/openapoc_trace.json");
 
 	// FIXME: Use proper json parser instead of magically constructing from strings?
 
