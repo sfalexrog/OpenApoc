@@ -141,6 +141,8 @@ void TileView::EventOccurred(Event *e)
 			{
 				deltaPos.x /= isoTileSize.x;
 				deltaPos.y /= isoTileSize.y;
+				Vec2<float> isoDelta(deltaPos.x + deltaPos.y, deltaPos.y - deltaPos.x);
+				deltaPos = isoDelta;
 			}
 			else
 			{
