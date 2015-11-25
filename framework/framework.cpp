@@ -172,9 +172,10 @@ Framework::Framework(const UString programName, const std::vector<UString> cmdli
 	PHYSFS_init(programName.c_str());
 
 	// Initialize subsystems separately?
-	if (!SDL_Init(SDL_INIT_EVERYTHING))
+	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
 	{
 		LogError("Cannot init SDL2");
+		LogError("SDL error: %s", SDL_GetError());
 		p->quitProgram = true;
 		return;
 	}
