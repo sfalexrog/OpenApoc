@@ -136,8 +136,7 @@ void TileView::EventOccurred(Event *e)
 		// FIXME: Review this code for sanity
 		if (e->Data.Finger.IsPrimary)
 		{
-			offsetX += e->Data.Finger.DeltaX;
-			offsetY += e->Data.Finger.DeltaY;
+
 		}
 	}
 	if (fw.gamecore->DebugModeEnabled && selectionChanged)
