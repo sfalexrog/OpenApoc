@@ -1,3 +1,5 @@
+#if 0 // TODO: To be replaced by SDL image loader!
+
 #include "library/sp.h"
 #include "framework/imageloader_interface.h"
 #include "framework/logger.h"
@@ -77,3 +79,5 @@ class AllegroImageLoaderFactory : public OpenApoc::ImageLoaderFactory
 OpenApoc::ImageLoaderRegister<AllegroImageLoaderFactory> register_at_load_allegro_image("allegro");
 //#endif
 }; // anonymous namespace
+
+#endif

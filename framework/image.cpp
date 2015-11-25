@@ -4,11 +4,12 @@
 #include "framework/renderer.h"
 #include "framework/logger.h"
 
-#include <allegro5/allegro.h>
-#include <allegro5/allegro_image.h>
+//#include <allegro5/allegro.h>
+//#include <allegro5/allegro_image.h>
 
 // Use physfs for RGBImage::saveBitmap directory creation
 #include <physfs.h>
+#include <SDL_surface.h>
 
 namespace OpenApoc
 {
@@ -93,16 +94,26 @@ void RGBImage::saveBitmap(const UString &filename)
 		}
 	}
 
-	ALLEGRO_BITMAP *bmp = al_create_bitmap(size.x, size.y);
+	SDL_Surface *bmp = SDL_CreateRGBSurface(0,
+											size.x,
+											size.y,
+											32,
+											0x000000ff,
+											0x0000ff00,
+											0x00ff0000,
+											0xff000000);
+	/*
 	ALLEGRO_LOCKED_REGION *rgn =
 	    al_lock_bitmap(bmp, ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE, ALLEGRO_LOCK_READWRITE);
+	    */
+	SDL_LockSurface(bmp);
 
 	for (unsigned int y = 0; y < size.y; y++)
 	{
 		for (unsigned int x = 0; x < size.x; x++)
 		{
-			int offset = (y * rgn->pitch) + (x * 4);
-			uint8_t *bytedata = reinterpret_cast<uint8_t *>(rgn->data);
+			int offset = (y * bmp->pitch) + (x * 4);
+			uint8_t *bytedata = reinterpret_cast<uint8_t *>(bmp->pixels);
 			Colour_ARGB8888LE *pxdata = reinterpret_cast<Colour_ARGB8888LE *>(bytedata + offset);
 			Colour c = pixels[(y * size.x) + x];
 
@@ -113,9 +124,9 @@ void RGBImage::saveBitmap(const UString &filename)
 		}
 	}
 
-	al_unlock_bitmap(bmp);
-	al_save_bitmap(filename.c_str(), bmp);
-	al_destroy_bitmap(bmp);
+	SDL_UnlockSurface(bmp);
+	SDL_SaveBMP(bmp, filename.c_str());
+	SDL_FreeSurface(bmp);
 }
 
 RGBImage::~RGBImage() {}

@@ -28,7 +28,8 @@
 #else
 
 #if defined(ERROR_DIALOG)
-#include <allegro5/allegro_native_dialog.h>
+//#include <allegro5/allegro_native_dialog.h>
+#include <SDL_video.h>
 #endif
 
 #endif
@@ -159,7 +160,7 @@ void Log(LogLevel level, UString prefix, UString format, ...)
 #ifdef UNIT_TEST
 		outFile = stderr;
 #else
-		outFile = fopen("/sdcard/openapoc/data/" LOGFILE, "w");
+		outFile = fopen("/storage/emulated/0/openapoc/data/" LOGFILE, "w");
 		if (!outFile)
 		{
 			// No log file, have to hope stderr goes somewhere useful
@@ -224,9 +225,28 @@ void Log(LogLevel level, UString prefix, UString format, ...)
 		vsnprintf(string.get(), strSize, format.c_str(), arglist);
 		va_end(arglist);
 
-		int but = al_show_native_message_box(NULL, "OpenApoc ERROR", "A fatal error has occurred",
+		SDL_MessageBoxData mBoxData;
+		mBoxData.flags = SDL_MESSAGEBOX_ERROR;
+		mBoxData.window = NULL; // Might happen before we get our window?
+		mBoxData.title = "OpenApoc ERROR"
+		mBoxData.message = string.get();
+		mBoxData.numbuttons = 2;
+		SDL_MessageBoxButtonData buttons[2];
+		buttons[0].flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
+		buttons[0].buttonid = 1;
+		buttons[0].text = "Exit";
+		buttons[1].flags = SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT;
+		buttons[1].buttonid = 2;
+		buttons[1].text = "try to limp along";
+		mBoxData.buttons = buttons;
+		mBoxData.colorScheme = NULL; // Use system settings
+
+		int but;
+		SDL_ShowMessageBox(&mBoxData, &but);
+
+		/*int but = al_show_native_message_box(NULL, "OpenApoc ERROR", "A fatal error has occurred",
 		                                     string.get(), "Exit|Continue (UNSUPPORTED)",
-		                                     ALLEGRO_MESSAGEBOX_ERROR);
+		                                     ALLEGRO_MESSAGEBOX_ERROR);*/
 		/* button 1 = "exit", button 2 = "try to limp along" */
 		if (but == 1)
 		{

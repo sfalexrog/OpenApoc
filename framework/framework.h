@@ -22,7 +22,11 @@
 
 // FIXME: Remove core-allegro
 // Required for input types
-#include <allegro5/allegro.h>
+//#include <allegro5/allegro.h>
+#include <SDL_keyboard.h>
+#include <SDL_keycode.h>
+#include <SDL_scancode.h>
+#include <SDL_mouse.h>
 #include <fstream>
 
 namespace OpenApoc
