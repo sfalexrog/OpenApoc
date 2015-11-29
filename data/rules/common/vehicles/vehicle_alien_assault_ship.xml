@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openapoc_rules>
+  <vehicle id="VEHICLE_ALIEN_ASSAULT_SHIP" type="ufo">
+    <name>STR_ALIEN_ASSAULT_SHIP</name>
+    <manufacturer>ORG_ALIEN</manufacturer>
+    <size>1,1,1</size>
+    <image_offset>32,32</image_offset>
+    <shadow_offset>32,0</shadow_offset>
+    <stratmap>
+      <sprite direction="n">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:572</sprite>
+    </stratmap>
+    <animation>
+      <frame>PCK:xcom3/UFODATA/SAUCER.PCK:xcom3/UFODATA/SAUCER.TAB:53</frame>
+      <frame>PCK:xcom3/UFODATA/SAUCER.PCK:xcom3/UFODATA/SAUCER.TAB:54</frame>
+      <frame>PCK:xcom3/UFODATA/SAUCER.PCK:xcom3/UFODATA/SAUCER.TAB:55</frame>
+      <frame>PCK:xcom3/UFODATA/SAUCER.PCK:xcom3/UFODATA/SAUCER.TAB:56</frame>
+      <frame>PCK:xcom3/UFODATA/SAUCER.PCK:xcom3/UFODATA/SAUCER.TAB:57</frame>
+      <frame>PCK:xcom3/UFODATA/SAUCER.PCK:xcom3/UFODATA/SAUCER.TAB:58</frame>
+      <frame>PCK:xcom3/UFODATA/SAUCER.PCK:xcom3/UFODATA/SAUCER.TAB:59</frame>
+      <frame>PCK:xcom3/UFODATA/SAUCER.PCK:xcom3/UFODATA/SAUCER.TAB:60</frame>
+      <frame>PCK:xcom3/UFODATA/SAUCER.PCK:xcom3/UFODATA/SAUCER.TAB:61</frame>
+      <frame>PCK:xcom3/UFODATA/SAUCER.PCK:xcom3/UFODATA/SAUCER.TAB:62</frame>
+      <frame>PCK:xcom3/UFODATA/SAUCER.PCK:xcom3/UFODATA/SAUCER.TAB:63</frame>
+      <frame>PCK:xcom3/UFODATA/SAUCER.PCK:xcom3/UFODATA/SAUCER.TAB:64</frame>
+    </animation>
+    <crashed>PCK:xcom3/UFODATA/SAUCER.PCK:xcom3/UFODATA/SAUCER.TAB:65</crashed>
+    <shadows>
+      <sprite direction="n">PCKSHADOW:xcom3/UFODATA/SHADOW.PCK:xcom3/UFODATA/SHADOW.TAB:93</sprite>
+    </shadows>
+    <acceleration>2</acceleration>
+    <top_speed>8</top_speed>
+    <health>850</health>
+    <crash_health>200</crash_health>
+    <weight>5000</weight>
+    <armour direction="rear">8</armour>
+    <armour direction="top">8</armour>
+    <armour direction="left">8</armour>
+    <armour direction="right">8</armour>
+    <armour direction="bottom">4</armour>
+    <armour direction="front">12</armour>
+    <passengers>3072</passengers>
+    <aggressiveness>550</aggressiveness>
+    <score>300</score>
+    <icon>PCK:xcom3/ufodata/vs_icon.pck:xcom3/ufodata/vs_icon.tab:9:xcom3/ufodata/pal_01.dat</icon>
+    <equipment_layout>
+      <slot type="general" align_x="left" align_y="top">4,9,12,12</slot>
+      <slot type="weapon" align_x="centre" align_y="centre">3,4,5,8</slot>
+      <slot type="weapon" align_x="centre" align_y="centre">11,4,13,8</slot>
+      <slot type="weapon" align_x="centre" align_y="centre">6,4,10,8</slot>
+    </equipment_layout>
+    <initial_equipment>
+      <equipment position="6,4">VEQUIP_MEDIUM_DISRUPTOR_BEAM</equipment>
+      <equipment position="4,9">VEQUIP_SMALL_DISRUPTION_SHIELD</equipment>
+      <equipment position="6,9">VEQUIP_TELEPORTER</equipment>
+      <equipment position="4,10">VEQUIP_CLOAKING_FIELD</equipment>
+    </initial_equipment>
+  </vehicle>
+</openapoc_rules>

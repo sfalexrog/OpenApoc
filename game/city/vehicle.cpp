@@ -116,7 +116,7 @@ VehicleMover::VehicleMover(Vehicle &v) : vehicle(v) {}
 
 VehicleMover::~VehicleMover() {}
 
-Vehicle::Vehicle(const VehicleDefinition &def, sp<Organisation> owner) : def(def), owner(owner) {}
+Vehicle::Vehicle(const VehicleType &type, sp<Organisation> owner) : type(type), owner(owner) {}
 
 Vehicle::~Vehicle() {}
 
@@ -180,7 +180,7 @@ void Vehicle::update(GameState &state, unsigned int ticks)
 			{
 				// Find something to shoot at!
 				// FIXME: Only run on 'aggressive'? And not already a manually-selected target?
-				float range = weapon->getWeaponDef().range;
+				float range = weapon->getRange();
 				// Find the closest enemy within the firing arc
 				float closestEnemyRange = std::numeric_limits<float>::max();
 				sp<TileObjectVehicle> closestEnemy;

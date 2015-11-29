@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openapoc_rules>
+  <vehicle id="VEHICLE_ALIEN_BATTLESHIP" type="ufo">
+    <name>STR_ALIEN_BATTLESHIP</name>
+    <manufacturer>ORG_ALIEN</manufacturer>
+    <size>2,2,2</size>
+    <image_offset>64,64</image_offset>
+    <shadow_offset>64,0</shadow_offset>
+    <stratmap>
+      <sprite offset="0,0" direction="n">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:573</sprite>
+      <sprite offset="0,1" direction="n">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:575</sprite>
+      <sprite offset="1,0" direction="n">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:574</sprite>
+      <sprite offset="1,1" direction="n">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:576</sprite>
+    </stratmap>
+    <animation>
+      <frame>PCK:xcom3/UFODATA/SAUCER.PCK:xcom3/UFODATA/SAUCER.TAB:92</frame>
+      <frame>PCK:xcom3/UFODATA/SAUCER.PCK:xcom3/UFODATA/SAUCER.TAB:93</frame>
+      <frame>PCK:xcom3/UFODATA/SAUCER.PCK:xcom3/UFODATA/SAUCER.TAB:94</frame>
+    </animation>
+    <crashed>PCK:xcom3/UFODATA/SAUCER.PCK:xcom3/UFODATA/SAUCER.TAB:95</crashed>
+    <shadows>
+      <sprite direction="n">PCKSHADOW:xcom3/UFODATA/SHADOW.PCK:xcom3/UFODATA/SHADOW.TAB:96</sprite>
+    </shadows>
+    <acceleration>1</acceleration>
+    <top_speed>12</top_speed>
+    <health>1800</health>
+    <crash_health>300</crash_health>
+    <weight>24000</weight>
+    <armour direction="rear">17</armour>
+    <armour direction="top">17</armour>
+    <armour direction="left">17</armour>
+    <armour direction="right">17</armour>
+    <armour direction="bottom">17</armour>
+    <armour direction="front">17</armour>
+    <passengers>768</passengers>
+    <aggressiveness>800</aggressiveness>
+    <score>500</score>
+    <icon>PCK:xcom3/ufodata/vs_icon.pck:xcom3/ufodata/vs_icon.tab:12:xcom3/ufodata/pal_01.dat</icon>
+    <equipment_layout>
+      <slot type="general" align_x="left" align_y="top">4,9,12,12</slot>
+      <slot type="weapon" align_x="centre" align_y="centre">3,4,5,8</slot>
+      <slot type="weapon" align_x="centre" align_y="centre">11,4,13,8</slot>
+      <slot type="weapon" align_x="centre" align_y="centre">6,4,10,8</slot>
+    </equipment_layout>
+    <initial_equipment>
+      <equipment position="6,4">VEQUIP_HEAVY_DISRUPTOR_BEAM</equipment>
+      <equipment position="3,4">VEQUIP_DISRUPTOR_BOMB_LAUNCHER</equipment>
+      <equipment position="4,9">VEQUIP_LARGE_DISRUPTION_SHIELD</equipment>
+      <equipment position="4,10">VEQUIP_TELEPORTER</equipment>
+    </initial_equipment>
+  </vehicle>
+</openapoc_rules>

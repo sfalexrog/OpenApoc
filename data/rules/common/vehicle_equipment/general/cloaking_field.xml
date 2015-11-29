@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openapoc_rules>
+  <vehicle_equipment type="general" id="VEQUIP_CLOAKING_FIELD">
+    <name>STR_CLOAKING_FIELD</name>
+    <usable_by>ground</usable_by>
+    <usable_by>air</usable_by>
+    <weight>80</weight>
+    <max_ammo>0</max_ammo>
+    <sprite>PCK:xcom3/ufodata/vehequip.pck:xcom3/ufodata/vehequip.tab:45:xcom3/ufodata/vhawk.pcx</sprite>
+    <size>3,4</size>
+    <manufacturer>ORG_X-COM</manufacturer>
+    <buy_limit>90</buy_limit>
+  </vehicle_equipment>
+</openapoc_rules>

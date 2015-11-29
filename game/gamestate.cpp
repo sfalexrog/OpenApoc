@@ -43,32 +43,42 @@ GameState::GameState(Framework &fw, Rules &rules)
 	std::uniform_int_distribution<int> bld_distribution(0, this->city->buildings.size() - 1);
 
 	// Loop through all vehicle types and weapons to get a decent spread for testing
-	auto weaponIt = rules.getWeaponDefs().begin();
-	auto vehicleDefIt = rules.getVehicleDefs().begin();
+	auto equipmentIt = rules.getVehicleEquipmentTypes().begin();
+	auto vehicleTypeIt = rules.getVehicleTypes().begin();
 
 	for (int i = 0; i < 100; i++)
 	{
 
+		while (equipmentIt->second->type != VEquipmentType::Type::Weapon)
+		{
+			equipmentIt++;
+			if (equipmentIt == rules.getVehicleEquipmentTypes().end())
+				equipmentIt = rules.getVehicleEquipmentTypes().begin();
+		}
+
+		while (vehicleTypeIt->second->type != VehicleType::Type::Flying)
+		{
+			vehicleTypeIt++;
+			if (vehicleTypeIt == rules.getVehicleTypes().end())
+				vehicleTypeIt = rules.getVehicleTypes().begin();
+		}
+
 		auto testVehicle = std::make_shared<Vehicle>(
-		    vehicleDefIt->second, this->getOrganisation((vehicleDefIt->second.manufacturer)));
+		    *vehicleTypeIt->second, this->getOrganisation((vehicleTypeIt->second->manufacturer)));
 
-		auto &weaponDef = weaponIt->second;
-		LogInfo("Equipping with weapon \"%s\"", weaponDef.name.c_str());
+		auto &equipment = equipmentIt->second;
+		auto &weaponType = *(static_cast<VWeaponType *>(equipment.get()));
+		LogInfo("Equipping with weapon \"%s\"", weaponType.name.c_str());
 
-		weaponIt++;
-		if (weaponIt == rules.getWeaponDefs().end())
-			weaponIt = rules.getWeaponDefs().begin();
-		vehicleDefIt++;
-		if (vehicleDefIt == rules.getVehicleDefs().end())
-			vehicleDefIt = rules.getVehicleDefs().begin();
-
-		auto *testWeapon = new Weapon(weaponDef, testVehicle, weaponDef.ammoCapacity);
+		auto *testWeapon = new Weapon(weaponType, testVehicle, weaponType.max_ammo);
 		testVehicle->weapons.emplace_back(testWeapon);
 
 		this->city->vehicles.push_back(testVehicle);
 		auto b = this->city->buildings[bld_distribution(rng)];
 		b->landed_vehicles.insert(testVehicle);
 		testVehicle->building = b;
+
+		vehicleTypeIt++;
 	}
 
 	if (this->city->baseBuildings.empty())

@@ -3,21 +3,57 @@
 #include <map>
 #include "library/strings.h"
 #include "library/colour.h"
+#include "library/vec.h"
 #include "framework/logger.h"
 
 namespace OpenApoc
 {
-bool ReadAttribute(tinyxml2::XMLElement *element, const UString &attributeName, bool &output);
-bool ReadAttribute(tinyxml2::XMLElement *element, const UString &attributeName, float &output);
-bool ReadAttribute(tinyxml2::XMLElement *element, const UString &attributeName, Colour &output);
-bool ReadAttribute(tinyxml2::XMLElement *element, const UString &attributeName, int &output);
-bool ReadAttribute(tinyxml2::XMLElement *element, const UString &attributeName, UString &output);
 
-bool ReadText(tinyxml2::XMLElement *element, bool &output);
-bool ReadText(tinyxml2::XMLElement *element, float &output);
-bool ReadText(tinyxml2::XMLElement *element, Colour &output);
-bool ReadText(tinyxml2::XMLElement *element, int &output);
-bool ReadText(tinyxml2::XMLElement *element, UString &output);
+bool FromString(const UString &str, Vec2<int> &output);
+bool FromString(const UString &str, Vec2<float> &output);
+bool FromString(const UString &str, Vec3<int> &output);
+bool FromString(const UString &str, Vec3<float> &output);
+bool FromString(const UString &str, Rect<int> &output);
+bool FromString(const UString &str, UString &output);
+bool FromString(const UString &str, int &output);
+bool FromString(const UString &str, float &output);
+bool FromString(const UString &str, bool &output);
+bool FromString(const UString &str, Colour &output);
+
+template <typename T>
+bool ReadAttribute(tinyxml2::XMLElement *element, const UString &attributeName, T &output)
+{
+	if (!element)
+	{
+		LogError("Invalid element pointer");
+		return false;
+	}
+	if (!element->Attribute(attributeName.c_str()))
+	{
+		return false;
+	}
+
+	UString str = element->Attribute(attributeName.c_str());
+
+	return FromString(str, output);
+}
+
+template <typename T> bool ReadText(tinyxml2::XMLElement *element, T &output)
+{
+	if (!element)
+	{
+		LogError("Invalid element pointer");
+		return false;
+	}
+	if (!element->GetText())
+	{
+		return false;
+	}
+
+	UString str = element->GetText();
+
+	return FromString(str, output);
+}
 
 template <typename T>
 bool ReadAttribute(tinyxml2::XMLElement *element, const UString &attributeName,
