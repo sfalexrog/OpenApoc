@@ -38,7 +38,7 @@ bool ReadAttribute(tinyxml2::XMLElement *element, const UString &attributeName, 
 	return FromString(str, output);
 }
 
-template <typename T> bool ReadText(tinyxml2::XMLElement *element, T &output)
+template <typename T> bool ReadElement(tinyxml2::XMLElement *element, T &output)
 {
 	if (!element)
 	{
@@ -83,7 +83,7 @@ bool ReadAttribute(tinyxml2::XMLElement *element, const UString &attributeName, 
 }
 
 template <typename T>
-bool ReadText(tinyxml2::XMLElement *element, const std::map<UString, T> &valueMap, T &output)
+bool ReadElement(tinyxml2::XMLElement *element, const std::map<UString, T> &valueMap, T &output)
 {
 	UString str = element->GetText();
 	auto it = valueMap.find(str);
@@ -96,9 +96,10 @@ bool ReadText(tinyxml2::XMLElement *element, const std::map<UString, T> &valueMa
 	return true;
 }
 
-template <typename T> bool ReadText(tinyxml2::XMLElement *element, T &output, const T &defaultValue)
+template <typename T>
+bool ReadElement(tinyxml2::XMLElement *element, T &output, const T &defaultValue)
 {
-	if (ReadText(element, output))
+	if (ReadElement(element, output))
 		return true;
 	output = defaultValue;
 	return false;

@@ -19,7 +19,7 @@ static bool ParseVehicleWeaponNode(tinyxml2::XMLElement *node, VEquipmentType &e
 
 	if (nodeName == "speed")
 	{
-		if (!ReadText(node, weapon.speed))
+		if (!ReadElement(node, weapon.speed))
 		{
 			LogError("Failed to read speed text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -29,7 +29,7 @@ static bool ParseVehicleWeaponNode(tinyxml2::XMLElement *node, VEquipmentType &e
 	}
 	else if (nodeName == "projectile_image")
 	{
-		if (!ReadText(node, weapon.projectile_image))
+		if (!ReadElement(node, weapon.projectile_image))
 		{
 			LogError("Failed to read projectile_image text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -39,7 +39,7 @@ static bool ParseVehicleWeaponNode(tinyxml2::XMLElement *node, VEquipmentType &e
 	}
 	else if (nodeName == "damage")
 	{
-		if (!ReadText(node, weapon.damage))
+		if (!ReadElement(node, weapon.damage))
 		{
 			LogError("Failed to read damage text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -49,7 +49,7 @@ static bool ParseVehicleWeaponNode(tinyxml2::XMLElement *node, VEquipmentType &e
 	}
 	else if (nodeName == "accuracy")
 	{
-		if (!ReadText(node, weapon.accuracy))
+		if (!ReadElement(node, weapon.accuracy))
 		{
 			LogError("Failed to read accuracy text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -59,7 +59,7 @@ static bool ParseVehicleWeaponNode(tinyxml2::XMLElement *node, VEquipmentType &e
 	}
 	else if (nodeName == "fire_delay")
 	{
-		if (!ReadText(node, weapon.fire_delay))
+		if (!ReadElement(node, weapon.fire_delay))
 		{
 			LogError("Failed to read fire_delay text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -69,7 +69,7 @@ static bool ParseVehicleWeaponNode(tinyxml2::XMLElement *node, VEquipmentType &e
 	}
 	else if (nodeName == "tail_size")
 	{
-		if (!ReadText(node, weapon.tail_size))
+		if (!ReadElement(node, weapon.tail_size))
 		{
 			LogError("Failed to read tail_size text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -79,7 +79,7 @@ static bool ParseVehicleWeaponNode(tinyxml2::XMLElement *node, VEquipmentType &e
 	}
 	else if (nodeName == "guided")
 	{
-		if (!ReadText(node, weapon.guided))
+		if (!ReadElement(node, weapon.guided))
 		{
 			LogError("Failed to read guided text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -89,7 +89,7 @@ static bool ParseVehicleWeaponNode(tinyxml2::XMLElement *node, VEquipmentType &e
 	}
 	else if (nodeName == "turn_rate")
 	{
-		if (!ReadText(node, weapon.turn_rate))
+		if (!ReadElement(node, weapon.turn_rate))
 		{
 			LogError("Failed to read turn_rate text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -99,7 +99,7 @@ static bool ParseVehicleWeaponNode(tinyxml2::XMLElement *node, VEquipmentType &e
 	}
 	else if (nodeName == "range")
 	{
-		if (!ReadText(node, weapon.range))
+		if (!ReadElement(node, weapon.range))
 		{
 			LogError("Failed to read range text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -109,7 +109,7 @@ static bool ParseVehicleWeaponNode(tinyxml2::XMLElement *node, VEquipmentType &e
 	}
 	else if (nodeName == "firing_arc_1")
 	{
-		if (!ReadText(node, weapon.firing_arc_1))
+		if (!ReadElement(node, weapon.firing_arc_1))
 		{
 			LogError("Failed to read firing_arc_1 text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -119,7 +119,7 @@ static bool ParseVehicleWeaponNode(tinyxml2::XMLElement *node, VEquipmentType &e
 	}
 	else if (nodeName == "firing_arc_2")
 	{
-		if (!ReadText(node, weapon.firing_arc_2))
+		if (!ReadElement(node, weapon.firing_arc_2))
 		{
 			LogError("Failed to read firing_arc_2 text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -129,7 +129,7 @@ static bool ParseVehicleWeaponNode(tinyxml2::XMLElement *node, VEquipmentType &e
 	}
 	else if (nodeName == "point_defence")
 	{
-		if (!ReadText(node, weapon.point_defence))
+		if (!ReadElement(node, weapon.point_defence))
 		{
 			LogError("Failed to read point_defence text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -139,7 +139,7 @@ static bool ParseVehicleWeaponNode(tinyxml2::XMLElement *node, VEquipmentType &e
 	}
 	else if (nodeName == "fire_sfx")
 	{
-		if (!ReadText(node, weapon.fire_sfx))
+		if (!ReadElement(node, weapon.fire_sfx))
 		{
 			LogError("Failed to read fire_sfx text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -149,7 +149,7 @@ static bool ParseVehicleWeaponNode(tinyxml2::XMLElement *node, VEquipmentType &e
 	}
 	else if (nodeName == "explosion_graphic")
 	{
-		if (!ReadText(node, weapon.explosion_graphic))
+		if (!ReadElement(node, weapon.explosion_graphic))
 		{
 			LogError("Failed to read explosion_graphic text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -159,7 +159,7 @@ static bool ParseVehicleWeaponNode(tinyxml2::XMLElement *node, VEquipmentType &e
 	}
 	else if (nodeName == "icon")
 	{
-		if (!ReadText(node, weapon.icon))
+		if (!ReadElement(node, weapon.icon))
 		{
 			LogError("Failed to read icon text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -207,7 +207,7 @@ static bool ParseVehicleEquipmentNode(tinyxml2::XMLElement *node, VEquipmentType
 		    {"air", VEquipmentType::User::Air}, {"ground", VEquipmentType::User::Ground},
 		};
 		VEquipmentType::User user;
-		if (!ReadText(node, user_map, user))
+		if (!ReadElement(node, user_map, user))
 		{
 			LogError("Invalid user \"%s\" for vehicle weapon ID \"%s\"", node->GetText(),
 			         equipment.id.c_str());
@@ -218,7 +218,7 @@ static bool ParseVehicleEquipmentNode(tinyxml2::XMLElement *node, VEquipmentType
 	}
 	else if (nodeName == "weight")
 	{
-		if (!ReadText(node, equipment.weight))
+		if (!ReadElement(node, equipment.weight))
 		{
 			LogError("Failed to read weight text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -228,7 +228,7 @@ static bool ParseVehicleEquipmentNode(tinyxml2::XMLElement *node, VEquipmentType
 	}
 	else if (nodeName == "max_ammo")
 	{
-		if (!ReadText(node, equipment.max_ammo))
+		if (!ReadElement(node, equipment.max_ammo))
 		{
 			LogError("Failed to read max_ammo text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -238,7 +238,7 @@ static bool ParseVehicleEquipmentNode(tinyxml2::XMLElement *node, VEquipmentType
 	}
 	else if (nodeName == "ammo_type")
 	{
-		if (!ReadText(node, equipment.ammo_type))
+		if (!ReadElement(node, equipment.ammo_type))
 		{
 			LogError("Failed to read ammo_type text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -248,7 +248,7 @@ static bool ParseVehicleEquipmentNode(tinyxml2::XMLElement *node, VEquipmentType
 	}
 	else if (nodeName == "sprite")
 	{
-		if (!ReadText(node, equipment.equipscreen_sprite_name))
+		if (!ReadElement(node, equipment.equipscreen_sprite_name))
 		{
 			LogError("Failed to read sprite text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -258,7 +258,7 @@ static bool ParseVehicleEquipmentNode(tinyxml2::XMLElement *node, VEquipmentType
 	}
 	else if (nodeName == "size")
 	{
-		if (!ReadText(node, equipment.equipscreen_size))
+		if (!ReadElement(node, equipment.equipscreen_size))
 		{
 			LogError("Failed to read size text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -268,7 +268,7 @@ static bool ParseVehicleEquipmentNode(tinyxml2::XMLElement *node, VEquipmentType
 	}
 	else if (nodeName == "manufacturer")
 	{
-		if (!ReadText(node, equipment.manufacturer))
+		if (!ReadElement(node, equipment.manufacturer))
 		{
 			LogError("Failed to read manufacturer text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -278,7 +278,7 @@ static bool ParseVehicleEquipmentNode(tinyxml2::XMLElement *node, VEquipmentType
 	}
 	else if (nodeName == "buy_limit")
 	{
-		if (!ReadText(node, equipment.buy_limit))
+		if (!ReadElement(node, equipment.buy_limit))
 		{
 			LogError("Failed to read buy_limit text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -294,7 +294,7 @@ static bool ParseVehicleEquipmentNode(tinyxml2::XMLElement *node, VEquipmentType
 	}
 	else if (nodeName == "name")
 	{
-		if (!ReadText(node, equipment.name))
+		if (!ReadElement(node, equipment.name))
 		{
 			LogError("Failed to read name text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());

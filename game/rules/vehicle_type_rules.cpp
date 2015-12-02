@@ -68,7 +68,7 @@ static bool ParseVehicleStratmapSprites(tinyxml2::XMLElement *parentNode, Vehicl
 				return false;
 			}
 			UString stratmap_path;
-			if (!ReadText(node, stratmap_path))
+			if (!ReadElement(node, stratmap_path))
 			{
 				LogError("Stratmap direction \"%s\" for vehicle_type ID \"%s\" missing sprite path",
 				         node->Attribute("direction"), vehicle.id.c_str());
@@ -109,7 +109,7 @@ static bool ParseVehicleShadowSprites(tinyxml2::XMLElement *parentNode, VehicleT
 				return false;
 			}
 			UString stratmap_path;
-			if (!ReadText(node, stratmap_path))
+			if (!ReadElement(node, stratmap_path))
 			{
 				LogError("Shadow direction \"%s\" for vehicle_type ID \"%s\" missing sprite path",
 				         node->Attribute("direction"), vehicle.id.c_str());
@@ -142,7 +142,7 @@ static bool ParseVehicleAnimationSprites(tinyxml2::XMLElement *parentNode, Vehic
 		if (node_name == "frame")
 		{
 			UString frame_path;
-			if (!ReadText(node, frame_path))
+			if (!ReadElement(node, frame_path))
 			{
 				LogError("Animation frame %u  for vehicle_type ID \"%s\" missing sprite path",
 				         (unsigned)sprites.size(), vehicle.id.c_str());
@@ -194,7 +194,7 @@ static bool ParseVehicleDirectionalSprites(tinyxml2::XMLElement *parentNode, Veh
 			}
 
 			UString sprite_path;
-			if (!ReadText(node, sprite_path))
+			if (!ReadElement(node, sprite_path))
 			{
 				LogError("Directional_sprites direction \"%s\" for vehicle_type ID \"%s\" missing "
 				         "sprite path",
@@ -223,7 +223,7 @@ static bool ParseVehicleTypeNode(tinyxml2::XMLElement *node, VehicleType &vehicl
 
 	if (node_name == "name")
 	{
-		if (!ReadText(node, vehicle.name))
+		if (!ReadElement(node, vehicle.name))
 		{
 			LogError("Failed to read name text \"%s\" for vehicle_type ID \"%s\"", node->GetText(),
 			         vehicle.id.c_str());
@@ -233,7 +233,7 @@ static bool ParseVehicleTypeNode(tinyxml2::XMLElement *node, VehicleType &vehicl
 	}
 	else if (node_name == "manufacturer")
 	{
-		if (!ReadText(node, vehicle.manufacturer))
+		if (!ReadElement(node, vehicle.manufacturer))
 		{
 			LogError("Failed to read manufacturer text \"%s\" for vehicle_type ID \"%s\"",
 			         node->GetText(), vehicle.id.c_str());
@@ -243,7 +243,7 @@ static bool ParseVehicleTypeNode(tinyxml2::XMLElement *node, VehicleType &vehicl
 	}
 	else if (node_name == "size")
 	{
-		if (!ReadText(node, vehicle.size))
+		if (!ReadElement(node, vehicle.size))
 		{
 			LogError("Failed to read size text \"%s\" on vehicle_type ID \"%s\"", node->GetText(),
 			         vehicle.id.c_str());
@@ -253,7 +253,7 @@ static bool ParseVehicleTypeNode(tinyxml2::XMLElement *node, VehicleType &vehicl
 	}
 	else if (node_name == "image_offset")
 	{
-		if (!ReadText(node, vehicle.image_offset))
+		if (!ReadElement(node, vehicle.image_offset))
 		{
 			LogError("Failed to read image_offset text \"%s\" on vehicle_type ID \"%s\"",
 			         node->GetText(), vehicle.id.c_str());
@@ -263,7 +263,7 @@ static bool ParseVehicleTypeNode(tinyxml2::XMLElement *node, VehicleType &vehicl
 	}
 	else if (node_name == "shadow_offset")
 	{
-		if (!ReadText(node, vehicle.shadow_offset))
+		if (!ReadElement(node, vehicle.shadow_offset))
 		{
 			LogError("Failed to read shadow_offset text \"%s\" on vehicle_type ID \"%s\"",
 			         node->GetText(), vehicle.id.c_str());
@@ -288,7 +288,7 @@ static bool ParseVehicleTypeNode(tinyxml2::XMLElement *node, VehicleType &vehicl
 	}
 	else if (node_name == "acceleration")
 	{
-		if (!ReadText(node, vehicle.acceleration))
+		if (!ReadElement(node, vehicle.acceleration))
 		{
 			LogError("Failed to read acceleration text \"%s\" on vehicle_type ID \"%s\"",
 			         node->GetText(), vehicle.id.c_str());
@@ -298,7 +298,7 @@ static bool ParseVehicleTypeNode(tinyxml2::XMLElement *node, VehicleType &vehicl
 	}
 	else if (node_name == "top_speed")
 	{
-		if (!ReadText(node, vehicle.top_speed))
+		if (!ReadElement(node, vehicle.top_speed))
 		{
 			LogError("Failed to read top_speed text \"%s\" on vehicle_type ID \"%s\"",
 			         node->GetText(), vehicle.id.c_str());
@@ -308,7 +308,7 @@ static bool ParseVehicleTypeNode(tinyxml2::XMLElement *node, VehicleType &vehicl
 	}
 	else if (node_name == "health")
 	{
-		if (!ReadText(node, vehicle.health))
+		if (!ReadElement(node, vehicle.health))
 		{
 			LogError("Failed to read health text \"%s\" on vehicle_type ID \"%s\"", node->GetText(),
 			         vehicle.id.c_str());
@@ -318,7 +318,7 @@ static bool ParseVehicleTypeNode(tinyxml2::XMLElement *node, VehicleType &vehicl
 	}
 	else if (node_name == "crash_health")
 	{
-		if (!ReadText(node, vehicle.crash_health))
+		if (!ReadElement(node, vehicle.crash_health))
 		{
 			LogError("Failed to read crash_health text \"%s\" on vehicle_type ID \"%s\"",
 			         node->GetText(), vehicle.id.c_str());
@@ -328,7 +328,7 @@ static bool ParseVehicleTypeNode(tinyxml2::XMLElement *node, VehicleType &vehicl
 	}
 	else if (node_name == "weight")
 	{
-		if (!ReadText(node, vehicle.weight))
+		if (!ReadElement(node, vehicle.weight))
 		{
 			LogError("Failed to read weight text \"%s\" on vehicle_type ID \"%s\"", node->GetText(),
 			         vehicle.id.c_str());
@@ -354,7 +354,7 @@ static bool ParseVehicleTypeNode(tinyxml2::XMLElement *node, VehicleType &vehicl
 			return false;
 		}
 		float value;
-		if (!ReadText(node, value))
+		if (!ReadElement(node, value))
 		{
 			LogError("Failed to read armor direction \"%s\" text \"%s\" on vehicle_type ID \"%s\"",
 			         node->Attribute("direction"), node->GetText(), vehicle.id.c_str());
@@ -364,7 +364,7 @@ static bool ParseVehicleTypeNode(tinyxml2::XMLElement *node, VehicleType &vehicl
 	}
 	else if (node_name == "passengers")
 	{
-		if (!ReadText(node, vehicle.passengers))
+		if (!ReadElement(node, vehicle.passengers))
 		{
 			LogError("Failed to read passengers text \"%s\" on vehicle_type ID \"%s\"",
 			         node->GetText(), vehicle.id.c_str());
@@ -374,7 +374,7 @@ static bool ParseVehicleTypeNode(tinyxml2::XMLElement *node, VehicleType &vehicl
 	}
 	else if (node_name == "aggressiveness")
 	{
-		if (!ReadText(node, vehicle.aggressiveness))
+		if (!ReadElement(node, vehicle.aggressiveness))
 		{
 			LogError("Failed to read aggressiveness text \"%s\" on vehicle_type ID \"%s\"",
 			         node->GetText(), vehicle.id.c_str());
@@ -384,7 +384,7 @@ static bool ParseVehicleTypeNode(tinyxml2::XMLElement *node, VehicleType &vehicl
 	}
 	else if (node_name == "score")
 	{
-		if (!ReadText(node, vehicle.score))
+		if (!ReadElement(node, vehicle.score))
 		{
 			LogError("Failed to read score text \"%s\" on vehicle_type ID \"%s\"", node->GetText(),
 			         vehicle.id.c_str());
@@ -394,7 +394,7 @@ static bool ParseVehicleTypeNode(tinyxml2::XMLElement *node, VehicleType &vehicl
 	}
 	else if (node_name == "equipment_screen")
 	{
-		if (!ReadText(node, vehicle.equipment_screen_path))
+		if (!ReadElement(node, vehicle.equipment_screen_path))
 		{
 			LogError("Failed to read equipment_screen text \"%s\" on vehicle_type ID \"%s\"",
 			         node->GetText(), vehicle.id.c_str());
@@ -404,7 +404,7 @@ static bool ParseVehicleTypeNode(tinyxml2::XMLElement *node, VehicleType &vehicl
 	}
 	else if (node_name == "icon")
 	{
-		if (!ReadText(node, vehicle.icon_path))
+		if (!ReadElement(node, vehicle.icon_path))
 		{
 			LogError("Failed to read icon text \"%s\" on vehicle_type ID \"%s\"", node->GetText(),
 			         vehicle.id.c_str());
@@ -426,7 +426,7 @@ static bool ParseVehicleTypeNode(tinyxml2::XMLElement *node, VehicleType &vehicl
 	}
 	else if (node_name == "crashed")
 	{
-		if (!ReadText(node, vehicle.crashed_sprite_path))
+		if (!ReadElement(node, vehicle.crashed_sprite_path))
 		{
 			LogError("Failed to read crashed text \"%s\" on vehicle_type ID \"%s\"",
 			         node->GetText(), vehicle.id.c_str());
