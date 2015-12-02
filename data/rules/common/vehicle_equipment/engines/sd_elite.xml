@@ -7,7 +7,10 @@
     <max_ammo>16</max_ammo>
     <ammo_type>0</ammo_type>
     <sprite>PCK:xcom3/ufodata/vehequip.pck:xcom3/ufodata/vehequip.tab:22:xcom3/ufodata/vhawk.pcx</sprite>
-    <size>4,4</size>
+    <size>
+      <x>4</x>
+      <y>4</y>
+    </size>
     <manufacturer>ORG_SUPERDYNAMICS</manufacturer>
     <buy_limit>120</buy_limit>
   </vehicle_equipment>

@@ -3,9 +3,19 @@
   <vehicle id="VEHICLE_DIMENSION_PROBE" type="flying">
     <name>STR_DIMENSION_PROBE</name>
     <manufacturer>ORG_MARSEC</manufacturer>
-    <size>1,1,1</size>
-    <image_offset>32,32</image_offset>
-    <shadow_offset>32,0</shadow_offset>
+    <size>
+      <x>1</x>
+      <y>1</y>
+      <z>1</z>
+    </size>
+    <image_offset>
+      <x>32</x>
+      <y>32</y>
+    </image_offset>
+    <shadow_offset>
+      <x>32</x>
+      <y>0</y>
+    </shadow_offset>
     <stratmap>
       <sprite direction="n">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:577</sprite>
       <sprite direction="ne">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:578</sprite>
@@ -85,7 +95,16 @@
     <equipment_screen>xcom3/ufodata/VDIMprob.pcx</equipment_screen>
     <icon>PCK:xcom3/ufodata/vs_icon.pck:xcom3/ufodata/vs_icon.tab:24:xcom3/ufodata/pal_01.dat</icon>
     <equipment_layout>
-      <slot type="weapon" align_x="centre" align_y="centre">7,5,9,7</slot>
+      <slot type="weapon" align_x="centre" align_y="centre">
+        <p0>
+          <x>7</x>
+          <y>5</y>
+        </p0>
+        <p1>
+          <x>9</x>
+          <y>7</y>
+        </p1>
+      </slot>
     </equipment_layout>
     <initial_equipment/>
   </vehicle>

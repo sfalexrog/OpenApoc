@@ -9,11 +9,6 @@
 namespace OpenApoc
 {
 
-bool FromString(const UString &str, Vec2<int> &output);
-bool FromString(const UString &str, Vec2<float> &output);
-bool FromString(const UString &str, Vec3<int> &output);
-bool FromString(const UString &str, Vec3<float> &output);
-bool FromString(const UString &str, Rect<int> &output);
 bool FromString(const UString &str, UString &output);
 bool FromString(const UString &str, int &output);
 bool FromString(const UString &str, float &output);
@@ -37,6 +32,15 @@ bool ReadAttribute(tinyxml2::XMLElement *element, const UString &attributeName, 
 
 	return FromString(str, output);
 }
+
+template <typename T> bool ReadElement(tinyxml2::XMLElement *element, T &output);
+
+template <> bool ReadElement(tinyxml2::XMLElement *element, Vec2<int> &output);
+template <> bool ReadElement(tinyxml2::XMLElement *element, Vec3<int> &output);
+template <> bool ReadElement(tinyxml2::XMLElement *element, Vec2<float> &output);
+template <> bool ReadElement(tinyxml2::XMLElement *element, Vec3<float> &output);
+template <> bool ReadElement(tinyxml2::XMLElement *element, Rect<int> &output);
+template <> bool ReadElement(tinyxml2::XMLElement *element, Rect<float> &output);
 
 template <typename T> bool ReadElement(tinyxml2::XMLElement *element, T &output)
 {

@@ -3,14 +3,28 @@
   <vehicle id="VEHICLE_ALIEN_BATTLESHIP" type="ufo">
     <name>STR_ALIEN_BATTLESHIP</name>
     <manufacturer>ORG_ALIEN</manufacturer>
-    <size>2,2,2</size>
-    <image_offset>64,64</image_offset>
-    <shadow_offset>64,0</shadow_offset>
+    <size>
+      <x>2</x>
+      <y>2</y>
+      <z>2</z>
+    </size>
+    <image_offset>
+      <x>64</x>
+      <y>64</y>
+    </image_offset>
+    <shadow_offset>
+      <x>64</x>
+      <y>0</y>
+    </shadow_offset>
     <stratmap>
-      <sprite offset="0,0" direction="n">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:573</sprite>
-      <sprite offset="0,1" direction="n">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:575</sprite>
-      <sprite offset="1,0" direction="n">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:574</sprite>
-      <sprite offset="1,1" direction="n">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:576</sprite>
+      <sprite direction="n">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:573                <offset><x>0</x><y>0</y></offset>
+            </sprite>
+      <sprite direction="n">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:575                <offset><x>0</x><y>1</y></offset>
+            </sprite>
+      <sprite direction="n">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:574                <offset><x>1</x><y>0</y></offset>
+            </sprite>
+      <sprite direction="n">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:576                <offset><x>1</x><y>1</y></offset>
+            </sprite>
     </stratmap>
     <animation>
       <frame>PCK:xcom3/UFODATA/SAUCER.PCK:xcom3/UFODATA/SAUCER.TAB:92</frame>
@@ -37,16 +51,76 @@
     <score>500</score>
     <icon>PCK:xcom3/ufodata/vs_icon.pck:xcom3/ufodata/vs_icon.tab:12:xcom3/ufodata/pal_01.dat</icon>
     <equipment_layout>
-      <slot type="general" align_x="left" align_y="top">4,9,12,12</slot>
-      <slot type="weapon" align_x="centre" align_y="centre">3,4,5,8</slot>
-      <slot type="weapon" align_x="centre" align_y="centre">11,4,13,8</slot>
-      <slot type="weapon" align_x="centre" align_y="centre">6,4,10,8</slot>
+      <slot type="general" align_x="left" align_y="top">
+        <p0>
+          <x>4</x>
+          <y>9</y>
+        </p0>
+        <p1>
+          <x>12</x>
+          <y>12</y>
+        </p1>
+      </slot>
+      <slot type="weapon" align_x="centre" align_y="centre">
+        <p0>
+          <x>3</x>
+          <y>4</y>
+        </p0>
+        <p1>
+          <x>5</x>
+          <y>8</y>
+        </p1>
+      </slot>
+      <slot type="weapon" align_x="centre" align_y="centre">
+        <p0>
+          <x>11</x>
+          <y>4</y>
+        </p0>
+        <p1>
+          <x>13</x>
+          <y>8</y>
+        </p1>
+      </slot>
+      <slot type="weapon" align_x="centre" align_y="centre">
+        <p0>
+          <x>6</x>
+          <y>4</y>
+        </p0>
+        <p1>
+          <x>10</x>
+          <y>8</y>
+        </p1>
+      </slot>
     </equipment_layout>
     <initial_equipment>
-      <equipment position="6,4">VEQUIP_HEAVY_DISRUPTOR_BEAM</equipment>
-      <equipment position="3,4">VEQUIP_DISRUPTOR_BOMB_LAUNCHER</equipment>
-      <equipment position="4,9">VEQUIP_LARGE_DISRUPTION_SHIELD</equipment>
-      <equipment position="4,10">VEQUIP_TELEPORTER</equipment>
+      <equipment>
+        <type>VEQUIP_HEAVY_DISRUPTOR_BEAM</type>
+        <position>
+          <x>6</x>
+          <y>4</y>
+        </position>
+      </equipment>
+      <equipment>
+        <type>VEQUIP_DISRUPTOR_BOMB_LAUNCHER</type>
+        <position>
+          <x>3</x>
+          <y>4</y>
+        </position>
+      </equipment>
+      <equipment>
+        <type>VEQUIP_LARGE_DISRUPTION_SHIELD</type>
+        <position>
+          <x>4</x>
+          <y>9</y>
+        </position>
+      </equipment>
+      <equipment>
+        <type>VEQUIP_TELEPORTER</type>
+        <position>
+          <x>4</x>
+          <y>10</y>
+        </position>
+      </equipment>
     </initial_equipment>
   </vehicle>
 </openapoc_rules>

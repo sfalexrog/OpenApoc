@@ -6,7 +6,10 @@
     <max_ammo>12</max_ammo>
     <ammo_type>10</ammo_type>
     <sprite>PCK:xcom3/ufodata/vehequip.pck:xcom3/ufodata/vehequip.tab:15:xcom3/ufodata/vhawk.pcx</sprite>
-    <size>2,4</size>
+    <size>
+      <x>2</x>
+      <y>4</y>
+    </size>
     <manufacturer>ORG_X-COM</manufacturer>
     <buy_limit>80</buy_limit>
     <speed>12</speed>

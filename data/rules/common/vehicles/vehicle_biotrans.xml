@@ -3,9 +3,19 @@
   <vehicle id="VEHICLE_BIOTRANS" type="flying">
     <name>STR_BIOTRANS</name>
     <manufacturer>ORG_X-COM</manufacturer>
-    <size>1,1,1</size>
-    <image_offset>32,32</image_offset>
-    <shadow_offset>32,0</shadow_offset>
+    <size>
+      <x>1</x>
+      <y>1</y>
+      <z>1</z>
+    </size>
+    <image_offset>
+      <x>32</x>
+      <y>32</y>
+    </image_offset>
+    <shadow_offset>
+      <x>32</x>
+      <y>0</y>
+    </shadow_offset>
     <stratmap>
       <sprite direction="n">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:577</sprite>
       <sprite direction="ne">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:578</sprite>
@@ -85,18 +95,84 @@
     <equipment_screen>xcom3/ufodata/VBIOTRAN.pcx</equipment_screen>
     <icon>PCK:xcom3/ufodata/vs_icon.pck:xcom3/ufodata/vs_icon.tab:25:xcom3/ufodata/pal_01.dat</icon>
     <equipment_layout>
-      <slot type="general" align_x="left" align_y="top">6,6,10,14</slot>
-      <slot type="weapon" align_x="centre" align_y="top">7,1,9,3</slot>
+      <slot type="general" align_x="left" align_y="top">
+        <p0>
+          <x>6</x>
+          <y>6</y>
+        </p0>
+        <p1>
+          <x>10</x>
+          <y>14</y>
+        </p1>
+      </slot>
+      <slot type="weapon" align_x="centre" align_y="top">
+        <p0>
+          <x>7</x>
+          <y>1</y>
+        </p0>
+        <p1>
+          <x>9</x>
+          <y>3</y>
+        </p1>
+      </slot>
     </equipment_layout>
     <initial_equipment>
-      <equipment position="6,6">VEQUIP_CARGO_MODULE</equipment>
-      <equipment position="8,6">VEQUIP_CARGO_MODULE</equipment>
-      <equipment position="6,8">VEQUIP_CARGO_MODULE</equipment>
-      <equipment position="8,8">VEQUIP_CARGO_MODULE</equipment>
-      <equipment position="6,10">VEQUIP_BIO-TRANSPORT_MODULE</equipment>
-      <equipment position="8,10">VEQUIP_BIO-TRANSPORT_MODULE</equipment>
-      <equipment position="6,12">VEQUIP_BIO-TRANSPORT_MODULE</equipment>
-      <equipment position="8,12">VEQUIP_BIO-TRANSPORT_MODULE</equipment>
+      <equipment>
+        <type>VEQUIP_CARGO_MODULE</type>
+        <position>
+          <x>6</x>
+          <y>6</y>
+        </position>
+      </equipment>
+      <equipment>
+        <type>VEQUIP_CARGO_MODULE</type>
+        <position>
+          <x>8</x>
+          <y>6</y>
+        </position>
+      </equipment>
+      <equipment>
+        <type>VEQUIP_CARGO_MODULE</type>
+        <position>
+          <x>6</x>
+          <y>8</y>
+        </position>
+      </equipment>
+      <equipment>
+        <type>VEQUIP_CARGO_MODULE</type>
+        <position>
+          <x>8</x>
+          <y>8</y>
+        </position>
+      </equipment>
+      <equipment>
+        <type>VEQUIP_BIO-TRANSPORT_MODULE</type>
+        <position>
+          <x>6</x>
+          <y>10</y>
+        </position>
+      </equipment>
+      <equipment>
+        <type>VEQUIP_BIO-TRANSPORT_MODULE</type>
+        <position>
+          <x>8</x>
+          <y>10</y>
+        </position>
+      </equipment>
+      <equipment>
+        <type>VEQUIP_BIO-TRANSPORT_MODULE</type>
+        <position>
+          <x>6</x>
+          <y>12</y>
+        </position>
+      </equipment>
+      <equipment>
+        <type>VEQUIP_BIO-TRANSPORT_MODULE</type>
+        <position>
+          <x>8</x>
+          <y>12</y>
+        </position>
+      </equipment>
     </initial_equipment>
   </vehicle>
 </openapoc_rules>

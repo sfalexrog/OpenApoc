@@ -3,9 +3,19 @@
   <vehicle id="VEHICLE_RETALIATOR" type="flying">
     <name>STR_RETALIATOR</name>
     <manufacturer>ORG_X-COM</manufacturer>
-    <size>1,1,1</size>
-    <image_offset>32,32</image_offset>
-    <shadow_offset>32,0</shadow_offset>
+    <size>
+      <x>1</x>
+      <y>1</y>
+      <z>1</z>
+    </size>
+    <image_offset>
+      <x>32</x>
+      <y>32</y>
+    </image_offset>
+    <shadow_offset>
+      <x>32</x>
+      <y>0</y>
+    </shadow_offset>
     <stratmap>
       <sprite direction="n">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:577</sprite>
       <sprite direction="ne">PCKSTRAT:xcom3/UFODATA/STRATMAP.PCK:xcom3/UFODATA/STRATMAP.TAB:578</sprite>
@@ -85,10 +95,46 @@
     <equipment_screen>xcom3/ufodata/VRTLIATR.pcx</equipment_screen>
     <icon>PCK:xcom3/ufodata/vs_icon.pck:xcom3/ufodata/vs_icon.tab:27:xcom3/ufodata/pal_01.dat</icon>
     <equipment_layout>
-      <slot type="general" align_x="left" align_y="top">6,9,10,13</slot>
-      <slot type="weapon" align_x="centre" align_y="top">7,1,9,4</slot>
-      <slot type="weapon" align_x="centre" align_y="top">3,4,5,8</slot>
-      <slot type="weapon" align_x="centre" align_y="top">11,4,13,8</slot>
+      <slot type="general" align_x="left" align_y="top">
+        <p0>
+          <x>6</x>
+          <y>9</y>
+        </p0>
+        <p1>
+          <x>10</x>
+          <y>13</y>
+        </p1>
+      </slot>
+      <slot type="weapon" align_x="centre" align_y="top">
+        <p0>
+          <x>7</x>
+          <y>1</y>
+        </p0>
+        <p1>
+          <x>9</x>
+          <y>4</y>
+        </p1>
+      </slot>
+      <slot type="weapon" align_x="centre" align_y="top">
+        <p0>
+          <x>3</x>
+          <y>4</y>
+        </p0>
+        <p1>
+          <x>5</x>
+          <y>8</y>
+        </p1>
+      </slot>
+      <slot type="weapon" align_x="centre" align_y="top">
+        <p0>
+          <x>11</x>
+          <y>4</y>
+        </p0>
+        <p1>
+          <x>13</x>
+          <y>8</y>
+        </p1>
+      </slot>
     </equipment_layout>
     <initial_equipment/>
   </vehicle>

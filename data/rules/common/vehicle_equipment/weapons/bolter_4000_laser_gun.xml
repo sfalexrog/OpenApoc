@@ -5,7 +5,10 @@
     <weight>50</weight>
     <max_ammo>0</max_ammo>
     <sprite>PCK:xcom3/ufodata/vehequip.pck:xcom3/ufodata/vehequip.tab:0:xcom3/ufodata/vhawk.pcx</sprite>
-    <size>1,3</size>
+    <size>
+      <x>1</x>
+      <y>3</y>
+    </size>
     <manufacturer>ORG_MEGAPOL</manufacturer>
     <buy_limit>40</buy_limit>
     <speed>38</speed>

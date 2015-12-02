@@ -5,7 +5,10 @@
     <weight>50</weight>
     <max_ammo>450</max_ammo>
     <sprite>PCK:xcom3/ufodata/vehequip.pck:xcom3/ufodata/vehequip.tab:5:xcom3/ufodata/vhawk.pcx</sprite>
-    <size>2,2</size>
+    <size>
+      <x>2</x>
+      <y>2</y>
+    </size>
     <manufacturer>ORG_X-COM</manufacturer>
     <buy_limit>60</buy_limit>
     <speed>28</speed>

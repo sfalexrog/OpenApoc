@@ -6,7 +6,10 @@
     <max_ammo>90</max_ammo>
     <ammo_type>1</ammo_type>
     <sprite>PCK:xcom3/ufodata/vehequip.pck:xcom3/ufodata/vehequip.tab:4:xcom3/ufodata/vhawk.pcx</sprite>
-    <size>2,2</size>
+    <size>
+      <x>2</x>
+      <y>2</y>
+    </size>
     <manufacturer>ORG_MARSEC</manufacturer>
     <buy_limit>40</buy_limit>
     <speed>38</speed>

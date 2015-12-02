@@ -198,4 +198,386 @@ bool FromString(const UString &str, Colour &output)
 	return true;
 }
 
+template <> bool ReadElement(tinyxml2::XMLElement *element, Vec3<int> &output)
+{
+	bool x_found = false;
+	bool y_found = false;
+	bool z_found = false;
+	int x = 0, y = 0, z = 0;
+	for (tinyxml2::XMLElement *node = element->FirstChildElement(); node != nullptr;
+	     node = node->NextSiblingElement())
+	{
+		UString node_name = node->Name();
+		if (node_name == "x")
+		{
+			if (x_found == true)
+			{
+				LogWarning("Multiple 'x' elements");
+				return false;
+			}
+			x_found = true;
+			if (!ReadElement(node, x))
+			{
+				LogWarning("Failed to parse 'x' element");
+				return false;
+			}
+		}
+		else if (node_name == "y")
+		{
+			if (y_found == true)
+			{
+				LogWarning("Multiple 'y' elements");
+				return false;
+			}
+			y_found = true;
+			if (!ReadElement(node, y))
+			{
+				LogWarning("Failed to parse 'y' element");
+				return false;
+			}
+		}
+		else if (node_name == "z")
+		{
+			if (z_found == true)
+			{
+				LogWarning("Multiple 'z' elements");
+				return false;
+			}
+			z_found = true;
+			if (!ReadElement(node, z))
+			{
+				LogWarning("Failed to parse 'z' element");
+				return false;
+			}
+		}
+		else
+		{
+			LogWarning("Unexpected node \"%s\"", node_name.c_str());
+			return false;
+		}
+	}
+	if (!x_found)
+	{
+		LogWarning("no \"x\" node");
+		return false;
+	}
+	if (!y_found)
+	{
+		LogWarning("no \"y\" node");
+		return false;
+	}
+	if (!z_found)
+	{
+		LogWarning("no \"z\" node");
+		return false;
+	}
+	output = {x, y, z};
+	return true;
+}
+
+template <> bool ReadElement(tinyxml2::XMLElement *element, Vec3<float> &output)
+{
+	bool x_found = false;
+	bool y_found = false;
+	bool z_found = false;
+	float x = 0, y = 0, z = 0;
+	for (tinyxml2::XMLElement *node = element->FirstChildElement(); node != nullptr;
+	     node = node->NextSiblingElement())
+	{
+		UString node_name = node->Name();
+		if (node_name == "x")
+		{
+			if (x_found == true)
+			{
+				LogWarning("Multiple 'x' elements");
+				return false;
+			}
+			x_found = true;
+			if (!ReadElement(node, x))
+			{
+				LogWarning("Failed to parse 'x' element");
+				return false;
+			}
+		}
+		else if (node_name == "y")
+		{
+			if (y_found == true)
+			{
+				LogWarning("Multiple 'y' elements");
+				return false;
+			}
+			y_found = true;
+			if (!ReadElement(node, y))
+			{
+				LogWarning("Failed to parse 'y' element");
+				return false;
+			}
+		}
+		else if (node_name == "z")
+		{
+			if (z_found == true)
+			{
+				LogWarning("Multiple 'z' elements");
+				return false;
+			}
+			z_found = true;
+			if (!ReadElement(node, z))
+			{
+				LogWarning("Failed to parse 'z' element");
+				return false;
+			}
+		}
+		else
+		{
+			LogWarning("Unexpected node \"%s\"", node_name.c_str());
+			return false;
+		}
+	}
+	if (!x_found)
+	{
+		LogWarning("no \"x\" node");
+		return false;
+	}
+	if (!y_found)
+	{
+		LogWarning("no \"y\" node");
+		return false;
+	}
+	if (!z_found)
+	{
+		LogWarning("no \"z\" node");
+		return false;
+	}
+	output = {x, y, z};
+	return true;
+}
+
+template <> bool ReadElement(tinyxml2::XMLElement *element, Vec2<int> &output)
+{
+	bool x_found = false;
+	bool y_found = false;
+	int x = 0, y = 0;
+	for (tinyxml2::XMLElement *node = element->FirstChildElement(); node != nullptr;
+	     node = node->NextSiblingElement())
+	{
+		UString node_name = node->Name();
+		if (node_name == "x")
+		{
+			if (x_found == true)
+			{
+				LogWarning("Multiple 'x' elements");
+				return false;
+			}
+			x_found = true;
+			if (!ReadElement(node, x))
+			{
+				LogWarning("Failed to parse 'x' element");
+				return false;
+			}
+		}
+		else if (node_name == "y")
+		{
+			if (y_found == true)
+			{
+				LogWarning("Multiple 'y' elements");
+				return false;
+			}
+			y_found = true;
+			if (!ReadElement(node, y))
+			{
+				LogWarning("Failed to parse 'y' element");
+				return false;
+			}
+		}
+		else
+		{
+			LogWarning("Unexpected node \"%s\"", node_name.c_str());
+			return false;
+		}
+	}
+	if (!x_found)
+	{
+		LogWarning("no \"x\" node");
+		return false;
+	}
+	if (!y_found)
+	{
+		LogWarning("no \"y\" node");
+		return false;
+	}
+	output = {x, y};
+	return true;
+}
+
+template <> bool ReadElement(tinyxml2::XMLElement *element, Vec2<float> &output)
+{
+	bool x_found = false;
+	bool y_found = false;
+	float x = 0, y = 0;
+	for (tinyxml2::XMLElement *node = element->FirstChildElement(); node != nullptr;
+	     node = node->NextSiblingElement())
+	{
+		UString node_name = node->Name();
+		if (node_name == "x")
+		{
+			if (x_found == true)
+			{
+				LogWarning("Multiple 'x' elements");
+				return false;
+			}
+			x_found = true;
+			if (!ReadElement(node, x))
+			{
+				LogWarning("Failed to parse 'x' element");
+				return false;
+			}
+		}
+		else if (node_name == "y")
+		{
+			if (y_found == true)
+			{
+				LogWarning("Multiple 'y' elements");
+				return false;
+			}
+			y_found = true;
+			if (!ReadElement(node, y))
+			{
+				LogWarning("Failed to parse 'y' element");
+				return false;
+			}
+		}
+		else
+		{
+			LogWarning("Unexpected node \"%s\"", node_name.c_str());
+			return false;
+		}
+	}
+	if (!x_found)
+	{
+		LogWarning("no \"x\" node");
+		return false;
+	}
+	if (!y_found)
+	{
+		LogWarning("no \"y\" node");
+		return false;
+	}
+	output = {x, y};
+	return true;
+}
+
+template <> bool ReadElement(tinyxml2::XMLElement *element, Rect<int> &output)
+{
+	bool p0_found = false;
+	bool p1_found = false;
+	Vec2<int> p0, p1;
+	for (tinyxml2::XMLElement *node = element->FirstChildElement(); node != nullptr;
+	     node = node->NextSiblingElement())
+	{
+		UString node_name = node->Name();
+		if (node_name == "p0")
+		{
+			if (p0_found == true)
+			{
+				LogWarning("Multiple 'p0' elements");
+				return false;
+			}
+			p0_found = true;
+			if (!ReadElement(node, p0))
+			{
+				LogWarning("Failed to parse 'p0' element");
+				return false;
+			}
+		}
+		else if (node_name == "p1")
+		{
+			if (p1_found == true)
+			{
+				LogWarning("Multiple 'p1' elements");
+				return false;
+			}
+			p1_found = true;
+			if (!ReadElement(node, p1))
+			{
+				LogWarning("Failed to parse 'p1' element");
+				return false;
+			}
+		}
+		else
+		{
+			LogWarning("Unexpected node \"%s\"", node_name.c_str());
+			return false;
+		}
+	}
+	if (!p1_found)
+	{
+		LogWarning("no \"p1\" node");
+		return false;
+	}
+	if (!p1_found)
+	{
+		LogWarning("no \"p1\" node");
+		return false;
+	}
+	output = {p0, p1};
+	return true;
+}
+
+template <> bool ReadElement(tinyxml2::XMLElement *element, Rect<float> &output)
+{
+	bool p0_found = false;
+	bool p1_found = false;
+	Vec2<float> p0, p1;
+	for (tinyxml2::XMLElement *node = element->FirstChildElement(); node != nullptr;
+	     node = node->NextSiblingElement())
+	{
+		UString node_name = node->Name();
+		if (node_name == "p0")
+		{
+			if (p0_found == true)
+			{
+				LogWarning("Multiple 'p0' elements");
+				return false;
+			}
+			p0_found = true;
+			if (!ReadElement(node, p0))
+			{
+				LogWarning("Failed to parse 'p0' element");
+				return false;
+			}
+		}
+		else if (node_name == "p1")
+		{
+			if (p1_found == true)
+			{
+				LogWarning("Multiple 'p1' elements");
+				return false;
+			}
+			p1_found = true;
+			if (!ReadElement(node, p1))
+			{
+				LogWarning("Failed to parse 'p1' element");
+				return false;
+			}
+		}
+		else
+		{
+			LogWarning("Unexpected node \"%s\"", node_name.c_str());
+			return false;
+		}
+	}
+	if (!p1_found)
+	{
+		LogWarning("no \"p1\" node");
+		return false;
+	}
+	if (!p1_found)
+	{
+		LogWarning("no \"p1\" node");
+		return false;
+	}
+	output = {p0, p1};
+	return true;
+}
+
 }; // namespace OpenApoc

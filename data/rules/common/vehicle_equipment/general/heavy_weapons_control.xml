@@ -7,7 +7,10 @@
     <weight>12</weight>
     <max_ammo>0</max_ammo>
     <sprite>PCK:xcom3/ufodata/vehequip.pck:xcom3/ufodata/vehequip.tab:37:xcom3/ufodata/vhawk.pcx</sprite>
-    <size>2,2</size>
+    <size>
+      <x>2</x>
+      <y>2</y>
+    </size>
     <manufacturer>ORG_CYBERWEB</manufacturer>
     <buy_limit>40</buy_limit>
   </vehicle_equipment>

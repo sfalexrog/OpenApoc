@@ -7,7 +7,10 @@
     <max_ammo>5</max_ammo>
     <ammo_type>0</ammo_type>
     <sprite>PCK:xcom3/ufodata/vehequip.pck:xcom3/ufodata/vehequip.tab:33:xcom3/ufodata/vhawk.pcx</sprite>
-    <size>2,4</size>
+    <size>
+      <x>2</x>
+      <y>4</y>
+    </size>
     <manufacturer>ORG_GENERAL_METRO</manufacturer>
     <buy_limit>80</buy_limit>
   </vehicle_equipment>
