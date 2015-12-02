@@ -139,7 +139,7 @@ static bool ParseVehicleWeaponNode(tinyxml2::XMLElement *node, VEquipmentType &e
 	}
 	else if (nodeName == "fire_sfx")
 	{
-		if (!ReadElement(node, weapon.fire_sfx))
+		if (!ReadElement(node, weapon.fire_sfx_path))
 		{
 			LogError("Failed to read fire_sfx text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -605,6 +605,17 @@ bool VWeaponType::isValid(Framework &fw, Rules &rules)
 		LogError("Vehicle weapon \"%s\" failed to load icon image \"%s\"", id.c_str(),
 		         this->icon_path.c_str());
 		return false;
+	}
+
+	if (this->fire_sfx_path != "")
+	{
+		this->fire_sfx = fw.data->load_sample(this->fire_sfx_path);
+		if (!this->fire_sfx)
+		{
+			LogError("Vehicle weapon \"%s\" failed to load fire sfx \"%s\"", id.c_str(),
+			         this->fire_sfx_path.c_str());
+			return false;
+		}
 	}
 
 	return true;

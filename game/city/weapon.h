@@ -9,6 +9,7 @@ namespace OpenApoc
 {
 class Vehicle;
 class Projectile;
+class Framework;
 class Weapon
 {
   public:
@@ -38,6 +39,6 @@ class Weapon
 	// Reload uses up to 'ammoAvailable' to reload the weapon. It returns the amount
 	// actually used.
 	int reload(int ammoAvailable);
-	sp<Projectile> fire(Vec3<float> target);
+	sp<Projectile> fire(Framework &fw, Vec3<float> target);
 };
 }; // namespace OpenApoc

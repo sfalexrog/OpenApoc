@@ -9,6 +9,7 @@ namespace OpenApoc
 class Rules;
 class Image;
 class Framework;
+class Sample;
 class VEquipmentType
 {
   public:
@@ -67,7 +68,8 @@ class VWeaponType : public VEquipmentType
 	int firing_arc_1;
 	int firing_arc_2;
 	bool point_defence;
-	UString fire_sfx;
+	UString fire_sfx_path;
+	sp<Sample> fire_sfx;
 	UString explosion_graphic;
 	UString icon_path;
 	sp<Image> icon;

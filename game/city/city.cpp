@@ -255,7 +255,7 @@ void City::update(GameState &state, unsigned int ticks)
 	for (auto it = this->vehicles.begin(); it != this->vehicles.end();)
 	{
 		auto v = *it++;
-		v->update(state, ticks);
+		v->update(fw, state, ticks);
 	}
 	Trace::end("City::update::vehices->update");
 	Trace::start("City::update::projectiles->update");

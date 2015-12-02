@@ -67,7 +67,7 @@ class Vehicle : public std::enable_shared_from_this<Vehicle>
 
 	void setPosition(const Vec3<float> &pos);
 
-	virtual void update(GameState &state, unsigned int ticks);
+	virtual void update(Framework &fw, GameState &state, unsigned int ticks);
 };
 
 }; // namespace OpenApoc

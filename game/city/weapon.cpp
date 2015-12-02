@@ -1,6 +1,7 @@
 #include "library/sp.h"
 #include "game/city/weapon.h"
 #include "framework/logger.h"
+#include "framework/framework.h"
 #include "game/city/vehicle.h"
 #include "game/city/projectile.h"
 #include "game/tileview/tileobject_vehicle.h"
@@ -12,7 +13,7 @@ Weapon::Weapon(const VWeaponType &type, sp<Vehicle> owner, int initialAmmo, Stat
     : state(initialState), type(type), owner(owner), ammo(initialAmmo), reloadTime(0)
 {
 }
-sp<Projectile> Weapon::fire(Vec3<float> target)
+sp<Projectile> Weapon::fire(Framework &fw, Vec3<float> target)
 {
 	auto owner = this->owner.lock();
 	if (!owner)
@@ -37,6 +38,11 @@ sp<Projectile> Weapon::fire(Vec3<float> target)
 	this->reloadTime = this->type.fire_delay;
 	this->state = State::Reloading;
 	this->ammo--;
+
+	if (this->type.fire_sfx)
+	{
+		fw.soundBackend->playSample(this->type.fire_sfx);
+	}
 
 	if (this->ammo == 0)
 	{
