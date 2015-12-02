@@ -159,7 +159,7 @@ static bool ParseVehicleWeaponNode(tinyxml2::XMLElement *node, VEquipmentType &e
 	}
 	else if (nodeName == "icon")
 	{
-		if (!ReadElement(node, weapon.icon))
+		if (!ReadElement(node, weapon.icon_path))
 		{
 			LogError("Failed to read icon text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
@@ -434,12 +434,64 @@ bool VEquipmentType::isValid(Framework &fw, Rules &rules)
 	return true;
 }
 
-VWeaponType::VWeaponType(const UString &id) : VEquipmentType(VEquipmentType::Type::Weapon, id) {}
+VWeaponType::VWeaponType(const UString &id)
+    : VEquipmentType(VEquipmentType::Type::Weapon, id), speed(0), projectile_image(0), damage(0),
+      accuracy(0), fire_delay(0), tail_size(0), guided(false), turn_rate(0), range(0),
+      firing_arc_1(0), firing_arc_2(0), point_defence(false)
+{
+}
 
 bool VWeaponType::isValid(Framework &fw, Rules &rules)
 {
 	if (!VEquipmentType::isValid(fw, rules))
 		return false;
+	if (speed == 0)
+	{
+		LogError("Vehicle weapon \"%s\" has zero speed", id.c_str());
+		return false;
+	}
+	if (fire_delay == 0)
+	{
+		LogError("Vehicle weapon \"%s\" has zero fire_delay", id.c_str());
+		return false;
+	}
+	if (tail_size == 0)
+	{
+		LogError("Vehicle weapon \"%s\" has zero tail_size", id.c_str());
+		return false;
+	}
+	if (guided && turn_rate == 0)
+	{
+		LogError("Vehicle weapon \"%s\" has zero turn_rate but is set as guided", id.c_str());
+		return false;
+	}
+	if (range == 0)
+	{
+		LogError("Vehicle weapon \"%s\" has zero range", id.c_str());
+		return false;
+	}
+	if (firing_arc_1 == 0)
+	{
+		LogError("Vehicle weapon \"%s\" has zero firing_arc_1", id.c_str());
+		return false;
+	}
+	if (firing_arc_2 == 0)
+	{
+		LogError("Vehicle weapon \"%s\" has zero firing_arc_1", id.c_str());
+		return false;
+	}
+	if (icon_path == "")
+	{
+		LogError("Vehicle weapon \"%s\" has no icon", id.c_str());
+		return false;
+	}
+	this->icon = fw.data->load_image(this->icon_path);
+	if (!this->icon)
+	{
+		LogError("Vehicle weapon \"%s\" failed to load icon image \"%s\"", id.c_str(),
+		         this->icon_path.c_str());
+		return false;
+	}
 
 	return true;
 }

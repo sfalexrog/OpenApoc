@@ -69,7 +69,8 @@ class VWeaponType : public VEquipmentType
 	bool point_defence;
 	UString fire_sfx;
 	UString explosion_graphic;
-	UString icon;
+	UString icon_path;
+	sp<Image> icon;
 };
 
 class VEngineType : public VEquipmentType
