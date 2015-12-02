@@ -13,5 +13,7 @@
     </size>
     <manufacturer>ORG_MARSEC</manufacturer>
     <buy_limit>120</buy_limit>
+    <power>1000</power>
+    <top_speed>7</top_speed>
   </vehicle_equipment>
 </openapoc_rules>

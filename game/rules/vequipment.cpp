@@ -180,8 +180,32 @@ static bool ParseVehicleEngineNode(tinyxml2::XMLElement *node, VEquipmentType &e
 		LogError("Called on non-engine equipment");
 		return false;
 	}
-	LogError("Not implemented");
-	std::ignore = node;
+	auto &engine = static_cast<VEngineType &>(equipment);
+	UString node_name(node->Name());
+
+	if (node_name == "top_speed")
+	{
+		if (!ReadElement(node, engine.top_speed))
+		{
+			LogError("Failed to read top_speed text \"%s\" for vehicle engine ID \"%s\"",
+			         node->GetText(), equipment.id.c_str());
+			return false;
+		}
+		return true;
+	}
+	else if (node_name == "power")
+	{
+		if (!ReadElement(node, engine.power))
+		{
+			LogError("Failed to read power text \"%s\" for vehicle engine ID \"%s\"",
+			         node->GetText(), equipment.id.c_str());
+			return false;
+		}
+		return true;
+	}
+
+	LogError("Unexpected node \"%s\" for vehicle engine ID \"%s\"", node_name.c_str(),
+	         equipment.id.c_str());
 	return false;
 }
 
@@ -508,12 +532,25 @@ bool VGeneralEquipmentType::isValid(Framework &fw, Rules &rules)
 	return true;
 }
 
-VEngineType::VEngineType(const UString &id) : VEquipmentType(VEquipmentType::Type::Engine, id) {}
+VEngineType::VEngineType(const UString &id)
+    : VEquipmentType(VEquipmentType::Type::Engine, id), power(0), top_speed(0)
+{
+}
 
 bool VEngineType::isValid(Framework &fw, Rules &rules)
 {
 	if (!VEquipmentType::isValid(fw, rules))
 		return false;
+	if (this->power == 0)
+	{
+		LogError("Vehicle engine \"%s\" has zero power", id.c_str());
+		return false;
+	}
+	if (this->top_speed == 0)
+	{
+		LogError("Vehicle engine \"%s\" has zero top_speed", id.c_str());
+		return false;
+	}
 	return true;
 }
 } // namespace OpenApoc

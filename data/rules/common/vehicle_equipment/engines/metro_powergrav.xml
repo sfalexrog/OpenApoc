@@ -13,5 +13,7 @@
     </size>
     <manufacturer>ORG_GENERAL_METRO</manufacturer>
     <buy_limit>80</buy_limit>
+    <power>700</power>
+    <top_speed>6</top_speed>
   </vehicle_equipment>
 </openapoc_rules>

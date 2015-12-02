@@ -82,6 +82,9 @@ class VEngineType : public VEquipmentType
   public:
 	virtual ~VEngineType() = default;
 	bool isValid(Framework &fw, Rules &rules) override;
+
+	int power;
+	int top_speed;
 };
 
 class VGeneralEquipmentType : public VEquipmentType
