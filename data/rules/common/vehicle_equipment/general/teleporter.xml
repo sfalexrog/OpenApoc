@@ -12,5 +12,6 @@
     </size>
     <manufacturer>ORG_X-COM</manufacturer>
     <buy_limit>60</buy_limit>
+    <teleporting>true</teleporting>
   </vehicle_equipment>
 </openapoc_rules>

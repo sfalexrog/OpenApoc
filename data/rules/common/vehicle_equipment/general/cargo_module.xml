@@ -13,5 +13,6 @@
     </size>
     <manufacturer>ORG_SUPERDYNAMICS</manufacturer>
     <buy_limit>40</buy_limit>
+    <cargo_space>50</cargo_space>
   </vehicle_equipment>
 </openapoc_rules>

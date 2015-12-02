@@ -213,11 +213,101 @@ static bool ParseVehicleGeneralNode(tinyxml2::XMLElement *node, VEquipmentType &
 {
 	if (equipment.type != VEquipmentType::Type::General)
 	{
-		LogError("Called on non-general equipment");
+		LogError("Called on non-engine equipment");
 		return false;
 	}
-	LogError("Not implemented");
-	std::ignore = node;
+	auto &gequipment = static_cast<VGeneralEquipmentType &>(equipment);
+	UString node_name(node->Name());
+
+	if (node_name == "accuracy_modifier")
+	{
+		if (!ReadElement(node, gequipment.accuracy_modifier))
+		{
+			LogError("Failed to read accuracy_modifier text \"%s\" for vehicle general equipment "
+			         "ID \"%s\"",
+			         node->GetText(), equipment.id.c_str());
+			return false;
+		}
+		return true;
+	}
+	else if (node_name == "cargo_space")
+	{
+		if (!ReadElement(node, gequipment.cargo_space))
+		{
+			LogError(
+			    "Failed to read cargo_space text \"%s\" for vehicle general equipment ID \"%s\"",
+			    node->GetText(), equipment.id.c_str());
+			return false;
+		}
+		return true;
+	}
+	else if (node_name == "passengers")
+	{
+		if (!ReadElement(node, gequipment.passengers))
+		{
+			LogError(
+			    "Failed to read passengers text \"%s\" for vehicle general equipment ID \"%s\"",
+			    node->GetText(), equipment.id.c_str());
+			return false;
+		}
+		return true;
+	}
+	else if (node_name == "alien_space")
+	{
+		if (!ReadElement(node, gequipment.alien_space))
+		{
+			LogError(
+			    "Failed to read alien_space text \"%s\" for vehicle general equipment ID \"%s\"",
+			    node->GetText(), equipment.id.c_str());
+			return false;
+		}
+		return true;
+	}
+	else if (node_name == "missile_jamming")
+	{
+		if (!ReadElement(node, gequipment.missile_jamming))
+		{
+			LogError("Failed to read missile_jamming text \"%s\" for vehicle general equipment ID "
+			         "\"%s\"",
+			         node->GetText(), equipment.id.c_str());
+			return false;
+		}
+		return true;
+	}
+	else if (node_name == "shielding")
+	{
+		if (!ReadElement(node, gequipment.shielding))
+		{
+			LogError("Failed to read shielding text \"%s\" for vehicle general equipment ID \"%s\"",
+			         node->GetText(), equipment.id.c_str());
+			return false;
+		}
+		return true;
+	}
+	else if (node_name == "cloaking")
+	{
+		if (!ReadElement(node, gequipment.cloaking))
+		{
+			LogError("Failed to read cloaking text \"%s\" for vehicle general equipment ID \"%s\"",
+			         node->GetText(), equipment.id.c_str());
+			return false;
+		}
+		return true;
+	}
+	else if (node_name == "teleporting")
+	{
+		if (!ReadElement(node, gequipment.teleporting))
+		{
+			LogError(
+			    "Failed to read teleporting text \"%s\" for vehicle general equipment ID \"%s\"",
+			    node->GetText(), equipment.id.c_str());
+			return false;
+		}
+		return true;
+	}
+
+	LogError("Unexpected node \"%s\" for vehicle general equipment ID \"%s\"", node_name.c_str(),
+	         equipment.id.c_str());
 	return false;
 }
 
@@ -521,7 +611,9 @@ bool VWeaponType::isValid(Framework &fw, Rules &rules)
 }
 
 VGeneralEquipmentType::VGeneralEquipmentType(const UString &id)
-    : VEquipmentType(VEquipmentType::Type::General, id)
+    : VEquipmentType(VEquipmentType::Type::General, id), accuracy_modifier(0), cargo_space(0),
+      passengers(0), alien_space(0), missile_jamming(0), shielding(0), cloaking(false),
+      teleporting(false)
 {
 }
 
@@ -529,6 +621,13 @@ bool VGeneralEquipmentType::isValid(Framework &fw, Rules &rules)
 {
 	if (!VEquipmentType::isValid(fw, rules))
 		return false;
+	if (this->accuracy_modifier == 0 && this->cargo_space == 0 && this->passengers == 0 &&
+	    this->alien_space == 0 && this->missile_jamming == 0 && this->shielding == 0 &&
+	    this->cloaking == false && this->teleporting == false)
+	{
+		LogError("Vehicle general equipment ID \"%s\" has no effects", this->id.c_str());
+		return false;
+	}
 	return true;
 }
 

@@ -13,5 +13,6 @@
     </size>
     <manufacturer>ORG_CYBERWEB</manufacturer>
     <buy_limit>40</buy_limit>
+    <missile_jamming>40</missile_jamming>
   </vehicle_equipment>
 </openapoc_rules>

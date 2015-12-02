@@ -13,5 +13,6 @@
     </size>
     <manufacturer>ORG_X-COM</manufacturer>
     <buy_limit>40</buy_limit>
+    <alien_space>20</alien_space>
   </vehicle_equipment>
 </openapoc_rules>

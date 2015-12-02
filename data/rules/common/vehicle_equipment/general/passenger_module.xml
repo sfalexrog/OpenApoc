@@ -13,5 +13,6 @@
     </size>
     <manufacturer>ORG_GENERAL_METRO</manufacturer>
     <buy_limit>40</buy_limit>
+    <passengers>4</passengers>
   </vehicle_equipment>
 </openapoc_rules>

@@ -96,6 +96,15 @@ class VGeneralEquipmentType : public VEquipmentType
   public:
 	virtual ~VGeneralEquipmentType() = default;
 	bool isValid(Framework &fw, Rules &rules) override;
+
+	int accuracy_modifier;
+	int cargo_space;
+	int passengers;
+	int alien_space;
+	int missile_jamming;
+	int shielding;
+	bool cloaking;
+	bool teleporting;
 };
 
 } // namespace OpenApoc

@@ -13,5 +13,6 @@
     </size>
     <manufacturer>ORG_X-COM</manufacturer>
     <buy_limit>40</buy_limit>
+    <accuracy_modifier>50</accuracy_modifier>
   </vehicle_equipment>
 </openapoc_rules>

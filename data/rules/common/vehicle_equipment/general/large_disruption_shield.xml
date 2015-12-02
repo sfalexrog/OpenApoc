@@ -13,5 +13,6 @@
     </size>
     <manufacturer>ORG_X-COM</manufacturer>
     <buy_limit>90</buy_limit>
+    <shielding>400</shielding>
   </vehicle_equipment>
 </openapoc_rules>
