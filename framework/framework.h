@@ -27,7 +27,6 @@
 #include <SDL_keycode.h>
 #include <SDL_scancode.h>
 #include <SDL_mouse.h>
-#include <fstream>
 
 namespace OpenApoc
 {
@@ -42,9 +41,6 @@ class FrameworkPrivate;
 class Framework
 {
   private:
-	bool dumpEvents;
-	bool replayEvents;
-	std::fstream eventStream;
 	std::unique_ptr<FrameworkPrivate> p;
 	UString programName;
 	void Audio_Initialise();
@@ -69,9 +65,7 @@ class Framework
 	void Run();
 	void ProcessEvents();
 	void PushEvent(Event *e);
-	void DumpEvent(Event *e);
 	void TranslateSDLEvents();
-	void ReadRecordedEvents();
 	void ShutdownFramework();
 	bool IsShuttingDown();
 

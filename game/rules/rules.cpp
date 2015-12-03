@@ -8,9 +8,10 @@
 namespace OpenApoc
 {
 
-Rules::Rules(Framework &fw, const UString &rootFileName)
+Rules::Rules(Framework &fw, const UString &rootFileName) : aliases(new ResourceAliases())
 {
 	TRACE_FN_ARGS1("rootFileName", rootFileName);
+
 	UString systemPath;
 	auto file = fw.data->fs.open(rootFileName);
 	if (!file)
@@ -18,10 +19,11 @@ Rules::Rules(Framework &fw, const UString &rootFileName)
 		LogError("Failed to find rule file \"%s\"", rootFileName.c_str());
 		return;
 	}
-	systemPath = file.systemPath();
+
+	auto xmlData = file.readAll();
 
 	tinyxml2::XMLDocument doc;
-	doc.LoadFile(systemPath.c_str());
+	doc.Parse(xmlData.get(), file.size());
 	tinyxml2::XMLElement *root = doc.RootElement();
 	if (!root)
 	{
@@ -38,6 +40,9 @@ Rules::Rules(Framework &fw, const UString &rootFileName)
 
 	UString rulesetName = root->Attribute("name");
 	LogInfo("Loading ruleset \"%s\" from \"%s\"", rulesetName.c_str(), systemPath.c_str());
+
+	/* Wire up the resource aliases */
+	fw.data->aliases = this->aliases;
 
 	if (!RulesLoader::ParseRules(fw, *this, root))
 	{
@@ -128,11 +133,11 @@ bool RulesLoader::ParseRules(Framework &fw, Rules &rules, tinyxml2::XMLElement *
 				LogError("Failed to find included rule file \"%s\"", rootFileName.c_str());
 				return false;
 			}
-			systemPath = file.systemPath();
+			auto xmlData = file.readAll();
 			TRACE_FN_ARGS1("include", systemPath);
 			LogInfo("Loading included ruleset from \"%s\"", systemPath.c_str());
 			tinyxml2::XMLDocument doc;
-			doc.LoadFile(systemPath.c_str());
+			doc.Parse(xmlData.get(), file.size());
 			tinyxml2::XMLElement *incRoot = doc.RootElement();
 			if (!incRoot)
 			{
@@ -148,6 +153,11 @@ bool RulesLoader::ParseRules(Framework &fw, Rules &rules, tinyxml2::XMLElement *
 		else if (name == "doodad")
 		{
 			if (!ParseDoodadDefinition(fw, rules, e))
+				return false;
+		}
+		else if (name == "aliases")
+		{
+			if (!ParseAliases(fw, rules, e))
 				return false;
 		}
 		else
