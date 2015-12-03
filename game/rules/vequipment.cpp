@@ -390,11 +390,11 @@ static bool ParseVehicleEquipmentNode(tinyxml2::XMLElement *node, VEquipmentType
 		}
 		return true;
 	}
-	else if (nodeName == "buy_limit")
+	else if (nodeName == "store_space")
 	{
-		if (!ReadElement(node, equipment.buy_limit))
+		if (!ReadElement(node, equipment.store_space))
 		{
-			LogError("Failed to read buy_limit text \"%s\" for vehicle equipment ID \"%s\"",
+			LogError("Failed to read store_space text \"%s\" for vehicle equipment ID \"%s\"",
 			         node->GetText(), equipment.id.c_str());
 			return false;
 		}
@@ -507,7 +507,7 @@ bool RulesLoader::ParseVehicleEquipment(Framework &fw, Rules &rules, tinyxml2::X
 }
 
 VEquipmentType::VEquipmentType(Type type, const UString &id)
-    : type(type), id(id), weight(0), max_ammo(0), buy_limit(0)
+    : type(type), id(id), weight(0), max_ammo(0), store_space(0)
 {
 }
 

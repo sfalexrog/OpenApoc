@@ -39,7 +39,7 @@ class VEquipmentType
 	sp<Image> equipscreen_sprite;
 	Vec2<int> equipscreen_size;
 	UString manufacturer;
-	int buy_limit;
+	int store_space;
 	std::set<User> users;
 
   protected:

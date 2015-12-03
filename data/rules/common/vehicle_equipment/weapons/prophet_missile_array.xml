@@ -11,7 +11,7 @@
       <y>3</y>
     </size>
     <manufacturer>ORG_MARSEC</manufacturer>
-    <buy_limit>80</buy_limit>
+    <store_space>80</store_space>
     <speed>18</speed>
     <projectile_image>0</projectile_image>
     <damage>26</damage>

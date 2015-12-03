@@ -11,7 +11,7 @@
       <y>4</y>
     </size>
     <manufacturer>ORG_X-COM</manufacturer>
-    <buy_limit>80</buy_limit>
+    <store_space>80</store_space>
     <speed>12</speed>
     <projectile_image>14</projectile_image>
     <damage>98</damage>

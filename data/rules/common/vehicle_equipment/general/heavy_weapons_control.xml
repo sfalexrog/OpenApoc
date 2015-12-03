@@ -12,7 +12,7 @@
       <y>2</y>
     </size>
     <manufacturer>ORG_CYBERWEB</manufacturer>
-    <buy_limit>40</buy_limit>
+    <store_space>40</store_space>
     <accuracy_modifier>70</accuracy_modifier>
   </vehicle_equipment>
 </openapoc_rules>

@@ -12,7 +12,7 @@
       <y>4</y>
     </size>
     <manufacturer>ORG_X-COM</manufacturer>
-    <buy_limit>90</buy_limit>
+    <store_space>90</store_space>
     <missile_jamming>20</missile_jamming>
     <cloaking>true</cloaking>
   </vehicle_equipment>

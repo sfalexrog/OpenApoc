@@ -11,7 +11,7 @@
       <y>3</y>
     </size>
     <manufacturer>ORG_MEGAPOL</manufacturer>
-    <buy_limit>80</buy_limit>
+    <store_space>80</store_space>
     <speed>10</speed>
     <projectile_image>1</projectile_image>
     <damage>50</damage>

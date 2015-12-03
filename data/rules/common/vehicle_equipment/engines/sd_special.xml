@@ -12,7 +12,7 @@
       <y>4</y>
     </size>
     <manufacturer>ORG_SUPERDYNAMICS</manufacturer>
-    <buy_limit>160</buy_limit>
+    <store_space>160</store_space>
     <power>32000</power>
     <top_speed>15</top_speed>
   </vehicle_equipment>

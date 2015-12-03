@@ -12,7 +12,7 @@
       <y>2</y>
     </size>
     <manufacturer>ORG_GENERAL_METRO</manufacturer>
-    <buy_limit>40</buy_limit>
+    <store_space>40</store_space>
     <power>300</power>
     <top_speed>4</top_speed>
   </vehicle_equipment>

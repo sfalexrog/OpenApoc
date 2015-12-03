@@ -11,7 +11,7 @@
       <y>2</y>
     </size>
     <manufacturer>ORG_X-COM</manufacturer>
-    <buy_limit>60</buy_limit>
+    <store_space>60</store_space>
     <teleporting>true</teleporting>
   </vehicle_equipment>
 </openapoc_rules>

@@ -12,7 +12,7 @@
       <y>3</y>
     </size>
     <manufacturer>ORG_X-COM</manufacturer>
-    <buy_limit>90</buy_limit>
+    <store_space>90</store_space>
     <shielding>400</shielding>
   </vehicle_equipment>
 </openapoc_rules>
