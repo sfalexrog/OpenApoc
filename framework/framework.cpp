@@ -65,7 +65,7 @@ static std::map<UString, UString> defaultConfig = {
     {"Resource.LocalCDPath", "/storage/emulated/0/openapoc/cd.iso"},
     {"Resource.SystemCDPath", "/storage/emulated/0/openapoc/cd.iso"},
     {"Visual.Renderers", RENDERERS},
-    {"Audio.Backends", "allegro:null"},
+    {"Audio.Backends", "SDLRaw:allegro:null"},
     {"Audio.GlobalGain", "20"},
     {"Audio.SampleGain", "20"},
     {"Audio.MusicGain", "20"},
