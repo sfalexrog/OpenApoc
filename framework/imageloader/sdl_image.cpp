@@ -49,6 +49,11 @@ class SDLImageLoader : public OpenApoc::ImageLoader
 #endif
 		// TODO: Use SDL_RWops with PhysFS!
 		PHYSFS_file *source = PHYSFS_openRead(path.c_str());
+		if (!source)
+		{
+			LogWarning("Could not open file %s", path.c_str());
+			return nullptr;
+		}
 		int fsize = PHYSFS_fileLength(source);
 		std::unique_ptr<char[]> buffer(new char[fsize]);
 		PHYSFS_readBytes(source, buffer.get(), fsize);

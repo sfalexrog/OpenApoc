@@ -28,6 +28,11 @@ public:
     virtual sp<OpenApoc::Image> loadImage(UString path) override
     {
         PHYSFS_file *source = PHYSFS_openRead(path.c_str());
+		if (!source)
+		{
+			LogWarning("Could not load file %s", path.c_str());
+			return nullptr;
+		}
         std::vector<unsigned char> buffer(PHYSFS_fileLength(source));
         PHYSFS_read(source, &buffer[0], 1, PHYSFS_fileLength(source));
         PHYSFS_close(source);
