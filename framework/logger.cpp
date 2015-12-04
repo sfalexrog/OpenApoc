@@ -30,6 +30,7 @@
 #if defined(ERROR_DIALOG)
 //#include <allegro5/allegro_native_dialog.h>
 #include <SDL_video.h>
+#include <SDL_messagebox.h>
 #endif
 
 #endif
@@ -42,6 +43,15 @@
 #define LOGWV(fmt, ap) __android_log_vprint(ANDROID_LOG_WARN, "OpenApoc", fmt, ap)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "OpenApoc", __VA_ARGS__)
 #define LOGEV(fmt, ap) __android_log_vprint(ANDROID_LOG_ERROR, "OpenApoc", fmt, ap)
+#define LOG_PATH "/storage/emulated/0/openapoc/data/" 
+#else
+#define LOGD(...)
+#define LOGDV(fmt, ap)
+#define LOGW(...)
+#define LOGWV(fmt, ap)
+#define LOGE(...)
+#define LOGEV(fmt, ap)
+#define LOG_PATH
 #endif
 
 #define MAX_SYMBOL_LENGTH 1000
@@ -160,7 +170,7 @@ void Log(LogLevel level, UString prefix, UString format, ...)
 #ifdef UNIT_TEST
 		outFile = stderr;
 #else
-		outFile = fopen("/storage/emulated/0/openapoc/data/" LOGFILE, "w");
+		outFile = fopen(LOG_PATH LOGFILE, "w");
 		if (!outFile)
 		{
 			// No log file, have to hope stderr goes somewhere useful
@@ -228,7 +238,7 @@ void Log(LogLevel level, UString prefix, UString format, ...)
 		SDL_MessageBoxData mBoxData;
 		mBoxData.flags = SDL_MESSAGEBOX_ERROR;
 		mBoxData.window = NULL; // Might happen before we get our window?
-		mBoxData.title = "OpenApoc ERROR"
+		mBoxData.title = "OpenApoc ERROR";
 		mBoxData.message = string.get();
 		mBoxData.numbuttons = 2;
 		SDL_MessageBoxButtonData buttons[2];

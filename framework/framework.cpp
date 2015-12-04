@@ -60,12 +60,12 @@ static std::map<UString, UString> defaultConfig = {
 #endif
     {"Language", "en_gb"},
     {"GameRules", "XCOMAPOC.XML"},
-    {"Resource.LocalDataDir", "/storage/emulated/0/openapoc/data"},
-    {"Resource.SystemDataDir", "/storage/emulated/0/openapoc"},
-    {"Resource.LocalCDPath", "/storage/emulated/0/openapoc/cd.iso"},
-    {"Resource.SystemCDPath", "/storage/emulated/0/openapoc/cd.iso"},
+    {"Resource.LocalDataDir", "./data"},
+	{ "Resource.SystemDataDir", DATA_DIRECTORY },
+    {"Resource.LocalCDPath", "./data/cd.iso"},
+	{ "Resource.SystemCDPath", DATA_DIRECTORY "/cd.iso"},
     {"Visual.Renderers", RENDERERS},
-    {"Audio.Backends", "SDLRaw:allegro:null"},
+    {"Audio.Backends", "SDLRaw:null"},
     {"Audio.GlobalGain", "20"},
     {"Audio.SampleGain", "20"},
     {"Audio.MusicGain", "20"},
@@ -770,7 +770,7 @@ void Framework::Display_Initialise()
 
 	// FIXME: This is very, very Windows-specific.
 	// Then again, GLContext should not be needed in the future (allegro should take care of EGL)
-#ifdef _MSC_VER
+#if defined (_MSC_VER) && (0)
 	// FIXME: Retrieve the window's hWnd and pass it to GLContext
 	GLContext::GetInstance()->Init(al_get_win_window_handle(p->screen));
 #else
@@ -872,7 +872,7 @@ void Framework::Display_SetTitle(UString NewTitle)
 void Framework::Display_SetIcon()
 {
 #ifdef _WIN32
-	SDL_SysWMInfo info;
+	SDL_SysWMinfo info;
 	SDL_VERSION(&info.version);
 	SDL_GetWindowWMInfo(p->window, &info);
 	HINSTANCE handle = GetModuleHandle(NULL);
