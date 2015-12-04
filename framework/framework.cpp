@@ -279,6 +279,7 @@ Framework::~Framework()
 	// allegro is de-inited
 	state.reset();
 	gamecore.reset();
+	rules.reset();
 	p->ProgramStages.Clear();
 	LogInfo("Saving config");
 	SaveSettings();

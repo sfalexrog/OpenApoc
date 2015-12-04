@@ -1,6 +1,7 @@
 #include "library/sp.h"
 #include "game/city/weapon.h"
 #include "framework/logger.h"
+#include "framework/framework.h"
 #include "game/city/vehicle.h"
 #include "game/city/projectile.h"
 #include "game/tileview/tileobject_vehicle.h"
@@ -8,11 +9,11 @@
 namespace OpenApoc
 {
 
-Weapon::Weapon(const WeaponDef &def, sp<Vehicle> owner, int initialAmmo, State initialState)
-    : state(initialState), def(def), owner(owner), ammo(initialAmmo), reloadTime(0)
+Weapon::Weapon(const VWeaponType &type, sp<Vehicle> owner, int initialAmmo, State initialState)
+    : state(initialState), type(type), owner(owner), ammo(initialAmmo), reloadTime(0)
 {
 }
-sp<Projectile> Weapon::fire(Vec3<float> target)
+sp<Projectile> Weapon::fire(Framework &fw, Vec3<float> target)
 {
 	auto owner = this->owner.lock();
 	if (!owner)
@@ -34,30 +35,26 @@ sp<Projectile> Weapon::fire(Vec3<float> target)
 		LogWarning("Trying to fire weapon with no ammo");
 		return nullptr;
 	}
-	this->reloadTime = this->def.firingDelay;
+	this->reloadTime = this->type.fire_delay;
 	this->state = State::Reloading;
 	this->ammo--;
+
+	if (this->type.fire_sfx)
+	{
+		fw.soundBackend->playSample(this->type.fire_sfx);
+	}
 
 	if (this->ammo == 0)
 	{
 		this->state = State::OutOfAmmo;
 	}
 
-	switch (this->def.projectileType)
-	{
-		case WeaponDef::ProjectileType::Beam:
-		{
-			Vec3<float> velocity = target - vehicleTile->getPosition();
-			velocity = glm::normalize(velocity);
-			velocity *= this->def.projectileSpeed;
-			return std::make_shared<Projectile>(
-			    owner, vehicleTile->getPosition(), velocity,
-			    static_cast<int>(def.range / this->def.projectileSpeed), def.beamColour,
-			    def.projectileTailLength, def.beamWidth);
-		}
-		default:
-			LogWarning("Unknown projectile type");
-	}
+	Vec3<float> velocity = target - vehicleTile->getPosition();
+	velocity = glm::normalize(velocity);
+	velocity *= this->type.speed;
+	return std::make_shared<Projectile>(owner, vehicleTile->getPosition(), velocity,
+	                                    static_cast<int>(this->getRange() / this->type.speed),
+	                                    Colour{255, 0, 255, 255}, this->type.tail_size, 2.0f);
 
 	return nullptr;
 }
@@ -88,7 +85,7 @@ void Weapon::update(int ticks)
 
 int Weapon::reload(int ammoAvailable)
 {
-	int ammoRequired = this->def.ammoCapacity - this->ammo;
+	int ammoRequired = this->type.max_ammo - this->ammo;
 	int reloadAmount = std::min(ammoRequired, ammoAvailable);
 	this->ammo += reloadAmount;
 	return reloadAmount;

@@ -10,7 +10,7 @@
 namespace
 {
 
-static const int max_samples = 10;
+static const int max_samples = 1000;
 
 using namespace OpenApoc;
 

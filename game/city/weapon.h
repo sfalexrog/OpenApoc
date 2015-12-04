@@ -1,7 +1,7 @@
 #pragma once
 #include "library/sp.h"
 
-#include "game/rules/weapondef.h"
+#include "game/rules/vequipment.h"
 
 #include "library/vec.h"
 
@@ -9,6 +9,7 @@ namespace OpenApoc
 {
 class Vehicle;
 class Projectile;
+class Framework;
 class Weapon
 {
   public:
@@ -22,22 +23,22 @@ class Weapon
 
   private:
 	State state;
-	const WeaponDef &def;
+	const VWeaponType &type;
 	std::weak_ptr<Vehicle> owner;
 	int ammo;
 	int reloadTime;
 
   public:
-	Weapon(const WeaponDef &def, sp<Vehicle> owner, int initialAmmo,
+	Weapon(const VWeaponType &type, sp<Vehicle> owner, int initialAmmo,
 	       State initialState = State::Ready);
 
-	const WeaponDef &getWeaponDef() const { return def; }
+	const VWeaponType &getWeaponType() const { return type; }
+	float getRange() const { return this->type.range; }
 	bool canFire() const { return state == State::Ready; }
 	void update(int ticks);
 	// Reload uses up to 'ammoAvailable' to reload the weapon. It returns the amount
 	// actually used.
 	int reload(int ammoAvailable);
-	sp<Projectile> fire(Vec3<float> target);
+	sp<Projectile> fire(Framework &fw, Vec3<float> target);
 };
-
 }; // namespace OpenApoc

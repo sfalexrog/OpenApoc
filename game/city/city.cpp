@@ -255,7 +255,7 @@ void City::update(GameState &state, unsigned int ticks)
 	for (auto it = this->vehicles.begin(); it != this->vehicles.end();)
 	{
 		auto v = *it++;
-		v->update(state, ticks);
+		v->update(fw, state, ticks);
 	}
 	Trace::end("City::update::vehices->update");
 	Trace::start("City::update::projectiles->update");
@@ -328,7 +328,7 @@ void City::update(GameState &state, unsigned int ticks)
 	Trace::end("City::update::doodads->update");
 }
 
-sp<Doodad> City::placeDoodad(DoodadDef &def, Vec3<float> position)
+sp<Doodad> City::placeDoodad(const DoodadDef &def, Vec3<float> position)
 {
 	auto doodad = std::make_shared<AnimatedDoodad>(def, position);
 	map.addObjectToMap(doodad);
