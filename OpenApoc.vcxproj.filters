@@ -267,14 +267,8 @@
     <ClCompile Include="framework\trace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="framework\render\gles20\ogles_2_0_renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="game\tileview\tileobject_shadow.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\render\gles20\EGLContext.cpp">
-      <Filter>Source Files\EGLContext</Filter>
     </ClCompile>
     <ClCompile Include="game\rules\alises.cpp">
       <Filter>Source Files</Filter>
@@ -602,9 +596,6 @@
     <ClInclude Include="framework\render\gles20\egl.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="framework\render\gles20\EGLContext.h">
-      <Filter>Source Files\EGLContext</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="apocicon.rc">
@@ -629,6 +620,12 @@
     </None>
     <None Include="framework\render\gles20\egl.inl">
       <Filter>Source Files\EGLContext</Filter>
+    </None>
+    <None Include="framework\render\gles20\EGLContext.cpp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="framework\render\gles20\EGLContext.h">
+      <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
 </Project>
