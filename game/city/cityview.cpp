@@ -220,7 +220,8 @@ void CityView::EventOccurred(Event *e)
 			return;
 		}
 		// FIXME: Check if scancode is better/worse
-		else if (e->Type == EVENT_KEY_DOWN && SDL_GetScancodeFromKey(e->Data.Keyboard.KeyCode) == SDL_SCANCODE_R)
+		else if (e->Type == EVENT_KEY_DOWN &&
+		         SDL_GetScancodeFromKey(e->Data.Keyboard.KeyCode) == SDL_SCANCODE_R)
 		{
 			LogInfo("Repairing...");
 			std::set<sp<Scenery>> stuffToRepair;

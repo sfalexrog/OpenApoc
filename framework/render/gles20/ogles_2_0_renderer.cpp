@@ -6,7 +6,7 @@
 #include <memory>
 #include <array>
 
-//namespace
+// namespace
 //{
 /* Workaround MSVC not liking int64_t being defined here and in allegro */
 #define GLEXT_64_TYPES_DEFINED
@@ -145,8 +145,8 @@ const char *RGBProgram_vertexSource = {
     "  if (flipY) gl_Position = vec4((tmpPos.x*2.0), -(tmpPos.y*2.0),0.0,1.0);\n"
     "  else gl_Position = vec4((tmpPos.x*2.0), (tmpPos.y*2.0),0.0,1.0);\n"
     "}\n"};
-const char *RGBProgram_fragmentSource = { "#version 100\n"
-										 "precision mediump float;\n"
+const char *RGBProgram_fragmentSource = {"#version 100\n"
+                                         "precision mediump float;\n"
                                          "varying vec2 texcoord;\n"
                                          "uniform sampler2D tex;\n"
                                          "void main() {\n"
@@ -215,7 +215,7 @@ const char *PaletteProgram_vertexSource = {
     "  else gl_Position = vec4((tmpPos.x*2.0), (tmpPos.y*2.0),0.0,1.0);\n"
     "}\n"};
 const char *PaletteProgram_fragmentSource = {"#version 100\n"
-											 "precision mediump float;\n"
+                                             "precision mediump float;\n"
                                              "varying vec2 texcoord;\n"
                                              "uniform sampler2D tex;\n"
                                              "uniform sampler2D pal;\n"
@@ -282,7 +282,7 @@ const char *SolidColourProgram_vertexSource = {
     "  else gl_Position = vec4((tmpPos.x*2.0), (tmpPos.y*2.0),0.0,1.0);\n"
     "}\n"};
 const char *SolidColourProgram_fragmentSource = {"#version 100\n"
-												 "precision mediump float;\n"
+                                                 "precision mediump float;\n"
                                                  "uniform vec4 colour;\n"
                                                  "void main() {\n"
                                                  " gl_FragColor = colour;\n"
@@ -448,11 +448,11 @@ class BindTexture
 		{
 			// FIXME: GLES2.0 only has 2D textures
 			/*case gl::TEXTURE_1D:
-				return gl::TEXTURE_BINDING_1D;*/
+			    return gl::TEXTURE_BINDING_1D;*/
 			case gl::TEXTURE_2D:
 				return gl::TEXTURE_BINDING_2D;
 			/*case gl::TEXTURE_3D:
-				return gl::TEXTURE_BINDING_3D;*/
+			    return gl::TEXTURE_BINDING_3D;*/
 			default:
 				LogError("Unknown texture enum %d", static_cast<int>(e));
 				return gl::TEXTURE_BINDING_2D;
@@ -540,8 +540,8 @@ class FBOData : public RendererImageData
 		gl::GenFramebuffers(1, &this->fbo);
 		BindFramebuffer f(this->fbo);
 
-		gl::FramebufferTexture2D(gl::FRAMEBUFFER, gl::COLOR_ATTACHMENT0, gl::TEXTURE_2D,
-		                            this->tex, 0);
+		gl::FramebufferTexture2D(gl::FRAMEBUFFER, gl::COLOR_ATTACHMENT0, gl::TEXTURE_2D, this->tex,
+		                         0);
 		assert(gl::CheckFramebufferStatus(gl::FRAMEBUFFER) == gl::FRAMEBUFFER_COMPLETE);
 	}
 	virtual ~FBOData()
@@ -612,9 +612,9 @@ class GLPaletteImage : public RendererImageData
 		gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE);
 		// FIXME: GLES2.0 doesn't have gl::RED, gl::GREEN or gl::BLUE texture formats,
 		// replacing them with gl::LUMINANCE might have side effects.
-		gl::TexImage2D(gl::TEXTURE_2D, 0, /*1*/ gl::LUMINANCE, parent->size.x, parent->size.y, 0, /*gl::RED,*/
-					   gl::LUMINANCE,
-		               gl::UNSIGNED_BYTE, l.getData());
+		gl::TexImage2D(gl::TEXTURE_2D, 0, /*1*/ gl::LUMINANCE, parent->size.x, parent->size.y,
+		               0, /*gl::RED,*/
+		               gl::LUMINANCE, gl::UNSIGNED_BYTE, l.getData());
 	}
 	virtual ~GLPaletteImage() { gl::DeleteTextures(1, &this->texID); }
 };

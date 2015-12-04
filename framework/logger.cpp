@@ -43,7 +43,7 @@
 #define LOGWV(fmt, ap) __android_log_vprint(ANDROID_LOG_WARN, "OpenApoc", fmt, ap)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "OpenApoc", __VA_ARGS__)
 #define LOGEV(fmt, ap) __android_log_vprint(ANDROID_LOG_ERROR, "OpenApoc", fmt, ap)
-#define LOG_PATH "/storage/emulated/0/openapoc/data/" 
+#define LOG_PATH "/storage/emulated/0/openapoc/data/"
 #else
 #define LOGD(...)
 #define LOGDV(fmt, ap)

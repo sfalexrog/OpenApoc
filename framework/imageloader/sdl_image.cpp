@@ -6,7 +6,6 @@
 #include <physfs.h>
 #include <SDL_image.h>
 
-
 #include <string>
 
 using namespace OpenApoc;
@@ -26,15 +25,12 @@ class SDLImageLoader : public OpenApoc::ImageLoader
 		// FIXME: Compile with PNG support?
 		/* IMG_Init(IMG_INIT_PNG); */
 		// Create an empty SDL_Surface with 32bpp to use as a base for image loading
-		dummySurface = SDL_CreateRGBSurface(0, 1, 1, 32, 0xff,
-											0xff00,
-											0xff0000,
-											0xff000000);
+		dummySurface = SDL_CreateRGBSurface(0, 1, 1, 32, 0xff, 0xff00, 0xff0000, 0xff000000);
 		tgtPixFormat = dummySurface->format;
 	}
 	virtual ~SDLImageLoader()
 	{
-	/* IMG_Quit();*/
+		/* IMG_Quit();*/
 		SDL_FreeSurface(dummySurface);
 	} // Required only if loading PNG, JPG or TIF?
 
@@ -67,7 +63,7 @@ class SDLImageLoader : public OpenApoc::ImageLoader
 			return nullptr;
 		}
 
-		SDL_Surface* src = SDL_ConvertSurface(bmp, tgtPixFormat, 0);
+		SDL_Surface *src = SDL_ConvertSurface(bmp, tgtPixFormat, 0);
 		SDL_FreeSurface(bmp);
 
 		OpenApoc::Vec2<int> size{src->w, src->h};
@@ -101,6 +97,7 @@ class SDLImageLoaderFactory : public OpenApoc::ImageLoaderFactory
 	virtual ~SDLImageLoaderFactory() {}
 };
 //#ifndef ANDROID
-OpenApoc::ImageLoaderRegister<SDLImageLoaderFactory> register_at_load_allegro_image("SDL_ImageLoader");
+OpenApoc::ImageLoaderRegister<SDLImageLoaderFactory>
+    register_at_load_allegro_image("SDL_ImageLoader");
 //#endif
 }; // anonymous namespace

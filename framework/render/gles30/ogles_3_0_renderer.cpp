@@ -144,7 +144,7 @@ const char *RGBProgram_vertexSource = {
     "  else gl_Position = vec4((tmpPos.x*2.0), (tmpPos.y*2.0),0.0,1.0);\n"
     "}\n"};
 const char *RGBProgram_fragmentSource = {"#version 300 es\n"
-		                                 "precision mediump float;\n"
+                                         "precision mediump float;\n"
                                          "in vec2 texcoord;\n"
                                          "uniform sampler2D tex;\n"
                                          "out vec4 out_colour;\n"
@@ -216,7 +216,7 @@ const char *PaletteProgram_vertexSource = {
     "}\n"};
 const char *PaletteProgram_fragmentSource = {
     "#version 300 es\n"
-			"precision mediump float;\n"
+    "precision mediump float;\n"
     "in vec2 texcoord;\n"
     "uniform isampler2D tex;\n"
     "uniform sampler2D pal;\n"
@@ -292,7 +292,7 @@ const char *PaletteSetProgram_vertexSource = {
     "}\n"};
 const char *PaletteSetProgram_fragmentSource = {
     "#version 300 es\n"
-			"precision mediump float;\n"
+    "precision mediump float;\n"
     "in vec2 texcoord;\n"
     "flat in int sprite;\n"
     "uniform isampler2DArray tex;\n"
@@ -398,7 +398,7 @@ const char *SolidColourProgram_vertexSource = {
     "  else gl_Position = vec4((tmpPos.x*2.0), (tmpPos.y*2.0),0.0,1.0);\n"
     "}\n"};
 const char *SolidColourProgram_fragmentSource = {"#version 300 es\n"
-														 "precision mediump float;\n"
+                                                 "precision mediump float;\n"
                                                  "uniform vec4 colour;\n"
                                                  "out vec4 out_colour;\n"
                                                  "void main() {\n"
@@ -566,7 +566,7 @@ class BindTexture
 		{
 			// FIXME: Not supported?
 			/*case GL_TEXTURE_1D:
-				return GL_TEXTURE_BINDING_1D; */
+			    return GL_TEXTURE_BINDING_1D; */
 			case GL_TEXTURE_2D:
 				return GL_TEXTURE_BINDING_2D;
 			case GL_TEXTURE_3D:
@@ -653,7 +653,7 @@ class FBOData : public RendererImageData
 		glGenTextures(1, &this->tex);
 		BindTexture b(this->tex);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-		               NULL);
+		             NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -664,10 +664,10 @@ class FBOData : public RendererImageData
 		glGenFramebuffers(1, &this->fbo);
 		BindFramebuffer f(this->fbo);
 
-		glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-		                         this->tex, 0);
+		glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->tex,
+		                       0);
 		glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,
-		                            depthBuffer);
+		                          depthBuffer);
 		assert(glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 	}
 	virtual ~FBOData()
@@ -696,7 +696,7 @@ class GLRGBImage : public RendererImageData
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, parent->size.x, parent->size.y, 0, GL_RGBA,
-		               GL_UNSIGNED_BYTE, l.getData());
+		             GL_UNSIGNED_BYTE, l.getData());
 	}
 	virtual ~GLRGBImage() { glDeleteTextures(1, &this->texID); }
 };
@@ -715,7 +715,7 @@ class GLPalette : public RendererImageData
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, parent->colours.size(), 1, 0, GL_RGBA,
-		               GL_UNSIGNED_BYTE, parent->colours.data());
+		             GL_UNSIGNED_BYTE, parent->colours.data());
 	}
 	virtual ~GLPalette() { glDeleteTextures(1, &this->texID); }
 };
@@ -735,8 +735,8 @@ class GLPaletteImage : public RendererImageData
 		UnpackAlignment align(1);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_R8UI, parent->size.x, parent->size.y, 0,
-		               GL_RED_INTEGER, GL_UNSIGNED_BYTE, l.getData());
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_R8UI, parent->size.x, parent->size.y, 0, GL_RED_INTEGER,
+		             GL_UNSIGNED_BYTE, l.getData());
 	}
 	virtual ~GLPaletteImage() { glDeleteTextures(1, &this->texID); }
 };
@@ -758,7 +758,7 @@ class GLPaletteSpritesheet : public RendererImageData
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_R8UI, maxSize.x, maxSize.y, numSprites, 0,
-		               GL_RED_INTEGER, GL_UNSIGNED_BYTE, NULL);
+		             GL_RED_INTEGER, GL_UNSIGNED_BYTE, NULL);
 
 		std::unique_ptr<char[]> zeros(new char[maxSize.x * maxSize.y]);
 		memset(zeros.get(), 1, maxSize.x * maxSize.y);
@@ -770,12 +770,12 @@ class GLPaletteSpritesheet : public RendererImageData
 			sp<PaletteImage> img = std::dynamic_pointer_cast<PaletteImage>(parent->images[i]);
 			// FIXME: HACK - better way of clearing undefined portions to '0'?
 			glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, maxSize.x, maxSize.y, 1,
-			                  GL_RED_INTEGER, GL_UNSIGNED_BYTE, zeros.get());
+			                GL_RED_INTEGER, GL_UNSIGNED_BYTE, zeros.get());
 
 			PaletteImageLock l(img, ImageLockUse::Read);
 
 			glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, img->size.x, img->size.y, 1,
-			                  GL_RED_INTEGER, GL_UNSIGNED_BYTE, l.getData());
+			                GL_RED_INTEGER, GL_UNSIGNED_BYTE, l.getData());
 		}
 		LogInfo("Uploading spritesheet complete", numSprites);
 	}
@@ -1105,17 +1105,16 @@ class OGL30Renderer : public Renderer
 		const char *vertexPtr = reinterpret_cast<const char *>(this->batchedSprites.data());
 
 		glVertexAttribPointer(paletteSetProgram->posLoc, 2, GL_FLOAT, GL_FALSE,
-		                        sizeof(BatchedVertex),
-		                        vertexPtr + offsetof(BatchedVertex, position));
+		                      sizeof(BatchedVertex), vertexPtr + offsetof(BatchedVertex, position));
 		glVertexAttribPointer(paletteSetProgram->texcoordLoc, 2, GL_FLOAT, GL_FALSE,
-		                        sizeof(BatchedVertex),
-		                        vertexPtr + offsetof(BatchedVertex, texCoord));
+		                      sizeof(BatchedVertex), vertexPtr + offsetof(BatchedVertex, texCoord));
 		glVertexAttribIPointer(paletteSetProgram->spriteLoc, 1, GL_INT, sizeof(BatchedVertex),
-		                         vertexPtr + offsetof(BatchedVertex, spriteIdx));
+		                       vertexPtr + offsetof(BatchedVertex, spriteIdx));
 		// FIXME: glMultiDrawArrays is not supported, so I'm throwing in this stupid loop
 		for (int i = 0; i < batchedSprites.size(); ++i)
 		{
-			glDrawArrays(GL_TRIANGLE_STRIP, *(this->firstList.get() + i), *(this->countList.get() + i));
+			glDrawArrays(GL_TRIANGLE_STRIP, *(this->firstList.get() + i),
+			             *(this->countList.get() + i));
 		}
 		/*glMultiDrawArrays(GL_TRIANGLE_STRIP, this->firstList.get(), this->countList.get(),
 		                    this->batchedSprites.size());*/
@@ -1250,7 +1249,7 @@ class OGL30RendererFactory : public OpenApoc::RendererFactory
 		{
 			alreadyInitialised = true;
 			// check version string for "3.0 es"
-			const char* version_gl = (const char*)glGetString(GL_VERSION);
+			const char *version_gl = (const char *)glGetString(GL_VERSION);
 			std::string version = std::string(version_gl);
 			LogInfo("[GLES3Renderer] Version: %s", version_gl);
 			bool success = (version.find("ES 3.0") != std::string::npos);
@@ -1262,7 +1261,7 @@ class OGL30RendererFactory : public OpenApoc::RendererFactory
 
 			/*
 			if (success.GetNumMissing())
-				return nullptr;*/
+			    return nullptr;*/
 			functionLoadSuccess = true;
 		}
 		if (functionLoadSuccess)

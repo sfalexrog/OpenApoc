@@ -22,15 +22,15 @@ struct sampleData
 
 class SDLSampleData : public BackendSampleData
 {
-public:
+  public:
 	std::map<long int, sampleData> playingInfo;
-	unsigned char* sampleStart;
+	unsigned char *sampleStart;
 	int sampleLen;
 	bool isFinished;
 
 	SDL_AudioCVT cvt;
 
-	SDLSampleData(sp<Sample> sample): sampleStart(0), sampleLen(0), isFinished(false)
+	SDLSampleData(sp<Sample> sample) : sampleStart(0), sampleLen(0), isFinished(false)
 	{
 		SDL_AudioFormat sdlFormat;
 		int smplSize;
@@ -54,19 +54,14 @@ public:
 
 		cvt.len = smplSize * srcChannels * sample->sampleCount;
 
-		cvt.buf = (Uint8*)SDL_malloc(cvt.len * cvt.len_mult);
+		cvt.buf = (Uint8 *)SDL_malloc(cvt.len * cvt.len_mult);
 		SDL_memcpy(cvt.buf, sample->data.get(), cvt.len);
 		SDL_ConvertAudio(&cvt);
 		sampleStart = cvt.buf;
 		sampleLen = cvt.len_cvt;
 	}
 
-	virtual ~SDLSampleData()
-	{
-		SDL_free(cvt.buf);
-	}
-
-
+	virtual ~SDLSampleData() { SDL_free(cvt.buf); }
 };
 
 class SDLRawBackend : public SoundBackend
@@ -75,7 +70,8 @@ class SDLRawBackend : public SoundBackend
 
 	long int sampleId; // FIXME: Handle (or don't handle) overflows?
 
-	struct {
+	struct
+	{
 		int overallVolume;
 		int musicVolume;
 		int soundVolume;
@@ -84,7 +80,7 @@ class SDLRawBackend : public SoundBackend
 	sp<MusicTrack> track;
 	sp<Sample> musicSample;
 
-	std::list<sp<Sample> > sampleQueue;
+	std::list<sp<Sample>> sampleQueue;
 	SDL_AudioDeviceID devID;
 
 	std::function<void(void *)> musicFinishedCallback;
@@ -92,18 +88,22 @@ class SDLRawBackend : public SoundBackend
 
 	bool musicPaused;
 
-	static void mixingCallback(void* userdata, Uint8* stream, int len) {
+	static void mixingCallback(void *userdata, Uint8 *stream, int len)
+	{
 		// pass "this" pointer as a user data pointer - might be useful?
 		SDLRawBackend *_this = reinterpret_cast<SDLRawBackend *>(userdata);
 		// initialize stream buffer
 		SDL_memset(stream, 0, len); // FIXME: Calculate silence value for current output format?
 		MusicTrack::MusicCallbackReturn musReturn = MusicTrack::MusicCallbackReturn::Continue;
 
-		if (!_this->musicPaused) {
+		if (!_this->musicPaused)
+		{
 			// mix music first
-			if (!_this->musicSample.get()) {
+			if (!_this->musicSample.get())
+			{
 				int sampleSize;
-				switch (_this->track->format.format) {
+				switch (_this->track->format.format)
+				{
 					case AudioFormat::SampleFormat::PCM_SINT16:
 						sampleSize = 2;
 						break;
@@ -119,24 +119,28 @@ class SDLRawBackend : public SoundBackend
 				_this->musicSample->format = _this->track->format;
 				_this->musicSample->sampleCount = _this->track->sampleCount;
 				_this->musicSample->data.reset(
-						new unsigned char[_this->musicSample->sampleCount * sampleSize]);
-				musReturn = _this->track->callback(_this->track,
-						                           _this->musicSample->sampleCount,
-												   _this->musicSample->data.get(),
-												   &(_this->musicSample->sampleCount));
+				    new unsigned char[_this->musicSample->sampleCount * sampleSize]);
+				musReturn = _this->track->callback(_this->track, _this->musicSample->sampleCount,
+				                                   _this->musicSample->data.get(),
+				                                   &(_this->musicSample->sampleCount));
 				_this->musicSample->backendData.reset(new SDLSampleData(_this->musicSample));
-				SDLSampleData *musicData = static_cast<SDLSampleData*>(_this->musicSample->backendData.get());
+				SDLSampleData *musicData =
+				    static_cast<SDLSampleData *>(_this->musicSample->backendData.get());
 				musicData->playingInfo[1].samplePos = musicData->sampleStart;
 			}
 
-			SDLSampleData *musicData = static_cast<SDLSampleData*>(_this->musicSample->backendData.get());
-			int smplLen = (musicData->sampleStart + musicData->sampleLen) - musicData->playingInfo[1].samplePos;
+			SDLSampleData *musicData =
+			    static_cast<SDLSampleData *>(_this->musicSample->backendData.get());
+			int smplLen = (musicData->sampleStart + musicData->sampleLen) -
+			              musicData->playingInfo[1].samplePos;
 			int musLen = std::min(len, smplLen);
 
-			SDL_MixAudioFormat(stream, (Uint8*)musicData->playingInfo[1].samplePos, musicData->cvt.dst_format, musLen, _this->mixVolumes.musicVolume);
+			SDL_MixAudioFormat(stream, (Uint8 *)musicData->playingInfo[1].samplePos,
+			                   musicData->cvt.dst_format, musLen, _this->mixVolumes.musicVolume);
 			musicData->playingInfo[1].samplePos += musLen;
 
-			if (musicData->playingInfo[1].samplePos == (musicData->sampleStart + musicData->sampleLen))
+			if (musicData->playingInfo[1].samplePos ==
+			    (musicData->sampleStart + musicData->sampleLen))
 			{
 				if (musReturn == MusicTrack::MusicCallbackReturn::End)
 				{
@@ -148,16 +152,18 @@ class SDLRawBackend : public SoundBackend
 
 		// mix pending samples
 		auto sndIt = _this->sampleQueue.begin();
-		while(sndIt != _this->sampleQueue.end())
+		while (sndIt != _this->sampleQueue.end())
 		{
-			SDLSampleData* smplData = static_cast<SDLSampleData*>((*sndIt)->backendData.get());
+			SDLSampleData *smplData = static_cast<SDLSampleData *>((*sndIt)->backendData.get());
 			auto smplIt = smplData->playingInfo.begin();
-			while(smplIt != smplData->playingInfo.end())
+			while (smplIt != smplData->playingInfo.end())
 			{
-				int smplLen = (smplData->sampleStart + smplData->sampleLen) - smplIt->second.samplePos; // Remaining length of sample
+				int smplLen = (smplData->sampleStart + smplData->sampleLen) -
+				              smplIt->second.samplePos; // Remaining length of sample
 				int mixLen = std::min(len, smplLen);
 				int volume = ((float)_this->mixVolumes.soundVolume / 128) * smplIt->second.volume;
-				SDL_MixAudioFormat(stream, (Uint8*)smplIt->second.samplePos, smplData->cvt.dst_format, mixLen, _this->mixVolumes.soundVolume);
+				SDL_MixAudioFormat(stream, (Uint8 *)smplIt->second.samplePos,
+				                   smplData->cvt.dst_format, mixLen, _this->mixVolumes.soundVolume);
 				smplIt->second.samplePos += mixLen;
 				if (smplIt->second.samplePos == (smplData->sampleStart + smplData->sampleLen))
 				{
@@ -179,6 +185,7 @@ class SDLRawBackend : public SoundBackend
 			}
 		}
 	}
+
   public:
 	SDLRawBackend() : musicPaused(true), sampleId(2) // use sampleId of 1 for music?
 	{
@@ -194,7 +201,8 @@ class SDLRawBackend : public SoundBackend
 		{
 			LogInfo("Device %d: %s", i, SDL_GetAudioDeviceName(i, 0));
 		}
-		LogWarning("Selecting audio devices not currently implemented! Selecting first available device.");
+		LogWarning(
+		    "Selecting audio devices not currently implemented! Selecting first available device.");
 		const char *deviceName = SDL_GetAudioDeviceName(0, 0);
 		SDL_AudioSpec wantFormat;
 		wantFormat.channels = 2;
@@ -203,11 +211,11 @@ class SDLRawBackend : public SoundBackend
 		wantFormat.samples = 512;
 		wantFormat.callback = mixingCallback;
 		wantFormat.userdata = this;
-		devID = SDL_OpenAudioDevice(deviceName,
-							0,           // capturing is not supported
-							&wantFormat,
-							&outputFormat,
-							SDL_AUDIO_ALLOW_ANY_CHANGE); // hopefully we'll get a sane output format
+		devID = SDL_OpenAudioDevice(
+		    deviceName,
+		    0, // capturing is not supported
+		    &wantFormat, &outputFormat,
+		    SDL_AUDIO_ALLOW_ANY_CHANGE); // hopefully we'll get a sane output format
 		mixVolumes.musicVolume = 64;
 		mixVolumes.soundVolume = 32;
 		mixVolumes.overallVolume = 128;
@@ -247,12 +255,14 @@ class SDLRawBackend : public SoundBackend
 		SDL_UnlockAudioDevice(devID);
 	}
 
-	virtual void stopMusic() override
-	{
-		musicPaused = true;
-	}
+	virtual void stopMusic() override { musicPaused = true; }
 
-	virtual ~SDLRawBackend() { this->stopMusic(); SDL_CloseAudioDevice(devID); SDL_QuitSubSystem(SDL_INIT_AUDIO); }
+	virtual ~SDLRawBackend()
+	{
+		this->stopMusic();
+		SDL_CloseAudioDevice(devID);
+		SDL_QuitSubSystem(SDL_INIT_AUDIO);
+	}
 
 	virtual const AudioFormat &getPreferredFormat() { return preferredFormat; }
 
@@ -271,12 +281,12 @@ class SDLRawBackend : public SoundBackend
 				reqGain = mixVolumes.musicVolume;
 				break;
 		}
-		return (float)reqGain/(128);
+		return (float)reqGain / (128);
 	}
 	virtual void setGain(Gain g, float f) override
 	{
 		int sdlVolume = f * 128;
-		switch(g)
+		switch (g)
 		{
 			case Gain::Global:
 				mixVolumes.overallVolume = sdlVolume;
