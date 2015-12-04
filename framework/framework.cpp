@@ -430,12 +430,15 @@ void Framework::TranslateSDLEvents()
 
 	// FIXME: That's not the right way to figure out the primary finger!
 	int primaryFingerID = -1;
-	SDL_Finger *primaryFinger = SDL_GetTouchFinger(SDL_GetTouchDevice(0), 0);
-	if (primaryFinger)
+	if (SDL_GetNumTouchDevices())
 	{
-		primaryFingerID = primaryFinger->id;
+		SDL_Finger *primaryFinger = SDL_GetTouchFinger(SDL_GetTouchDevice(0), 0);
+		if (primaryFinger)
+		{
+			primaryFingerID = primaryFinger->id;
+		}
 	}
-
+	
 	while (SDL_PollEvent(&e))
 	{
 		switch (e.type)
