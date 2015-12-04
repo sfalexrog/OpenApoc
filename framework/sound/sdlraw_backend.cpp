@@ -252,7 +252,7 @@ class SDLRawBackend : public SoundBackend
 		musicPaused = true;
 	}
 
-	virtual ~SDLRawBackend() { this->stopMusic(); }
+	virtual ~SDLRawBackend() { this->stopMusic(); SDL_CloseAudioDevice(devID); SDL_QuitSubSystem(SDL_INIT_AUDIO); }
 
 	virtual const AudioFormat &getPreferredFormat() { return preferredFormat; }
 
