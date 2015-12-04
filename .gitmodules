@@ -15,3 +15,9 @@
 [submodule "dependencies/icu55"]
 	path = dependencies/icu55
 	url = https://github.com/JonnyH/icu55.git
+[submodule "dependencies/SDL2"]
+	path = dependencies/SDL2
+	url = https://github.com/sfalexrog/SDL2_OA
+[submodule "dependencies/SDL2_Image"]
+	path = dependencies/SDL2_Image
+	url = https://github.com/sfalexrog/SDL2_Image_OA
