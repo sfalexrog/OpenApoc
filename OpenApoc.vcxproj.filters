@@ -276,9 +276,6 @@
     <ClCompile Include="framework\render\gles20\ogles_2_0_renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="framework\render\gles20\ogles_2_0_renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="game\tileview\tileobject_shadow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -286,6 +283,18 @@
       <Filter>Source Files\EGLContext</Filter>
     </ClCompile>
     <ClCompile Include="game\rules\alises.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\sound\sdlraw_backend.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\imageloader\lodepng.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\imageloader\lodepng_image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\imageloader\sdl_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
