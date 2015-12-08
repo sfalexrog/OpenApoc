@@ -6,6 +6,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/framework/cmake/")
 
+set(FRAMEWORK_BACKEND "SDL2" CACHE STRING "Framework backend to use - one of
+ALLEGRO or SDL2")
+
 include(framework)
 
 # check compiler
