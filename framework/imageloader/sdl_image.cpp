@@ -64,6 +64,11 @@ class SDLImageLoader : public OpenApoc::ImageLoader
 		}
 
 		SDL_Surface *src = SDL_ConvertSurface(bmp, tgtPixFormat, 0);
+		if (!src)
+		{
+			LogWarning("Failed to convert surface \"%s\" to RGBA", path.c_str());
+			return nullptr;
+		}
 		SDL_FreeSurface(bmp);
 
 		OpenApoc::Vec2<int> size{src->w, src->h};
