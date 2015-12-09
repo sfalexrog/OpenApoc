@@ -825,6 +825,7 @@ void Framework::Display_Initialise()
 	SDL_GL_GetAttribute(SDL_GL_BLUE_SIZE, &bitsBlue);
 	SDL_GL_GetAttribute(SDL_GL_ALPHA_SIZE, &bitsAlpha);
 	LogInfo("  RGBA bits: %d-%d-%d-%d", bitsRed, bitsGreen, bitsBlue, bitsAlpha);
+	SDL_GL_SetSwapInterval(1);
 	SDL_GL_MakeCurrent(p->window, p->context); // for good measure?
 #endif
 	// FIXME: Are we _really_ using SDL/Allegro blending functions?
