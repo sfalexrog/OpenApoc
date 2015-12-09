@@ -137,6 +137,11 @@ Colour RGBImageLock::get(Vec2<unsigned int> pos)
 {
 	// FIXME: Check read use
 	unsigned offset = pos.y * this->img->size.x + pos.x;
+	if (pos.x >= this->img->size.x || pos.y >= this->img->size.y)
+	{
+		LogError("Getting {%u,%u} in image of size {%u,%u}", pos.x, pos.y, this->img->size.x,
+		         this->img->size.y);
+	}
 	assert(offset < this->img->size.x * this->img->size.y);
 	return this->img->pixels[offset];
 }
@@ -144,6 +149,11 @@ Colour RGBImageLock::get(Vec2<unsigned int> pos)
 void RGBImageLock::set(Vec2<unsigned int> pos, Colour &c)
 {
 	unsigned offset = pos.y * this->img->size.x + pos.x;
+	if (pos.x >= this->img->size.x || pos.y >= this->img->size.y)
+	{
+		LogError("Setting {%u,%u} in image of size {%u,%u}", pos.x, pos.y, this->img->size.x,
+		         this->img->size.y);
+	}
 	assert(offset < this->img->size.x * this->img->size.y);
 	this->img->pixels[offset] = c;
 }
@@ -162,6 +172,11 @@ uint8_t PaletteImageLock::get(Vec2<unsigned int> pos)
 {
 	// FIXME: Check read use
 	unsigned offset = pos.y * this->img->size.x + pos.x;
+	if (pos.x >= this->img->size.x || pos.y >= this->img->size.y)
+	{
+		LogError("Getting {%u,%u} in image of size {%u,%u}", pos.x, pos.y, this->img->size.x,
+		         this->img->size.y);
+	}
 	assert(offset < this->img->size.x * this->img->size.y);
 	return this->img->indices[offset];
 }
@@ -170,6 +185,11 @@ void PaletteImageLock::set(Vec2<unsigned int> pos, uint8_t idx)
 {
 	// FIXME: Check write use
 	unsigned offset = pos.y * this->img->size.x + pos.x;
+	if (pos.x >= this->img->size.x || pos.y >= this->img->size.y)
+	{
+		LogError("Setting {%u,%u} in image of size {%u,%u}", pos.x, pos.y, this->img->size.x,
+		         this->img->size.y);
+	}
 	assert(offset < this->img->size.x * this->img->size.y);
 	this->img->indices[offset] = idx;
 }

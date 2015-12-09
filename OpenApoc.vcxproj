@@ -94,7 +94,7 @@
     <IntDir>obj\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(LIB);$(SolutionDir)bin\$(Configuration)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)\dependencies\physfs\src;$(ProjectDir)\dependencies\tinyxml2;$(ProjectDir)\dependencies\include;$(ProjectDir)\dependencies\icu55\source\io;$(ProjectDir)\dependencies\icu55\source\i18n;$(ProjectDir)\dependencies\icu55\source\common;$(ProjectDir)\dependencies\glm;$(IncludePath);$(ProjectDir)\;$(ProjectDir)\dependencies\SDL2\include;$(ProjectDir)\dependencies\SDL2_Image</IncludePath>
+    <IncludePath>$(ProjectDir)\dependencies\physfs\src;$(ProjectDir)\dependencies\tinyxml2;$(ProjectDir)\dependencies\include;$(ProjectDir)\dependencies\icu55\source\io;$(ProjectDir)\dependencies\icu55\source\i18n;$(ProjectDir)\dependencies\icu55\source\common;$(ProjectDir)\dependencies\glm;$(IncludePath);$(ProjectDir)\;$(ProjectDir)\dependencies\SDL2\include;</IncludePath>
     <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
@@ -102,19 +102,19 @@
     <IntDir>obj\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(LIB);$(SolutionDir)bin\$(Configuration)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)\dependencies\physfs\src;$(ProjectDir)\dependencies\tinyxml2;$(ProjectDir)\dependencies\include;$(ProjectDir)\dependencies\icu55\source\io;$(ProjectDir)\dependencies\icu55\source\i18n;$(ProjectDir)\dependencies\icu55\source\common;$(ProjectDir)\dependencies\glm;$(IncludePath);$(ProjectDir)\;$(ProjectDir)\dependencies\SDL2\include;$(ProjectDir)\dependencies\SDL2_Image</IncludePath>
+    <IncludePath>$(ProjectDir)\dependencies\physfs\src;$(ProjectDir)\dependencies\tinyxml2;$(ProjectDir)\dependencies\include;$(ProjectDir)\dependencies\icu55\source\io;$(ProjectDir)\dependencies\icu55\source\i18n;$(ProjectDir)\dependencies\icu55\source\common;$(ProjectDir)\dependencies\glm;$(IncludePath);$(ProjectDir)\;$(ProjectDir)\dependencies\SDL2\include;</IncludePath>
     <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(LIB);$(ProjectDir)\dependencies\angle\lib\$(Platform);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)\dependencies\physfs\src;$(ProjectDir)\dependencies\tinyxml2;$(ProjectDir)\dependencies\include;$(ProjectDir)\dependencies\icu55\source\io;$(ProjectDir)\dependencies\icu55\source\i18n;$(ProjectDir)\dependencies\icu55\source\common;$(ProjectDir)\dependencies\glm;$(IncludePath);$(ProjectDir)\;$(ProjectDir)\dependencies\SDL2\include;$(ProjectDir)\dependencies\SDL2_Image</IncludePath>
+    <IncludePath>$(ProjectDir)\dependencies\physfs\src;$(ProjectDir)\dependencies\tinyxml2;$(ProjectDir)\dependencies\include;$(ProjectDir)\dependencies\icu55\source\io;$(ProjectDir)\dependencies\icu55\source\i18n;$(ProjectDir)\dependencies\icu55\source\common;$(ProjectDir)\dependencies\glm;$(IncludePath);$(ProjectDir)\;$(ProjectDir)\dependencies\SDL2\include;</IncludePath>
     <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(LIB);$(ProjectDir)\dependencies\angle\lib\$(Platform);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)\dependencies\physfs\src;$(ProjectDir)\dependencies\tinyxml2;$(ProjectDir)\dependencies\include;$(ProjectDir)\dependencies\icu55\source\io;$(ProjectDir)\dependencies\icu55\source\i18n;$(ProjectDir)\dependencies\icu55\source\common;$(ProjectDir)\dependencies\glm;$(IncludePath);$(ProjectDir)\;$(ProjectDir)\dependencies\SDL2\include;$(ProjectDir)\dependencies\SDL2_Image</IncludePath>
+    <IncludePath>$(ProjectDir)\dependencies\physfs\src;$(ProjectDir)\dependencies\tinyxml2;$(ProjectDir)\dependencies\include;$(ProjectDir)\dependencies\icu55\source\io;$(ProjectDir)\dependencies\icu55\source\i18n;$(ProjectDir)\dependencies\icu55\source\common;$(ProjectDir)\dependencies\glm;$(IncludePath);$(ProjectDir)\;$(ProjectDir)\dependencies\SDL2\include;</IncludePath>
     <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -122,13 +122,13 @@
     <IntDir>obj\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(LIB);$(SolutionDir)bin\$(Configuration)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)\dependencies\physfs\src;$(ProjectDir)\dependencies\tinyxml2;$(ProjectDir)\dependencies\include;$(ProjectDir)\dependencies\icu55\source\io;$(ProjectDir)\dependencies\icu55\source\i18n;$(ProjectDir)\dependencies\icu55\source\common;$(ProjectDir)\dependencies\glm;$(IncludePath);$(ProjectDir)\;$(ProjectDir)\dependencies\SDL2\include;$(ProjectDir)\dependencies\SDL2_Image</IncludePath>
+    <IncludePath>$(ProjectDir)\dependencies\physfs\src;$(ProjectDir)\dependencies\tinyxml2;$(ProjectDir)\dependencies\include;$(ProjectDir)\dependencies\icu55\source\io;$(ProjectDir)\dependencies\icu55\source\i18n;$(ProjectDir)\dependencies\icu55\source\common;$(ProjectDir)\dependencies\glm;$(IncludePath);$(ProjectDir)\;$(ProjectDir)\dependencies\SDL2\include;</IncludePath>
     <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(LIB);$(ProjectDir)\dependencies\angle\lib\$(Platform);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)\dependencies\physfs\src;$(ProjectDir)\dependencies\tinyxml2;$(ProjectDir)\dependencies\include;$(ProjectDir)\dependencies\icu55\source\io;$(ProjectDir)\dependencies\icu55\source\i18n;$(ProjectDir)\dependencies\icu55\source\common;$(ProjectDir)\dependencies\glm;$(IncludePath);$(ProjectDir)\;$(ProjectDir)\dependencies\SDL2\include;$(ProjectDir)\dependencies\SDL2_Image</IncludePath>
+    <IncludePath>$(ProjectDir)\dependencies\physfs\src;$(ProjectDir)\dependencies\tinyxml2;$(ProjectDir)\dependencies\include;$(ProjectDir)\dependencies\icu55\source\io;$(ProjectDir)\dependencies\icu55\source\i18n;$(ProjectDir)\dependencies\icu55\source\common;$(ProjectDir)\dependencies\glm;$(IncludePath);$(ProjectDir)\;$(ProjectDir)\dependencies\SDL2\include;</IncludePath>
     <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -146,7 +146,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>DbgHelp.lib;gdiplus.lib;opengl32.lib;shlwapi.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;gdiplus.lib;opengl32.lib;shlwapi.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -186,7 +186,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>DbgHelp.lib;gdiplus.lib;opengl32.lib;shlwapi.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;gdiplus.lib;opengl32.lib;shlwapi.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -215,7 +215,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;ERROR_DIALOG;OPENAPOC_GLES;RENDERERS="GLES_2_0";_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;ERROR_DIALOG;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -226,7 +226,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>DbgHelp.lib;gdiplus.lib;opengl32.lib;shlwapi.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;libEGL.lib;libGLESv2.lib</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;gdiplus.lib;opengl32.lib;shlwapi.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
     </Link>
@@ -249,7 +249,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;ERROR_DIALOG;OPENAPOC_GLES;RENDERERS="GLES_2_0";_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;ERROR_DIALOG;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -260,7 +260,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>DbgHelp.lib;gdiplus.lib;opengl32.lib;shlwapi.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;libEGL.lib;libGLESv2.lib</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;gdiplus.lib;opengl32.lib;shlwapi.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
     </Link>
@@ -294,7 +294,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>DbgHelp.lib;gdiplus.lib;opengl32.lib;shlwapi.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;gdiplus.lib;opengl32.lib;shlwapi.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -321,7 +321,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;ERROR_DIALOG;OPENAPOC_GLES;RENDERERS="GLES_2_0";NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;ERROR_DIALOG;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>
@@ -332,7 +332,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>DbgHelp.lib;gdiplus.lib;opengl32.lib;shlwapi.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;libEGL.lib;libGLESv2.lib</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;gdiplus.lib;opengl32.lib;shlwapi.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -371,7 +371,7 @@
     <ClCompile Include="framework\image.cpp" />
     <ClCompile Include="framework\imageloader\lodepng.cpp" />
     <ClCompile Include="framework\imageloader\lodepng_image.cpp" />
-    <ClCompile Include="framework\imageloader\sdl_image.cpp" />
+    <ClCompile Include="framework\imageloader\pcx.cpp" />
     <ClCompile Include="framework\logger.cpp" />
     <ClCompile Include="framework\palette.cpp" />
     <ClCompile Include="framework\physfs_fs.cpp" />
@@ -466,6 +466,7 @@
     <ClInclude Include="framework\fs.h" />
     <ClInclude Include="framework\ignorecase.h" />
     <ClInclude Include="framework\image.h" />
+    <ClInclude Include="framework\imageloader\lodepng.h" />
     <ClInclude Include="framework\imageloader_interface.h" />
     <ClInclude Include="framework\logger.h" />
     <ClInclude Include="framework\musicloader_interface.h" />
@@ -558,6 +559,12 @@
     </ProjectReference>
     <ProjectReference Include="dependencies\physfs.vcxproj">
       <Project>{5a1d2ec4-525e-49b6-9398-be359e71cb35}</Project>
+    </ProjectReference>
+    <ProjectReference Include="dependencies\SDL2\VisualC\SDLmain\SDLmain.vcxproj">
+      <Project>{da956fd3-e142-46f2-9dd5-c78bebb56b7a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="dependencies\SDL2\VisualC\SDL\SDL.vcxproj">
+      <Project>{81ce8daf-ebb2-4761-8e45-b71abcca8c68}</Project>
     </ProjectReference>
     <ProjectReference Include="dependencies\tinyxml2.vcxproj">
       <Project>{d1c528b6-aa02-4d29-9d61-dc08e317a70d}</Project>
