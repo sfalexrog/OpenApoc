@@ -5,7 +5,6 @@
 #include <SDL.h>
 
 #include <list>
-#include <map>
 
 namespace
 {
@@ -14,16 +13,17 @@ SDL_AudioSpec outputFormat;
 
 using namespace OpenApoc;
 
-struct sampleData
+struct SampleData
 {
 	unsigned char *samplePos;
 	int volume;
+	SampleData(unsigned char *samplePos, int volume) : samplePos(samplePos), volume(volume) {};
 };
 
 class SDLSampleData : public BackendSampleData
 {
   public:
-	std::map<long int, sampleData> playingInfo;
+	std::list<SampleData> playingInfo;
 	unsigned char *sampleStart;
 	int sampleLen;
 	bool isFinished;
@@ -126,20 +126,20 @@ class SDLRawBackend : public SoundBackend
 				_this->musicSample->backendData.reset(new SDLSampleData(_this->musicSample));
 				SDLSampleData *musicData =
 				    static_cast<SDLSampleData *>(_this->musicSample->backendData.get());
-				musicData->playingInfo[1].samplePos = musicData->sampleStart;
+				musicData->playingInfo.push_back(SampleData{ musicData->sampleStart, 128 });
 			}
 
 			SDLSampleData *musicData =
 			    static_cast<SDLSampleData *>(_this->musicSample->backendData.get());
 			int smplLen = (musicData->sampleStart + musicData->sampleLen) -
-			              musicData->playingInfo[1].samplePos;
+			              musicData->playingInfo.front().samplePos;
 			int musLen = std::min(len, smplLen);
 
-			SDL_MixAudioFormat(stream, (Uint8 *)musicData->playingInfo[1].samplePos,
+			SDL_MixAudioFormat(stream, (Uint8 *)musicData->playingInfo.front().samplePos,
 			                   musicData->cvt.dst_format, musLen, _this->mixVolumes.musicVolume);
-			musicData->playingInfo[1].samplePos += musLen;
+			musicData->playingInfo.front().samplePos += musLen;
 
-			if (musicData->playingInfo[1].samplePos ==
+			if (musicData->playingInfo.front().samplePos ==
 			    (musicData->sampleStart + musicData->sampleLen))
 			{
 				if (musReturn == MusicTrack::MusicCallbackReturn::End)
@@ -159,13 +159,13 @@ class SDLRawBackend : public SoundBackend
 			while (smplIt != smplData->playingInfo.end())
 			{
 				int smplLen = (smplData->sampleStart + smplData->sampleLen) -
-				              smplIt->second.samplePos; // Remaining length of sample
+				              smplIt->samplePos; // Remaining length of sample
 				int mixLen = std::min(len, smplLen);
-				int volume = ((float)_this->mixVolumes.soundVolume / 128) * smplIt->second.volume;
-				SDL_MixAudioFormat(stream, (Uint8 *)smplIt->second.samplePos,
+				int volume = ((float)_this->mixVolumes.soundVolume / 128) * smplIt->volume;
+				SDL_MixAudioFormat(stream, (Uint8 *)smplIt->samplePos,
 				                   smplData->cvt.dst_format, mixLen, _this->mixVolumes.soundVolume);
-				smplIt->second.samplePos += mixLen;
-				if (smplIt->second.samplePos == (smplData->sampleStart + smplData->sampleLen))
+				smplIt->samplePos += mixLen;
+				if (smplIt->samplePos == (smplData->sampleStart + smplData->sampleLen))
 				{
 					smplIt = smplData->playingInfo.erase(smplIt);
 				}
@@ -230,8 +230,7 @@ class SDLRawBackend : public SoundBackend
 			sample->backendData.reset(new SDLSampleData(sample));
 		}
 		SDLSampleData *data = static_cast<SDLSampleData *>(sample->backendData.get());
-		data->playingInfo[sampleId].samplePos = data->sampleStart;
-		data->playingInfo[sampleId].volume = gain * 128;
+		data->playingInfo.push_back(SampleData{ data->sampleStart, static_cast<int>(gain * 128) });
 		sampleId++;
 		sampleQueue.push_back(sample);
 		LogInfo("Placed sound %p on queue", sample.get());
