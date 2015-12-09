@@ -35,7 +35,7 @@ env:
 
 install:
 # TODO: use a packaged SDL2 instead of building our own each time
-  - pushd ./dependencies/SDL2 && cmake -DCMAKE_INSTALL_PREFIX=~/dependency-prefix . && make -j2 && make install && popd;
+  - mkdir ./dependencies/SDL2_build && pushd ./dependencies/SDL2_build && cmake -DCMAKE_INSTALL_PREFIX=~/dependency-prefix ../SDL2 && make -j2 && make install && popd;
   - pushd ./dependencies/tinyxml2 && cmake -DCMAKE_INSTALL_PREFIX=~/dependency-prefix . && make -j2 && make install && popd;
   - pushd ./dependencies/glm && cmake -DCMAKE_INSTALL_PREFIX=~/dependency-prefix . && make -j2 && make install && popd;
   - pushd ./dependencies/physfs && cmake -DCMAKE_INSTALL_PREFIX=~/dependency-prefix . && make -j2 && make install && popd;
