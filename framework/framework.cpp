@@ -289,6 +289,11 @@ Framework::~Framework()
 	/*
 	al_destroy_event_queue(p->eventAllegro);
 	al_destroy_mutex(p->eventMutex);*/
+	LogInfo("Destroying SDL_GL context");
+	if (p->context) {
+		SDL_GL_DeleteContext(p->context);
+		p->context = 0;
+	}
 
 	LogInfo("SDL shutdown");
 	/*al_uninstall_mouse();
@@ -779,15 +784,37 @@ void Framework::Display_Initialise()
 	p->context = SDL_GL_CreateContext(p->window);
 	if (!p->context)
 	{
-		LogError("Could not create GL context! [SDLError: %s]", SDL_GetError());
-		SDL_DestroyWindow(p->window);
-		exit(1);
+		LogWarning("Could not create GL context! [SDLError: %s]", SDL_GetError());
+		LogWarning("Attempting to create context by lowering the requested version");
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+		p->context = SDL_GL_CreateContext(p->window);
+		if (!p->context)
+		{
+			LogError("Failed to create GL context! [SDLerror: %s]", SDL_GetError());
+			SDL_DestroyWindow(p->window);
+			exit(1);
+		}
 	}
 	// Output the context parameters
 	LogInfo("Created OpenGL context, parameters:");
 	int value;
 	SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, &value);
-	LogInfo("  Context profile: %s", (value == SDL_GL_CONTEXT_PROFILE_ES) ? "ES" : "Core");
+	std::string profileType;
+	switch (value) {
+	case SDL_GL_CONTEXT_PROFILE_ES:
+		profileType = "ES";
+		break;
+	case SDL_GL_CONTEXT_PROFILE_CORE:
+		profileType = "Core";
+		break;
+	case SDL_GL_CONTEXT_PROFILE_COMPATIBILITY:
+		profileType = "Compatibility";
+		break;
+	default:
+		profileType = "Unknown";
+	}
+	LogInfo("  Context profile: %s", profileType.c_str());
 	int ctxMajor, ctxMinor;
 	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &ctxMajor);
 	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &ctxMinor);
@@ -798,6 +825,7 @@ void Framework::Display_Initialise()
 	SDL_GL_GetAttribute(SDL_GL_BLUE_SIZE, &bitsBlue);
 	SDL_GL_GetAttribute(SDL_GL_ALPHA_SIZE, &bitsAlpha);
 	LogInfo("  RGBA bits: %d-%d-%d-%d", bitsRed, bitsGreen, bitsBlue, bitsAlpha);
+	SDL_GL_MakeCurrent(p->window, p->context); // for good measure?
 #endif
 	// FIXME: Are we _really_ using SDL/Allegro blending functions?
 	// al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
