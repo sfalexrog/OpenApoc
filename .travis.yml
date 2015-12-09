@@ -3,6 +3,9 @@ sudo: false
 
 addons:
   apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    - llvm-toolchain-precise-3.7
     packages:
     - cmake
     - g++-5
