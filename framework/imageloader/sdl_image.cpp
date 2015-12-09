@@ -23,7 +23,9 @@ class SDLImageLoader : public OpenApoc::ImageLoader
 	SDLImageLoader()
 	{
 		// FIXME: Compile with PNG support?
-		/* IMG_Init(IMG_INIT_PNG); */
+#ifndef __ANDROID__
+		IMG_Init(IMG_INIT_PNG);
+#endif
 		// Create an empty SDL_Surface with 32bpp to use as a base for image loading
 		dummySurface = SDL_CreateRGBSurface(0, 1, 1, 32, 0xff, 0xff00, 0xff0000, 0xff000000);
 		tgtPixFormat = dummySurface->format;
