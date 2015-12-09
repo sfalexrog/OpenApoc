@@ -4,6 +4,7 @@ sudo: false
 addons:
   apt:
     sources:
+    - debian-sid
     - ubuntu-toolchain-r-test
     - llvm-toolchain-precise-3.7
     packages:
@@ -11,9 +12,7 @@ addons:
     - g++-5
     - clang-3.7
     - libicu-dev
-# libunwind8-dev is not available for precise
-# (this is why we can't have nice things)
-#    - libunwind8-dev
+    - libunwind8-dev
 # Precise lacks SDL2, so we'll build it ourselves
 #    - libsdl2-dev
 
