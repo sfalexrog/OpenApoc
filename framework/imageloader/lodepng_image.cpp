@@ -25,28 +25,20 @@ class LodepngImageLoader : public OpenApoc::ImageLoader
 		// empty?
 	}
 
-	virtual sp<OpenApoc::Image> loadImage(UString path) override
+	virtual sp<OpenApoc::Image> loadImage(IFile &file) override
 	{
-		PHYSFS_file *source = PHYSFS_openRead(path.c_str());
-		if (!source)
-		{
-			LogWarning("Could not load file %s", path.c_str());
-			return nullptr;
-		}
-		std::vector<unsigned char> buffer(PHYSFS_fileLength(source));
-		PHYSFS_read(source, &buffer[0], 1, PHYSFS_fileLength(source));
-		PHYSFS_close(source);
-
+		auto data = file.readAll();
 		std::vector<unsigned char> image;
 		unsigned int width, height;
-		unsigned int error = lodepng::decode(image, width, height, buffer);
+		unsigned int error =
+		    lodepng::decode(image, width, height, (unsigned char *)data.get(), file.size());
 		if (error)
 		{
-			LogWarning("LodePNG error code: %d: %s", error, lodepng_error_text(error));
+			LogInfo("LodePNG error code: %d: %s", error, lodepng_error_text(error));
 		}
 		if (!image.size())
 		{
-			LogInfo("Failed to load image %s (not a PNG?)", path.c_str());
+			LogInfo("Failed to load image %s (not a PNG?)", file.systemPath().c_str());
 			return nullptr;
 		}
 		OpenApoc::Vec2<int> size(width, height);
