@@ -11,8 +11,10 @@ addons:
     - g++-5
     - clang-3.7
     - libicu-dev
-    - libunwind8-dev
-    - libsdl2-dev
+# libunwind8-dev is not available for 
+    - libunwind-dev
+# Precise lacks SDL2, so we'll build it ourselves
+#    - libsdl2-dev
 
 compiler:
   - gcc
@@ -31,6 +33,8 @@ env:
   - BUILD_TYPE="Release" LTO=on SUGGESTIONS=on
 
 install:
+# TODO: use a packaged SDL2 instead of building our own each time
+  - pushd ./dependencies/SDL2 && cmake -DCMAKE_INSTALL_PREFIX=~/dependency-prefix . && make -j2 && make install && popd;
   - pushd ./dependencies/tinyxml2 && cmake -DCMAKE_INSTALL_PREFIX=~/dependency-prefix . && make -j2 && make install && popd;
   - pushd ./dependencies/glm && cmake -DCMAKE_INSTALL_PREFIX=~/dependency-prefix . && make -j2 && make install && popd;
   - pushd ./dependencies/physfs && cmake -DCMAKE_INSTALL_PREFIX=~/dependency-prefix . && make -j2 && make install && popd;
