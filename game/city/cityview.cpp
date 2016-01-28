@@ -532,6 +532,12 @@ void CityView::Update(StageCmd *const cmd)
 
 void CityView::EventOccurred(Event *e)
 {
+	// FIXME: There should be a better place for handling "clicks"
+	static bool isTouched = false;
+	static int xTouch, yTouch;
+	const int thresholdX = 10;
+	const int thresholdY = 10;
+
 	fw().gamecore->MouseCursor->EventOccured(e);
 	activeTab->EventOccured(e);
 	baseForm->EventOccured(e);
@@ -567,6 +573,39 @@ void CityView::EventOccurred(Event *e)
 			s->repair(*state);
 			state->city->fallingScenery.erase(s);
 		}
+	}
+	else if (e->Type() == EVENT_FINGER_DOWN)
+	{
+		isTouched = true;
+		xTouch = e->Finger().X;
+		yTouch = e->Finger().Y;
+	}
+	else if (e->Type() == EVENT_FINGER_MOVE)
+	{
+		int x = e->Finger().X;
+		int y = e->Finger().Y;
+		bool overThreshold = (abs(x - xTouch) > thresholdX) && (abs(y - yTouch) > thresholdY);
+		if (overThreshold)
+		{
+			isTouched = false;
+			TileView::EventOccurred(e);
+		}
+	}
+	else if (e->Type() == EVENT_FINGER_UP)
+	{
+		if (isTouched)
+		{
+			MouseEvent mdEvent(EVENT_MOUSE_DOWN);
+			mdEvent.Mouse().X = e->Finger().X;
+			mdEvent.Mouse().Y = e->Finger().Y;
+			mdEvent.Mouse().DeltaX = e->Finger().DeltaX;
+			mdEvent.Mouse().DeltaY = e->Finger().DeltaY;
+			mdEvent.Mouse().WheelVertical = 0;
+			mdEvent.Mouse().WheelHorizontal = 0;
+			mdEvent.Mouse().Button = 1;
+			CityView::EventOccurred(&mdEvent);
+		}
+		isTouched = false;
 	}
 	// Exclude mouse down events that are over the form
 	else if (e->Type() == EVENT_MOUSE_DOWN)
