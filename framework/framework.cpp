@@ -165,6 +165,8 @@ class FrameworkPrivate
 	// The display size may be scaled up to windowSize
 	Vec2<int> displaySize;
 	Vec2<int> windowSize;
+	float scaleX;
+	float scaleY;
 
 	sp<Surface> scaleSurface;
 };
@@ -491,10 +493,10 @@ void Framework::TranslateSDLEvents()
 			// FIXME: handle SDL_TEXTINPUT?
 			case SDL_MOUSEMOTION:
 				fwE = new MouseEvent(EVENT_MOUSE_MOVE);
-				fwE->Mouse().X = e.motion.x;
-				fwE->Mouse().Y = e.motion.y;
-				fwE->Mouse().DeltaX = e.motion.xrel;
-				fwE->Mouse().DeltaY = e.motion.yrel;
+				fwE->Mouse().X = e.motion.x * p->scaleX;
+				fwE->Mouse().Y = e.motion.y * p->scaleY;
+				fwE->Mouse().DeltaX = e.motion.xrel * p->scaleX;
+				fwE->Mouse().DeltaY = e.motion.yrel * p->scaleY;
 				fwE->Mouse().WheelVertical = 0;   // These should be handled
 				fwE->Mouse().WheelHorizontal = 0; // in a separate event
 				fwE->Mouse().Button = e.motion.state;
@@ -508,8 +510,8 @@ void Framework::TranslateSDLEvents()
 				{
 					int mx, my;
 					fwE->Mouse().Button = SDL_GetMouseState(&mx, &my);
-					fwE->Mouse().X = mx;
-					fwE->Mouse().Y = my;
+					fwE->Mouse().X = mx * p->scaleX;
+					fwE->Mouse().Y = my * p->scaleY;
 					fwE->Mouse().DeltaX = 0; // FIXME: This might cause problems?
 					fwE->Mouse().DeltaY = 0;
 					fwE->Mouse().WheelVertical = e.wheel.y;
@@ -519,8 +521,8 @@ void Framework::TranslateSDLEvents()
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 				fwE = new MouseEvent(EVENT_MOUSE_DOWN);
-				fwE->Mouse().X = e.button.x;
-				fwE->Mouse().Y = e.button.y;
+				fwE->Mouse().X = e.button.x * p->scaleX;
+				fwE->Mouse().Y = e.button.y * p->scaleY;
 				fwE->Mouse().DeltaX = 0; // FIXME: This might cause problems?
 				fwE->Mouse().DeltaY = 0;
 				fwE->Mouse().WheelVertical = 0;
@@ -530,8 +532,8 @@ void Framework::TranslateSDLEvents()
 				break;
 			case SDL_MOUSEBUTTONUP:
 				fwE = new MouseEvent(EVENT_MOUSE_UP);
-				fwE->Mouse().X = e.button.x;
-				fwE->Mouse().Y = e.button.y;
+				fwE->Mouse().X = e.button.x * p->scaleX;
+				fwE->Mouse().Y = e.button.y * p->scaleY;
 				fwE->Mouse().DeltaX = 0; // FIXME: This might cause problems?
 				fwE->Mouse().DeltaY = 0;
 				fwE->Mouse().WheelVertical = 0;
@@ -774,6 +776,8 @@ void Framework::Display_Initialise()
 	// FIXME: Scale is currently stored as an integer in 1/100 units (ie 100 is 1.0 == same size)
 	int scaleX = Settings->getInt("Visual.ScaleX");
 	int scaleY = Settings->getInt("Visual.ScaleY");
+	p->scaleX = scaleX / 100.0;
+	p->scaleY = scaleY / 100.0;
 
 	if (scaleX != 100 || scaleY != 100)
 	{
