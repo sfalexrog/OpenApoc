@@ -248,7 +248,14 @@ void TileView::Render()
 						Vec2<float> pos = tileToScreenCoords(obj->getPosition());
 						pos.x += screenOffset.x;
 						pos.y += screenOffset.y;
-						obj->draw(r, *this, pos, this->viewMode);
+						// Only draw visible objects - cuts down rendering times significantly
+						if (pos.x > -isoTileSize.x &&
+							pos.y > -isoTileSize.y &&
+							pos.x < (dpySize.x + isoTileSize.x) &&
+							pos.y < (dpySize.y + isoTileSize.y))
+						{
+							obj->draw(r, *this, pos, this->viewMode);
+						}
 					}
 
 					if (showSelected)
