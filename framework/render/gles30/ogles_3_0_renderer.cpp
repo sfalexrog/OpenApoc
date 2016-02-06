@@ -278,7 +278,7 @@ const char *PaletteSetProgram_vertexSource = {
     "in vec2 texcoord_in;\n"
     "in int sprite_in;\n"
     "out vec2 texcoord;\n"
-    "flat out int sprite;\n"
+    "out int sprite;\n"
     "uniform vec2 screenSize;\n"
     "uniform bool flipY;\n"
     "void main() {\n"
@@ -294,7 +294,7 @@ const char *PaletteSetProgram_fragmentSource = {
     "#version 300 es\n"
     "precision mediump float;\n"
     "in vec2 texcoord;\n"
-    "flat in int sprite;\n"
+    "in int sprite;\n"
     "uniform isampler2DArray tex;\n"
     "uniform sampler2D pal;\n"
     "out vec4 out_colour;\n"
@@ -1170,12 +1170,12 @@ class OGL30Renderer : public Renderer
 		                      sizeof(BatchedVertex), vertexPtr + offsetof(BatchedVertex, texCoord));
 		glVertexAttribIPointer(paletteSetProgram->spriteLoc, 1, GL_INT, sizeof(BatchedVertex),
 		                       vertexPtr + offsetof(BatchedVertex, spriteIdx));
-		// FIXME: glMultiDrawArrays is not supported, so I'm throwing in this stupid loop
-		for (int i = 0; i < batchedSprites.size(); ++i)
-		{
-			glDrawArrays(GL_TRIANGLE_STRIP, *(this->firstList.get() + i),
-			             *(this->countList.get() + i));
-		}
+		// Advance sprite index each 4 vertices - "flat" keyword doesn't work with instancing apparently
+		glVertexAttribDivisor(paletteSetProgram->posLoc, 1);
+		glVertexAttribDivisor(paletteSetProgram->texcoordLoc, 1);
+		glVertexAttribDivisor(paletteSetProgram->spriteLoc, 4);
+		// FIXME: do something about non-four-edged sprites?
+		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0/* *(firstList.get())*/, 4/* *(countList.get()) */, batchedSprites.size());
 		/*glMultiDrawArrays(GL_TRIANGLE_STRIP, this->firstList.get(), this->countList.get(),
 		                    this->batchedSprites.size());*/
 
