@@ -40,15 +40,6 @@ namespace
 #define DATA_DIRECTORY "./data"
 #endif
 
-#ifndef RENDERERS
-#ifdef _WIN32
-#pragma message("WARNING: Using default renderer list")
-#else
-#warning RENDERERS not set - using default list
-#endif
-#define RENDERERS "GL_3_0:GL_2_0"
-#endif
-
 static std::map<UString, UString> defaultConfig = {
 #ifdef PANDORA
     {"Visual.ScreenWidth", "800"},
@@ -65,7 +56,6 @@ static std::map<UString, UString> defaultConfig = {
     {"Resource.SystemDataDir", DATA_DIRECTORY},
     {"Resource.LocalCDPath", "./data/cd.iso"},
     {"Resource.SystemCDPath", DATA_DIRECTORY "/cd.iso"},
-    {"Visual.Renderers", RENDERERS},
     {"Audio.Backends", "SDLRaw:null"},
     {"Audio.GlobalGain", "20"},
     {"Audio.SampleGain", "20"},
@@ -75,7 +65,6 @@ static std::map<UString, UString> defaultConfig = {
     {"Visual.ScaleY", "100"},
 };
 
-std::map<UString, std::unique_ptr<OpenApoc::RendererFactory>> *registeredRenderers = nullptr;
 std::map<UString, std::unique_ptr<OpenApoc::SoundBackendFactory>> *registeredSoundBackends =
     nullptr;
 };
@@ -84,13 +73,6 @@ namespace OpenApoc
 {
 
 Framework *Framework::instance = nullptr;
-
-void registerRenderer(RendererFactory *factory, UString name)
-{
-	if (!registeredRenderers)
-		registeredRenderers = new std::map<UString, std::unique_ptr<OpenApoc::RendererFactory>>();
-	registeredRenderers->emplace(name, std::unique_ptr<RendererFactory>(factory));
-}
 
 void registerSoundBackend(SoundBackendFactory *factory, UString name)
 {
@@ -159,7 +141,6 @@ class FrameworkPrivate
 
 	SDL_DisplayMode screenMode;
 	SDL_Window *window;
-	SDL_GLContext context;
 
 	// FIXME: Wrap eventQueue in mutex if handing events with multiple threads
 	std::list<Event *> eventQueue;
@@ -398,15 +379,7 @@ void Framework::Run()
 			}
 			{
 				TraceObj flipObj("Flip");
-#ifndef OPENAPOC_GLES
-				SDL_GL_SwapWindow(p->window);
-#else
-#ifdef _MSC_VER
-				GLContext::GetInstance()->Swap();
-#else
-				SDL_GL_SwapWindow(p->window);
-#endif
-#endif
+				this->renderer->swapBuffers();
 			}
 		}
 	}
@@ -652,25 +625,12 @@ void Framework::Display_Initialise()
 {
 	TRACE_FN;
 	LogInfo("Init display");
-	int display_flags = SDL_WINDOW_OPENGL;
-#ifdef OPENAPOC_GLES
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-#else
-#ifdef SDL_OPENGL_CORE
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-#endif
+	int display_flags = 0;
 
-#endif
-	// Request context version 3.0
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-	// Request RGBA5551 - change if needed
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
-	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 1);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
+	if (!Renderer::preWindowCreateHook(display_flags))
+	{
+		LogError("Renderer pre-window hook failed");
+	}
 	int scrW = Settings->getInt("Visual.ScreenWidth");
 	int scrH = Settings->getInt("Visual.ScreenHeight");
 	bool scrFS = Settings->getBool("Visual.FullScreen");
@@ -693,82 +653,13 @@ void Framework::Display_Initialise()
 	if (!p->window)
 	{
 		LogError("Failed to create window");
-		;
 		exit(1);
 	}
 
-	p->context = SDL_GL_CreateContext(p->window);
-	if (!p->context)
-	{
-		LogWarning("Could not create GL context! [SDLError: %s]", SDL_GetError());
-		LogWarning("Attempting to create context by lowering the requested version");
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-		p->context = SDL_GL_CreateContext(p->window);
-		if (!p->context)
-		{
-			LogError("Failed to create GL context! [SDLerror: %s]", SDL_GetError());
-			SDL_DestroyWindow(p->window);
-			exit(1);
-		}
-	}
-	// Output the context parameters
-	LogInfo("Created OpenGL context, parameters:");
-	int value;
-	SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, &value);
-	std::string profileType;
-	switch (value)
-	{
-		case SDL_GL_CONTEXT_PROFILE_ES:
-			profileType = "ES";
-			break;
-		case SDL_GL_CONTEXT_PROFILE_CORE:
-			profileType = "Core";
-			break;
-		case SDL_GL_CONTEXT_PROFILE_COMPATIBILITY:
-			profileType = "Compatibility";
-			break;
-		default:
-			profileType = "Unknown";
-	}
-	LogInfo("  Context profile: %s", profileType.c_str());
-	int ctxMajor, ctxMinor;
-	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &ctxMajor);
-	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &ctxMinor);
-	LogInfo("  Context version: %d.%d", ctxMajor, ctxMinor);
-	int bitsRed, bitsGreen, bitsBlue, bitsAlpha;
-	SDL_GL_GetAttribute(SDL_GL_RED_SIZE, &bitsRed);
-	SDL_GL_GetAttribute(SDL_GL_GREEN_SIZE, &bitsGreen);
-	SDL_GL_GetAttribute(SDL_GL_BLUE_SIZE, &bitsBlue);
-	SDL_GL_GetAttribute(SDL_GL_ALPHA_SIZE, &bitsAlpha);
-	LogInfo("  RGBA bits: %d-%d-%d-%d", bitsRed, bitsGreen, bitsBlue, bitsAlpha);
-	SDL_GL_SetSwapInterval(1);
-	SDL_GL_MakeCurrent(p->window, p->context); // for good measure?
 	SDL_ShowCursor(SDL_DISABLE);
 
-	for (auto &rendererName : Settings->getString("Visual.Renderers").split(':'))
-	{
-		auto rendererFactory = registeredRenderers->find(rendererName);
-		if (rendererFactory == registeredRenderers->end())
-		{
-			LogInfo("Renderer \"%s\" not in supported list", rendererName.c_str());
-			continue;
-		}
-		Renderer *r = rendererFactory->second->create();
-		if (!r)
-		{
-			LogInfo("Renderer \"%s\" failed to init", rendererName.c_str());
-			continue;
-		}
-		this->renderer.reset(r);
-		LogInfo("Using renderer: %s", this->renderer->getName().c_str());
-		break;
-	}
-	if (!this->renderer)
-	{
-		LogError("No functional renderer found");
-		abort();
-	}
+	this->renderer.reset(new Renderer(p->window));
+
 	this->p->defaultSurface = this->renderer->getDefaultSurface();
 
 	int width, height;
@@ -809,8 +700,6 @@ void Framework::Display_Shutdown()
 	LogInfo("Shutdown Display");
 	p->defaultSurface.reset();
 	renderer.reset();
-
-	SDL_GL_DeleteContext(p->context);
 	SDL_DestroyWindow(p->window);
 }
 

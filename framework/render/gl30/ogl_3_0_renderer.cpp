@@ -7,6 +7,7 @@
 #include <array>
 #include <memory>
 
+
 namespace
 {
 /* Workaround MSVC not liking int64_t being defined here and in allegro */
