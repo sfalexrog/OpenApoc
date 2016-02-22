@@ -10,7 +10,7 @@
 //{
 /* Workaround MSVC not liking int64_t being defined here and in allegro */
 #define GLEXT_64_TYPES_DEFINED
-#include "framework/render/gles20/gles_2_0.hpp"
+#include "framework/render/gles20/minigload.h"
 //#include "framework/render/gles20/gles_2_0.inl"
 //} // anonymous namespace
 
@@ -19,6 +19,131 @@ namespace
 
 using namespace OpenApoc;
 
+// Texture packing tree struct
+// Based on http://www.blackpawn.com/texts/lightmaps/
+// This version does not add borders between packed images.
+struct PackNode {
+	// Pointers to the node's "children"
+	std::unique_ptr<PackNode> child[2];
+	// Available space in the current node
+	struct Rectangle
+	{
+		int left, top, right, bottom;
+		Rectangle() : top(0), bottom(0), left(0), right(0) {}
+		Rectangle(int l, int t, int r, int b) : top(t), left(l), right(r), bottom(b) {}
+	} rc;
+	// Pointer to the stored image
+	std::weak_ptr<Image> pImage;
+	// ID of texture for atlasing (i.e. atlas page)
+	GLuint texID;
+	// Enum telling how the image fits in the enclosing rectangle
+	enum fitting {
+		DOES_NOT_FIT,
+		FITS_PERFECTLY,
+		FITS_WITH_SPACE,
+		FITS_PERFECTLY_ROTATED,   // This means we have to rotate the image 90 degrees
+		FITS_WITH_SPACE_ROTATED   // before inserting it into the texture.
+	};
+	// How does the image fit in the provided space?
+	fitting fits(sp<Image> img)
+	{
+		int rcWidth = rc.right - rc.left;
+		int rcHeight = rc.bottom - rc.top;
+		int imWidth = img->size.x;
+		int imHeight = img->size.y;
+		if ((rcWidth == imWidth) && (rcHeight == imHeight))
+		{
+			return FITS_PERFECTLY;
+		}
+		if ((rcWidth == imHeight) && (rcHeight == imWidth))
+		{
+			return FITS_PERFECTLY_ROTATED;
+		}
+		if ((rcWidth >= imWidth) && (rcHeight >= imHeight))
+		{
+			return FITS_WITH_SPACE;
+		}
+		if ((rcWidth >= imHeight) && (rcHeight >= imWidth))
+		{
+			return FITS_WITH_SPACE_ROTATED;
+		}
+		return DOES_NOT_FIT;
+	}
+	// Upload the image to the appropriate place in the texture
+	bool uploadImg(sp<Image> img, bool rotate)
+	{
+		char* imgData;
+
+		if (rotate)
+		{
+
+		}
+
+		ActiveTexture a(texID);
+
+		gl::TexSubImage2D(gl::TEXTURE_2D, 0, rc.top, rc.left, img->size.x, img->size.y, gl::LUMINANCE, gl::UNSIGNED_BYTE, imgData);
+
+	}
+
+
+	// Attempt to place the image img into the texture
+	// Returns texture coordinates of the top left corner of the image
+	// Returns {-1, -1} if it can't place the image
+	Vec2<int> insert(sp<Image> img)
+	{
+		// If this node has children, attempt to insert image into them
+		if (child[0] || child[1])
+		{
+			auto newNode = child[0]->insert(img);
+			if (newNode != Vec2<int>(-1, -1) ) { return newNode; }
+			return child[1]->insert(img);
+		}
+		else // We're in a childless node
+		{
+			//FIXME: What if the image gets deleted elsewhere?
+			if (pImage.lock()) { return {-1, -1}; }  // The node is already taken
+			auto fit = fits(img);
+			switch (fit)
+			{
+			case DOES_NOT_FIT:
+				return {-1, -1};   // Not enough space, can't do much about it
+			case FITS_PERFECTLY_ROTATED:
+				// TODO: Rotate the image
+			case FITS_PERFECTLY:
+				pImage = img;  // Just what we need!
+				// TODO: Put the image into texture
+				// TODO: Actually tell the image where in the texture it's supposed to be
+				return {rc.left, rc.top};
+			case FITS_WITH_SPACE_ROTATED:
+				// TODO: Rotate the image (maybe a temp variable should suffice?)
+				break;
+			}
+			// If there's space left, split the node
+			int dw = (rc.right - rc.left) - img->size.x;
+			int dh = (rc.bottom - rc.top) - img->size.y;
+			if (dw > dh)
+			{
+				// Split horizontally
+				child[0].reset(new PackNode(Rectangle(rc.left, rc.top, rc.left + img->size.x, rc.bottom), texID));
+				child[1].reset(new PackNode(Rectangle(rc.left + img->size.x, rc.top, rc.right, rc.bottom), texID));
+			}
+			else
+			{
+				// Split vertically
+				child[0].reset(new PackNode(Rectangle(rc.left, rc.top, rc.right, rc.top + img->size.y), texID));
+				child[1].reset(new PackNode(Rectangle(rc.left, rc.top + img->size.y, rc.right, rc.bottom), texID));
+			}
+			// Insert into the first child after split (it should fit perfectly)
+			return child[0]->insert(img);
+		}
+	}
+
+	// ctor
+	PackNode(Vec2<int> textureSize, GLuint textureID) : rc(Rectangle(0, 0, textureSize.x, textureSize.y)), texID(textureID) {}
+	PackNode(Rectangle freeSpace, GLuint textureID) : rc(freeSpace), texID(textureID) {}
+
+};
+
 class Program
 {
   public:
@@ -26,18 +151,7 @@ class Program
 	static GLuint CreateShader(GLenum type, const UString source)
 	{
 		GLuint shader = gl::CreateShader(type);
-		// This is an ugly hack to make Tegra 3 chip produce "correct" (translation: not horribly wrong)
-		// paletted image. So far it's Tegra-specific and did not manifest anywhere else.
-		// FIXME: Check the shader code and inputs for sanity; maybe it's a corner case?
-		// FIXME: Find a less ugly way to patch shaders.
-		UString procSource = source;
-		std::string renderer = (const char*) gl::GetString(gl::RENDERER);
-		if (renderer.find("Tegra") != std::string::npos)
-		{
-			//FIXME: Could as well be not 13, maybe use some method to find where the first line ends?
-			procSource.insert(13, "#define TEGRA_PALETTE_HACK\n");
-		}
-		auto sourceString = procSource.str();
+		auto sourceString = source.str();
 		const GLchar *string = sourceString.c_str();
 		GLint stringLength = sourceString.length();
 		gl::ShaderSource(shader, 1, &string, &stringLength);
@@ -983,17 +1097,17 @@ class OGLES20RendererFactory : public OpenApoc::RendererFactory
 		if (!alreadyInitialised)
 		{
 			alreadyInitialised = true;
-			auto success = gl::sys::LoadFunctions();
+			auto success = gl::sys::loadGLCore();
 			if (!success)
 			{
 				LogInfo("failed to load GL implementation functions");
 				return nullptr;
 			}
-			if (success.GetNumMissing())
-			{
-				LogInfo("GL implementation missing %d functions", success.GetNumMissing());
-				return nullptr;
-			}
+			//if (success.GetNumMissing())
+			//{
+			//	LogInfo("GL implementation missing %d functions", success.GetNumMissing());
+			//	return nullptr;
+			//}
 			if (!gl::sys::IsVersionGEQ(2, 0))
 			{
 				LogInfo("GL version not at least 2.0");
