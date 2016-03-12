@@ -25,12 +25,6 @@
 // Boost locale for setting the system locale
 #include <boost/locale.hpp>
 
-#ifdef OPENAPOC_GLES
-
-#include "framework/render/gles20/EGLContext.h"
-
-#endif /*OPENAPOC_GLES*/
-
 using namespace OpenApoc;
 
 namespace

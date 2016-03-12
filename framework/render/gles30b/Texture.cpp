@@ -40,12 +40,12 @@ namespace OpenApoc
 			internalformat = gl::R8UI;
 			break;
 		case TEXTURE_2D_RGBA:
-			internalformat = gl::RGBA;
+			internalformat = gl::RGBA8;
 			break;
 		default:
 			LogError("Wrong texture type!");
 		}
-		gl::TexStorage2D(gl::TEXTURE_2D, 0, internalformat, size.x, size.y);
+		gl::TexStorage2D(gl::TEXTURE_2D, 1, internalformat, size.x, size.y);
 	}
 
 	Texture::Texture(Vec3<int> size, TexType textureType, FilterType filterType) : _textureType(textureType), _size(size)
