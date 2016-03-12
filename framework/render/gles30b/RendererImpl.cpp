@@ -2,8 +2,17 @@
 
 #include "FBOData.h"
 
+#include "framework/logger.h"
+
 namespace OpenApoc
 {
+	RendererImpl::RendererImpl()
+	{
+		cRenderer.reset(new CachingRenderer());
+		LogWarning("Stopping here");
+		while (1) {};
+	}
+
 	void RendererImpl::setSurface(sp<Surface> s)
 	{
 		if (currentSurface == s)

@@ -5,6 +5,7 @@
 #include "library/strings.h"
 #include "framework/logger.h"
 #include "GLImageData.h"
+#include "Texture.h"
 
 namespace OpenApoc
 {
@@ -52,6 +53,49 @@ namespace OpenApoc
 		"}																							  \n"
 	};
 
+	static const char* ImmediateProgram_vertexSource = {
+		"#version 300 es																	  \n"
+		"layout(location = 0) in vec2 position;												  \n"
+		"layout(location = 1) in vec2 texcoord_in;											  \n"
+		"layout(location = 2) in int paletteIdx_in;											  \n"
+		"out vec2 texcoord;																	  \n"
+		"flat out int paletteIdx;															  \n"
+		"uniform vec2 screenSize;															  \n"
+		"uniform bool flipY;																  \n"
+		"void main() {																		  \n"
+		"	paletteIdx = paletteIdx_in;														  \n"
+		"	texcoord = texcoord_in;															  \n"
+		"	vec2 tmpPos = position;															  \n"
+		"	tmpPos = tmpPos / screenSize;													  \n"
+		"	tmpPos = tmpPos - vec2(0.5, 0.5);												  \n"
+		"	if (flipY) gl_Position = vec4((tmpPos.x * 2.0), -(tmpPos.y * 2.0), 0.0, 1.0);	  \n"
+		"	else gl_Position = vec4(((tmpPos.x * 2.0), (tmpPos.y * 2.0), 0.0, 1.0));		  \n"
+		"} 																					  \n"
+	};
+
+	static const char* ImmediateProgram_fragmentSource = {
+		"#version 300 es																			  \n"
+		"precision mediump float;																	  \n"
+		"precision mediump int;																		  \n"
+		"in vec2 texcoord;																			  \n"
+		"flat in int paletteIdx;																	  \n"
+		"uniform mediump usampler2D texIdx;												  \n"
+		"uniform mediump sampler2D texRGBA;												  \n"
+		"uniform mediump sampler2D palette;															  \n"
+		"out vec4 out_colour;																		  \n"
+		"void main() {																				  \n"
+		"	if (paletteIdx < 0)																		  \n"
+		"	{																						  \n"
+		"		out_colour = texture(texRGBA, texcoord);										  \n"
+		"	}																						  \n"
+		"	else																					  \n"
+		"	{																						  \n"
+		"		uint idx = texelFetch(texIdx, ivec2(texcoord.x, texcoord.y), 0).r;	  \n"
+		"		if (idx == 0u) discard;																  \n"
+		"		out_colour = texelFetch(palette, ivec2(idx, paletteIdx), 0);						  \n"
+		"	}																						  \n"
+		"}																							  \n"
+	};
 
 	class Program
 	{
@@ -147,7 +191,7 @@ namespace OpenApoc
 		}
 	};
 
-	class CachedProgram : public Program
+	class CachingProgram : public Program
 	{
 	public:
 		GLint positionLoc;
@@ -164,7 +208,7 @@ namespace OpenApoc
 		GLint currentTexRGBAUnit;
 		GLint currentTexPaletteUnit;
 
-		CachedProgram()
+		CachingProgram()
 			: Program(CachedProgram_vertexSource, CachedProgram_fragmentSource),
 			currentScreenSize(0, 0), currentFlipY(0), currentTexIdxUnit(0), currentTexRGBAUnit(0),
 			currentTexPaletteUnit(0)
@@ -214,15 +258,103 @@ namespace OpenApoc
 				Uniform(flipYLoc, flipY);
 			}
 		}
-
 	};
+
+	class ImmediateProgram : public Program
+	{
+	public:
+		GLint positionLoc;
+		GLint texcoordLoc;
+		GLint paletteIdxLoc;
+		GLint texIdxLoc;
+		GLint texRGBALoc;
+		GLint paletteLoc;
+		GLint screenSizeLoc;
+		GLint flipYLoc;
+		Vec2<int> currentScreenSize;
+		bool currentFlipY;
+		GLint currentTexIdxUnit;
+		GLint currentTexRGBAUnit;
+		GLint currentTexPaletteUnit;
+		ImmediateProgram()
+			: Program(ImmediateProgram_vertexSource, ImmediateProgram_fragmentSource),
+			currentScreenSize(0, 0), currentFlipY(0), currentTexIdxUnit(0), currentTexRGBAUnit(0),
+			currentTexPaletteUnit(0)
+		{
+			positionLoc = gl::GetAttribLocation(prog, "position");
+			assert(positionLoc == 0);
+			texcoordLoc = gl::GetAttribLocation(prog, "texcoord_in");
+			assert(texcoordLoc == 1);
+			paletteIdxLoc = gl::GetAttribLocation(prog, "paletteIdx_in");
+			assert(paletteIdxLoc == 2);
+			texIdxLoc = gl::GetUniformLocation(prog, "texIdx");
+			if (texIdxLoc < 0) { LogError("'texIdx' uniform not found in shader"); }
+			texRGBALoc = gl::GetUniformLocation(prog, "texRGBA");
+			if (texRGBALoc < 0) { LogError("'texRGBA' uniform not found in shader"); }
+			paletteLoc = gl::GetUniformLocation(prog, "palette");
+			if (paletteLoc < 0) { LogError("'palette' uniform not found in shader"); }
+			screenSizeLoc = gl::GetUniformLocation(prog, "screenSize");
+			if (screenSizeLoc < 0) { LogError("'screenSize' uniform not found in shader"); }
+			flipYLoc = gl::GetUniformLocation(prog, "flipY");
+			if (flipYLoc < 0) { LogError("'flipY' uniform not found in shader"); }
+		}
+		void setUniforms(Vec2<int> screenSize, bool flipY, GLint texIdxUnit, GLint texRGBAUnit, GLint texPaletteUnit)
+		{
+			if (screenSize != currentScreenSize)
+			{
+				currentScreenSize = screenSize;
+				Uniform(screenSizeLoc, screenSize);
+			}
+			if (texIdxUnit != currentTexIdxUnit)
+			{
+				currentTexIdxUnit = texIdxUnit;
+				Uniform(texIdxLoc, texIdxUnit);
+			}
+			if (texRGBAUnit != currentTexRGBAUnit)
+			{
+				currentTexRGBAUnit = texRGBAUnit;
+				Uniform(texRGBALoc, texRGBAUnit);
+			}
+			if (texPaletteUnit != currentTexPaletteUnit)
+			{
+				currentTexPaletteUnit = texPaletteUnit;
+				Uniform(paletteLoc, texPaletteUnit);
+			}
+			if (flipY != currentFlipY)
+			{
+				currentFlipY = flipY;
+				Uniform(flipYLoc, flipY);
+			}
+		}
+	};
+
 
 	/**
 	 *  Caching manager
 	 */
 
 
+	static const int INDEX_TEXTURE_MULTIPLIER = 3;
+	static const int MAX_PALETTE_SIZE = 256;
+	static const int MAX_PALETTES_COUNT = 1024;
+	CachingRenderer::CachingRenderer()
+	{
+		int scratchTexSize = std::min(Texture::Limits::MAX_TEXTURE_WIDTH, 1024u);
+		_cachingProgram.reset(new CachingProgram());
+		_immediateProgram.reset(new ImmediateProgram());
 
+		_idxTexture = Texture::createIndexTexture(Vec3<int>(
+			Texture::Limits::MAX_TEXTURE_WIDTH, 
+			Texture::Limits::MAX_TEXTURE_HEIGHT, 
+			Texture::Limits::MAX_TEXTURE_DEPTH * INDEX_TEXTURE_MULTIPLIER));
+		_rgbaTexture = Texture::createRGBATexture(Vec3<int>(
+			Texture::Limits::MAX_TEXTURE_WIDTH,
+			Texture::Limits::MAX_TEXTURE_HEIGHT,
+			Texture::Limits::MAX_TEXTURE_DEPTH));
+		_paletteTexture = Texture::createRGBATexture(Vec2<int>(MAX_PALETTE_SIZE, MAX_PALETTES_COUNT));
+		_scratchIndexTexture = Texture::createIndexTexture(Vec2<int>(scratchTexSize, scratchTexSize));
+		_scratchRGBATexture = Texture::createRGBATexture(Vec2<int>(scratchTexSize, scratchTexSize));
+	}
 	/**
 	 *	Enqueues the draw call.
 	 *  Actual draw calls happen in the flush() call.

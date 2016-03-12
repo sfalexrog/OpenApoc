@@ -189,8 +189,7 @@ namespace OpenApoc
 		pimpl.reset(new RendererImpl());
 		pimpl->window = win;
 		pimpl->context = ctx;
-		LogWarning("Stopping now, because the renderer is not fully functional yet.");
-		while (1) {};
+		LogWarning("(not actually a warning, just flushing logs)");
 	}
 
 	Renderer::~Renderer()

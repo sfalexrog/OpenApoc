@@ -17,6 +17,7 @@ namespace OpenApoc
 
 	class Image;
 	class Texture;
+	class Program;
 
 	class CachingRenderer
 	{
@@ -28,9 +29,14 @@ namespace OpenApoc
 			int paletteIdx;
 		};
 
+		sp<Program> _cachingProgram;
+		sp<Program> _immediateProgram;
+
 		sp<Texture> _idxTexture;
 		sp<Texture> _rgbaTexture;
 		sp<Texture> _paletteTexture;
+		sp<Texture> _scratchRGBATexture;
+		sp<Texture> _scratchIndexTexture;
 
 		std::array<VertexData, MAX_CACHED_VERTICES> _cachedVertices;
 		std::array<short, MAX_CACHED_VERTICES> _cachedIndices;

@@ -31,6 +31,8 @@ namespace OpenApoc
 		sp<Surface> defaultSurface;
 
 	public:
+		RendererImpl();
+
 		void clear(Colour c) { /* STUB */ }
 		void setPalette(sp<Palette> p) { currentPalette = p; }
 		sp<Palette> getPalette() { return currentPalette; }
