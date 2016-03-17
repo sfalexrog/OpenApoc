@@ -150,3 +150,14 @@ void dumpStrings();
 #endif
 
 }; // namespace OpenApoc
+
+namespace std
+{
+	template<> struct hash<OpenApoc::UString>
+	{
+		std::size_t operator()(const OpenApoc::UString& key) const
+		{
+			return hash<string>()(key.str());
+		}
+	};
+}

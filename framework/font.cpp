@@ -12,6 +12,9 @@ BitmapFont::~BitmapFont() {}
 
 sp<PaletteImage> BitmapFont::getString(const UString &Text)
 {
+	if (stringCache[Text]) { 
+		return stringCache[Text]; 
+	}
 	int height = this->GetFontHeight();
 	int width = this->GetFontWidth(Text);
 	auto img = mksp<PaletteImage>(Vec2<int>{width, height});
@@ -27,7 +30,7 @@ sp<PaletteImage> BitmapFont::getString(const UString &Text)
 		PaletteImage::blit(glyph, Vec2<int>{pos, 0}, img);
 		pos += glyph->size.x;
 	}
-
+	stringCache[Text] = img;
 	return img;
 }
 
