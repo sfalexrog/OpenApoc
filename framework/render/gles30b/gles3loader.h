@@ -1,4 +1,7 @@
 #pragma once
+#ifdef OPENAPOC_GL32_RENDER
+#include "gl32/gl_core_3_2.hpp"
+#else
 
 #include <string>
 #include <unordered_set>
@@ -23,8 +26,9 @@ namespace gl
 
 	namespace sys
 	{
-		bool loadGLCore();
+		bool LoadFunctions();
 	}
 
 }
 
+#endif

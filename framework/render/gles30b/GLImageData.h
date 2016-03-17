@@ -3,6 +3,7 @@
 #include "framework/renderer.h"
 #include "library/sp.h"
 #include "library/vec.h"
+#include <array>
 
 namespace OpenApoc
 {
@@ -11,6 +12,8 @@ namespace OpenApoc
 	class RGBImage;
 	class Palette;
 	class PaletteImage;
+
+	class FBOData;
 
 	/**
 	 *	Extended palette data
@@ -53,6 +56,12 @@ namespace OpenApoc
 		sp<Texture> tex;
 	};
 
+	struct SurfaceData
+	{
+		CacheState::CachedState cachedState;
+		sp<FBOData> fboData;
+	};
+
 	class GLImageData : public RendererImageData
 	{
 
@@ -63,7 +72,8 @@ namespace OpenApoc
 		enum {
 			IMG_RGBA,
 			IMG_PALETTE,
-			IMG_INDEX
+			IMG_INDEX,
+			IMG_SURFACE
 		} ImageTag;
 
 		union 
@@ -71,9 +81,17 @@ namespace OpenApoc
 			RGBData *rgbData;
 			PaletteData *paletteData;
 			IndexData *indexData;
+			SurfaceData *surfaceData;
 		};
+
+		// Coordinates order: top left, top right, bottom left, bottom right
+		std::array<Vec3<int>, 4> texelCoords;
+
 		GLImageData(sp<Image> parent);
+		GLImageData(sp<Surface> parent, bool defaultFbo = false);
 		GLImageData(sp<Palette> parent);
+		CacheState::CachedState getCacheState();
+		void setCachedState(CacheState::CachedState cachedState);
 		~GLImageData();
 	};
 }

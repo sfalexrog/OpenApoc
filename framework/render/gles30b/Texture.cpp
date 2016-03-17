@@ -96,7 +96,6 @@ namespace OpenApoc
 	sp<Texture> Texture::createRGBATexture(Vec2<int> size, FilterType filterType)
 	{
 		return mksp<Texture>(size, TEXTURE_2D_RGBA, filterType);
-	
 	}
 
 	sp<Texture> Texture::createRGBATexture(Vec3<int> size, FilterType filterType)
@@ -121,18 +120,19 @@ namespace OpenApoc
 		else
 		{
 			image->rendererPrivateData.reset(imageData = new GLImageData(image));
+			imageData = static_cast<GLImageData*>(image->rendererPrivateData.get());
 		}
 		switch (_textureType)
 		{
 		case TEXTURE_2D_INDEX:
 			assert(imageData->ImageTag == GLImageData::IMG_INDEX);
 			gl::PixelStorei(gl::UNPACK_ALIGNMENT, 1);
-			format = gl::R8UI;
+			format = gl::RED_INTEGER;
 			break;
 		case TEXTURE_2D_RGBA:
 			assert(imageData->ImageTag == GLImageData::IMG_PALETTE || imageData->ImageTag == GLImageData::IMG_RGBA);
 			gl::PixelStorei(gl::UNPACK_ALIGNMENT, 4);
-			format = gl::RGBA8;
+			format = gl::RGBA;
 			break;
 		default:
 			LogError("Attempted to upload image to an incompatible texture!");
@@ -141,8 +141,8 @@ namespace OpenApoc
 		{
 		case GLImageData::IMG_INDEX:
 			{
-				PaletteImage *pImage = static_cast<PaletteImage*>(image.get());
-				PaletteImageLock pl(sp<PaletteImage>(pImage), ImageLockUse::Read);
+				sp<PaletteImage> pImage = std::static_pointer_cast<PaletteImage>(image);
+				PaletteImageLock pl(pImage, ImageLockUse::Read);
 				if (rotate)
 				{
 					uint8_t* sourceImage = reinterpret_cast<uint8_t*>(pl.getData());
@@ -152,7 +152,7 @@ namespace OpenApoc
 					{
 						for (int x = 0; x < image->size.x; x++)
 						{
-							rotatedImage[image->size.y - y - 1 + x * image->size.x] = sourceImage[x + image->size.x * y];
+							rotatedImage[(x + 1) * image->size.y - y - 1] = sourceImage[x + image->size.x * y];
 						}
 					}
 					gl::TexSubImage2D(gl::TEXTURE_2D, 0, at.x, at.y, image->size.y, image->size.x, format, gl::UNSIGNED_BYTE, rotatedImage.get());
@@ -166,8 +166,8 @@ namespace OpenApoc
 			break;
 		case GLImageData::IMG_RGBA:
 			{
-				RGBImage *rgbImage = static_cast<RGBImage*>(image.get());
-				RGBImageLock rl(sp<RGBImage>(rgbImage), ImageLockUse::Read);
+				sp<RGBImage> rgbImage = std::static_pointer_cast<RGBImage>(image);
+				RGBImageLock rl(rgbImage, ImageLockUse::Read);
 				if (rotate)
 				{
 					Colour *sourceImage = reinterpret_cast<Colour*>(rl.getData());
@@ -177,7 +177,7 @@ namespace OpenApoc
 					{
 						for (int x = 0; x < image->size.x; x++)
 						{
-							rotatedImage[image->size.y - y - 1 + x * image->size.x] = sourceImage[x + image->size.x * y];
+							rotatedImage[(x + 1) * image->size.y - y - 1] = sourceImage[x + image->size.x * y];
 						}
 					}
 					gl::TexSubImage2D(gl::TEXTURE_2D, 0, at.x, at.y, image->size.y, image->size.x, format, gl::UNSIGNED_BYTE, rotatedImage.get());
@@ -189,14 +189,21 @@ namespace OpenApoc
 			}
 			break;
 		}
+		imageData->texelCoords[0] = Vec3<int>(at.x, at.y, -1);
+		imageData->texelCoords[1] = Vec3<int>(at.x + image->size.x - 1, at.y, -1);
+		imageData->texelCoords[2] = Vec3<int>(at.x, at.y + image->size.y - 1, -1);
+		imageData->texelCoords[3] = Vec3<int>(at.x + image->size.x - 1, at.y + image->size.y - 1, -1);
 	}
 
 	void Texture::uploadImage(sp<Palette> palette, Vec2<int> at)
 	{
 		bind(0);
+		auto error = gl::GetError();
+		assert(error == 0);
 		assert(_textureType == TEXTURE_2D_RGBA);
 		gl::PixelStorei(gl::UNPACK_ALIGNMENT, 4);
-		gl::TexSubImage2D(gl::TEXTURE_2D, 0, at.x, at.y, palette->colours.size(), 1, gl::RGBA8, gl::UNSIGNED_BYTE, palette->colours.data());
+		gl::TexSubImage2D(gl::TEXTURE_2D, 0, at.x, at.y, palette->colours.size(), 1, gl::RGBA, gl::UNSIGNED_BYTE, palette->colours.data());
+		assert(error == 0);
 	}
 	
 	Texture::~Texture()
@@ -248,7 +255,7 @@ namespace OpenApoc
 				{
 					for (int x = 0; x < image->size.x; x++)
 					{
-						rotatedImage[image->size.y - y - 1 + x * image->size.x] = sourceImage[x + image->size.x * y];
+						rotatedImage[(x + 1) * image->size.y - y - 1] = sourceImage[x + image->size.x * y];
 					}
 				}
 				gl::TexSubImage3D(gl::TEXTURE_2D_ARRAY, 0, at.x, at.y, at.z, image->size.y, image->size.x, 1, format, gl::UNSIGNED_BYTE, rotatedImage.get());
@@ -256,11 +263,12 @@ namespace OpenApoc
 			else
 			{
 				gl::TexSubImage3D(gl::TEXTURE_2D_ARRAY, 0, at.x, at.y, at.z, image->size.x, image->size.y, 1, format, gl::UNSIGNED_BYTE, pl.getData());
-				auto error = gl::GetError();
-				if (error)
-				{
-					LogWarning("Error during texture upload: %d", error);
-				}
+			}
+			auto error = gl::GetError();
+			if (error && (error != gl::OUT_OF_MEMORY))
+			{
+				LogWarning("Error during texture upload: %d", error);
+				assert(error == 0);
 			}
 
 		}
@@ -278,7 +286,7 @@ namespace OpenApoc
 				{
 					for (int x = 0; x < image->size.x; x++)
 					{
-						rotatedImage[image->size.y - y - 1 + x * image->size.x] = sourceImage[x + image->size.x * y];
+						rotatedImage[(x + 1) * image->size.y - y - 1] = sourceImage[x + image->size.x * y];
 					}
 				}
 				gl::TexSubImage3D(gl::TEXTURE_2D_ARRAY, 0, at.x, at.y, at.z, image->size.y, image->size.x, 1, format, gl::UNSIGNED_BYTE, rotatedImage.get());
@@ -294,6 +302,20 @@ namespace OpenApoc
 			}
 		}
 		break;
+		}
+		if (!rotate)
+		{
+			imageData->texelCoords[0] = Vec3<int>(at.x, at.y, at.z);
+			imageData->texelCoords[1] = Vec3<int>(at.x + image->size.x - 1, at.y, at.z);
+			imageData->texelCoords[2] = Vec3<int>(at.x, at.y + image->size.y - 1, at.z);
+			imageData->texelCoords[3] = Vec3<int>(at.x + image->size.x - 1, at.y + image->size.y - 1, at.z);
+		}
+		else
+		{
+			imageData->texelCoords[2] = Vec3<int>(at.x, at.y, at.z);
+			imageData->texelCoords[0] = Vec3<int>(at.x + image->size.y - 1, at.y, at.z);
+			imageData->texelCoords[3] = Vec3<int>(at.x, at.y + image->size.x - 1, at.z);
+			imageData->texelCoords[1] = Vec3<int>(at.x + image->size.y - 1, at.y + image->size.x - 1, at.z);
 		}
 	}
 
@@ -312,6 +334,16 @@ namespace OpenApoc
 			binding = gl::TEXTURE_2D;
 		}
 		gl::BindTexture(binding, _textureIdx);
+	}
+
+	/**
+	 *	Get the size of the texture.
+	 *  For 2D textures, the third component of size will be 0.
+	 *  For 2D array textures, the third component must be at least 1.
+	 */
+	Vec3<int> Texture::size()
+	{
+		return _size;
 	}
 		
 }

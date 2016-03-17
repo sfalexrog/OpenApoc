@@ -20,6 +20,8 @@ namespace OpenApoc
 		gl::FramebufferRenderbuffer(gl::DRAW_FRAMEBUFFER, gl::DEPTH_ATTACHMENT, gl::RENDERBUFFER, depthBuffer);
 
 		assert(gl::CheckFramebufferStatus(gl::DRAW_FRAMEBUFFER) == gl::FRAMEBUFFER_COMPLETE);
+		auto error = gl::GetError();
+		assert(error == 0);
 	}
 
 	FBOData::~FBOData()

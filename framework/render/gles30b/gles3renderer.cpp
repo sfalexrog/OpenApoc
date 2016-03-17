@@ -1,6 +1,6 @@
 #include "library/sp.h"
 #include "framework/renderer.h"
-
+#include "framework/image.h"
 #include "framework/logger.h"
 
 #include "gles3loader.h"
@@ -13,8 +13,15 @@ namespace OpenApoc
 
 	bool Renderer::preWindowCreateHook(int &display_flags)
 	{
+#ifdef OPENAPOC_GL32_RENDER
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+#else
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+#endif
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -127,9 +134,9 @@ namespace OpenApoc
 				LogInfo("Curiously enough, no error was found with texture size of %d x %d x %d", maxTextureWidth, maxTextureHeight, maxTextureDepth);
 				LogInfo("Cutting maxTextureDepth in half just in case");
 				maxTextureDepth /= 2;
-				Texture::Limits::MAX_TEXTURE_WIDTH = maxTextureWidth;
-				Texture::Limits::MAX_TEXTURE_HEIGHT = maxTextureHeight;
-				Texture::Limits::MAX_TEXTURE_DEPTH = maxTextureDepth;
+				Texture::Limits::MAX_TEXTURE_WIDTH = 8192;//maxTextureWidth;
+				Texture::Limits::MAX_TEXTURE_HEIGHT = 8192;//maxTextureHeight;
+				Texture::Limits::MAX_TEXTURE_DEPTH = 2;//maxTextureDepth;
 				limitsFound = true;
 				testTexture.reset();
 				SDL_GL_DeleteContext(testContext);
@@ -176,11 +183,15 @@ namespace OpenApoc
 		SDL_GL_GetAttribute(SDL_GL_BLUE_SIZE, &bitsBlue);
 		SDL_GL_GetAttribute(SDL_GL_ALPHA_SIZE, &bitsAlpha);
 		LogInfo("  RGBA bits: %d-%d-%d-%d", bitsRed, bitsGreen, bitsBlue, bitsAlpha);
-		bool functionsLoaded = gl::sys::loadGLCore();
+		auto functionsLoaded = gl::sys::LoadFunctions();
 		if (!functionsLoaded)
 		{
 			LogError("Failed to load GL functions");
 		}
+		LogInfo("  GL vendor: %s", gl::GetString(gl::VENDOR));
+		LogInfo("  GL version: %s", gl::GetString(gl::VERSION));
+		LogInfo("  GL renderer: %s", gl::GetString(gl::RENDERER));
+		LogInfo("  GLSL version: %s", gl::GetString(gl::SHADING_LANGUAGE_VERSION));
 		SDL_GL_DeleteContext(ctx);
 		populateLimits(win);
 		ctx = SDL_GL_CreateContext(win);
@@ -204,7 +215,10 @@ namespace OpenApoc
 	void Renderer::setSurface(sp<Surface> s) { pimpl->setSurface(s); }
 	sp<Surface> Renderer::getSurface() { return pimpl->getSurface(); }
 
-	void Renderer::swapBuffers() { SDL_GL_SwapWindow(pimpl->window); }
+	void Renderer::swapBuffers() { 
+		pimpl->flush();
+		SDL_GL_SwapWindow(pimpl->window); 
+	}
 
 	void Renderer::clear(Colour c) { pimpl->clear(c); }
 	void Renderer::setPalette(sp<Palette> p) { pimpl->setPalette(p); }
@@ -235,7 +249,7 @@ namespace OpenApoc
 		pimpl->drawLine(p1, p2, c, thickness);
 	}
 	void Renderer::flush() { pimpl->flush(); }
-	UString Renderer::getName() { return "GLES3.0b Renderer"; }
+	UString Renderer::getName() { return "GLES3.0b C[r]ashing Renderer"; }
 
 	sp<Surface> Renderer::getDefaultSurface() { return pimpl->getDefaultSurface(); }
 

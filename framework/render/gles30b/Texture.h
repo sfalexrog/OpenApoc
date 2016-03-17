@@ -50,6 +50,8 @@ namespace OpenApoc
 		void bind(int textureUnit);
 		// Get this texture's index
 		GLuint id() { return _textureIdx; };
+		// Get this texture's size
+		Vec3<int> size();
 		~Texture();
 		// Texture limits (determined experimentally at the start)
 		class Limits

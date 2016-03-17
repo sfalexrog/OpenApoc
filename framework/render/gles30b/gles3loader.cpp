@@ -1,5 +1,9 @@
 #include "gles3loader.h"
 
+#ifdef OPENAPOC_GL32_RENDER
+#include "gl32/gl_core_3_2.inl"
+#else
+
 #if !defined(OPENAPOC_USE_GLES_LOADER)
 #define GL_GLEXT_PROTOTYPES
 #endif
@@ -32,7 +36,7 @@ namespace gl
 #endif
 	namespace sys 
 	{
-		bool loadGLCore()
+		bool LoadFunctions()
 		{
 			if (initialized) { return initialized; }
 			int failed = 0;
@@ -50,3 +54,5 @@ namespace gl
 	}
 
 }
+
+#endif /*OPENAPOC_GL32_RENDER*/
