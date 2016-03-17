@@ -4,6 +4,10 @@
 #include "framework/trace.h"
 #include "game/general/mainmenu.h"
 #include "game/resources/gamecore.h"
+
+#include "game/city/city.h"
+#include "game/city/cityview.h"
+
 #include <tuple>
 
 namespace OpenApoc
@@ -57,7 +61,8 @@ void BootUp::Update(StageCmd *const cmd)
 	{
 		asyncGamecoreLoad.wait();
 		cmd->cmd = StageCmd::Command::REPLACE;
-		cmd->nextStage = mksp<MainMenu>();
+		//cmd->nextStage = mksp<MainMenu>();
+		cmd->nextStage = mksp<CityView>(mksp<GameState>("rules/difficulty3.xml"));
 	}
 }
 
