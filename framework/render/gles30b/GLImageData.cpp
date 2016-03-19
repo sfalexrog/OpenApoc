@@ -110,6 +110,7 @@ namespace OpenApoc
 		case IMG_SURFACE:
 			return CacheState::CachedState::CACHE_UNCACHEABLE;
 		}
+		return CacheState::CachedState::CACHE_UNCACHEABLE;
 	}
 
 	void GLImageData::setCachedState(CacheState::CachedState cachedState)
