@@ -192,11 +192,14 @@ namespace OpenApoc
 		LogInfo("  GL version: %s", gl::GetString(gl::VERSION));
 		LogInfo("  GL renderer: %s", gl::GetString(gl::RENDERER));
 		LogInfo("  GLSL version: %s", gl::GetString(gl::SHADING_LANGUAGE_VERSION));
-		SDL_GL_DeleteContext(ctx);
-		populateLimits(win);
-		ctx = SDL_GL_CreateContext(win);
+		//SDL_GL_DeleteContext(ctx);
+		//populateLimits(win);
+		//ctx = SDL_GL_CreateContext(win);
 		SDL_GL_MakeCurrent(win, ctx); // for good measure?
-		SDL_GL_SetSwapInterval(1);
+		Texture::Limits::MAX_TEXTURE_WIDTH = 1024;
+		Texture::Limits::MAX_TEXTURE_HEIGHT = 512;
+		Texture::Limits::MAX_TEXTURE_DEPTH = 4;
+		SDL_GL_SetSwapInterval(0);
 		pimpl.reset(new RendererImpl());
 		pimpl->window = win;
 		pimpl->context = ctx;
