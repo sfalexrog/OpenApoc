@@ -270,7 +270,6 @@ namespace OpenApoc
 				LogWarning("Error during texture upload: %d", error);
 				assert(error == 0);
 			}
-
 		}
 		break;
 		case GLImageData::IMG_RGBA:
@@ -306,16 +305,16 @@ namespace OpenApoc
 		if (!rotate)
 		{
 			imageData->texelCoords[0] = Vec3<int>(at.x, at.y, at.z);
-			imageData->texelCoords[1] = Vec3<int>(at.x + image->size.x - 1, at.y, at.z);
-			imageData->texelCoords[2] = Vec3<int>(at.x, at.y + image->size.y - 1, at.z);
-			imageData->texelCoords[3] = Vec3<int>(at.x + image->size.x - 1, at.y + image->size.y - 1, at.z);
+			imageData->texelCoords[1] = Vec3<int>(at.x + image->size.x, at.y, at.z);
+			imageData->texelCoords[2] = Vec3<int>(at.x, at.y + image->size.y, at.z);
+			imageData->texelCoords[3] = Vec3<int>(at.x + image->size.x, at.y + image->size.y, at.z);
 		}
 		else
 		{
 			imageData->texelCoords[2] = Vec3<int>(at.x, at.y, at.z);
-			imageData->texelCoords[0] = Vec3<int>(at.x + image->size.y - 1, at.y, at.z);
-			imageData->texelCoords[3] = Vec3<int>(at.x, at.y + image->size.x - 1, at.z);
-			imageData->texelCoords[1] = Vec3<int>(at.x + image->size.y - 1, at.y + image->size.x - 1, at.z);
+			imageData->texelCoords[0] = Vec3<int>(at.x + image->size.y, at.y, at.z);
+			imageData->texelCoords[3] = Vec3<int>(at.x, at.y + image->size.x, at.z);
+			imageData->texelCoords[1] = Vec3<int>(at.x + image->size.y, at.y + image->size.x, at.z);
 		}
 	}
 
