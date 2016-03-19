@@ -608,7 +608,10 @@ namespace OpenApoc
 		}
 		GLImageData *surfaceData = static_cast<GLImageData*>(s->rendererPrivateData.get());
 		FBOData *fbo = surfaceData->surfaceData->fboData.get();
-		gl::BindFramebuffer(gl::FRAMEBUFFER, fbo->fbo);
+		if (currentBoundFBO != fbo->fbo)
+		{
+			gl::BindFramebuffer(gl::FRAMEBUFFER, fbo->fbo);
+		}
 		currentBoundFBO = fbo->fbo;
 		gl::Viewport(0, 0, s->size.x, s->size.y);
 	}
@@ -623,6 +626,10 @@ namespace OpenApoc
 		}
 		_mappedCurrent += 4;
 		_elemCount += 5;
+		if (_mappedCurrent >= _mappedEnd)
+		{
+			flushCache();
+		}
 	}
 
 	RendererImpl::SpriteData RendererImpl::transform(sp<Image> image, Vec2<float> position, Vec2<float> size, Vec2<float> center, float angle)
@@ -740,10 +747,10 @@ namespace OpenApoc
 		_rgbaTexture = Texture::createRGBATexture(Vec3<int>(
 			Texture::Limits::MAX_TEXTURE_WIDTH,
 			Texture::Limits::MAX_TEXTURE_HEIGHT,
-			Texture::Limits::MAX_TEXTURE_DEPTH));
+			Texture::Limits::MAX_TEXTURE_DEPTH), Texture::FT_LINEAR);
 		//_paletteTexture = Texture::createRGBATexture(Vec2<int>(MAX_PALETTE_SIZE, MAX_PALETTES_COUNT));
 		_scratchIndexTexture = Texture::createIndexTexture(Vec2<int>(scratchTexSize, scratchTexSize));
-		_scratchRGBATexture = Texture::createRGBATexture(Vec2<int>(scratchTexSize, scratchTexSize));
+		_scratchRGBATexture = Texture::createRGBATexture(Vec2<int>(scratchTexSize, scratchTexSize), Texture::FT_LINEAR);
 
 		_idxCache.reset(new TextureCache(_idxTexture));
 		_rgbaCache.reset(new TextureCache(_rgbaTexture));
@@ -1000,8 +1007,8 @@ namespace OpenApoc
 		_scratchIndexTexture->bind(0);
 		if (PaletteDataExt::paletteTexture)
 			PaletteDataExt::paletteTexture->bind(2);
-		bool flip = currentBoundFBO != 0;
-		iProgram->setUniforms(currentSurface->size, true, 0, 1, 2);
+		bool flip = currentBoundFBO == 0;
+		iProgram->setUniforms(currentSurface->size, flip, 0, 1, 2);
 		error = gl::GetError(); assert(error == 0);
 		enqueue(data);
 		gl::FlushMappedBufferRange(gl::ARRAY_BUFFER, /*_mapOffset * sizeof(VertexData)*/ 0, _mappedCurrent * sizeof(VertexData));
@@ -1049,8 +1056,8 @@ namespace OpenApoc
 		{
 			PaletteDataExt::paletteTexture->bind(2);
 		}
-		bool flip = currentBoundFBO != 0;
-		program->setUniforms(currentSurface->size, false, 0, 1, 2);
+		bool flip = currentBoundFBO == 0;
+		program->setUniforms(currentSurface->size, flip, 0, 1, 2);
 
 		gl::DrawElements(gl::TRIANGLE_STRIP, _elemCount, gl::UNSIGNED_SHORT, reinterpret_cast<void*>(_elemOffset * sizeof(GLushort)));
 		error = gl::GetError(); assert(error == 0);
