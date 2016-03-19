@@ -14,7 +14,7 @@ namespace OpenApoc
 		sp<Texture> tex;
 		GLuint depthBuffer;
 		Vec2<float> size;
-		FBOData(GLuint fbo) : fbo(fbo), tex(nullptr), size(0, 0) { };
+		FBOData(GLuint fbo) : fbo(fbo), tex(nullptr), depthBuffer(0), size(0, 0) { };
 		FBOData(Vec2<int> size);
 		~FBOData();
 	};
