@@ -61,8 +61,7 @@ void BootUp::Update(StageCmd *const cmd)
 	{
 		asyncGamecoreLoad.wait();
 		cmd->cmd = StageCmd::Command::REPLACE;
-		//cmd->nextStage = mksp<MainMenu>();
-		cmd->nextStage = mksp<CityView>(mksp<GameState>("rules/difficulty3.xml"));
+		cmd->nextStage = mksp<MainMenu>();
 	}
 }
 
