@@ -10,6 +10,7 @@
 
 //#define MINIZ_HEADER_FILE_ONLY
 #include "dependencies/miniz/miniz.c"
+#include "framework.h"
 
 #include <iostream>
 #include <map>
@@ -51,7 +52,7 @@ static bool writePack(const UString &name, const std::map<UString, std::string> 
 {
 	mz_zip_archive archive = {0};
 
-	auto path = name + ".zip";
+	auto path = Framework::getInstance().Settings->getString("Resource.LocalDataDir") + "/" + name + ".zip";
 
 	bool ret = false;
 
@@ -90,7 +91,7 @@ static bool readPack(const UString &name, std::map<UString, std::string> &conten
 {
 	mz_zip_archive archive = {0};
 
-	auto path = name + ".zip";
+	auto path = Framework::getInstance().Settings->getString("Resource.LocalDataDir") + "/" +  name + ".zip";
 
 	bool ret = false;
 
