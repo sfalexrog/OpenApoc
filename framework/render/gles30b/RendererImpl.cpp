@@ -706,23 +706,9 @@ namespace OpenApoc
 			image->rendererPrivateData.reset(new GLImageData(image));
 			data = static_cast<GLImageData*>(image->rendererPrivateData.get());
 		}
+
 		if (data->getCacheState() == CacheState::CACHE_CACHED) return true;
 		if (data->getCacheState() == CacheState::CACHE_UNCACHEABLE) return false;
-
-		// Put the image into the appropriate cache
-		switch (data->ImageTag)
-		{
-		case GLImageData::IMG_INDEX:
-			_idxCache->putImage(image);
-			break;
-		case GLImageData::IMG_RGBA:
-			_rgbaCache->putImage(image);
-			break;
-		case GLImageData::IMG_SURFACE:
-			// Surfaces don't go into cache
-			return false;
-			break;
-		}
 
 		// Try and cache images that are in the same owningSet
 		auto owningSet = image->owningSet.lock();
@@ -741,7 +727,13 @@ namespace OpenApoc
 				}
 			}
 		}
+		else
+		{
+			// Don't cache images that are not in ImageSets - should prevent labels getting cached
+			data->setCachedState(CacheState::CACHE_UNCACHEABLE);
+		}
 
+		// Put the image into the appropriate cache
 		return data->getCacheState() == CacheState::CACHE_CACHED;
 	}
 
