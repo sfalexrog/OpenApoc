@@ -46,7 +46,7 @@ namespace OpenApoc
 	public:
 		struct VertexData
 		{
-			Vec2<float> position;
+			Vec3<float> position;
 			Vec3<float> texCoord;
 			int paletteIdx;
 		};
@@ -88,18 +88,22 @@ namespace OpenApoc
 		int _elemOffset;
 		int _elemCount;
 
+		float _primOrder;
+
 		void enqueue(const SpriteData& data);
 		SpriteData transform(sp<Image> image, Vec2<float> position, Vec2<float> size, Vec2<float> center = { 0.0f, 0.0f }, float angle = 0.0f);
 
 		bool cacheImage(sp<Image> image);
 
-		void drawImmediate(sp<Image> image, SpriteData data);
-		void drawImmediate(sp<RGBImage> image, RGBData *rdata, SpriteData data);
-		void drawImmediate(sp<PaletteImage> image, IndexData *idata, SpriteData data);
-		void drawImmediate(sp<Surface> image, SurfaceData *sdata, SpriteData data);
-		void drawImmediateExecute(SpriteData data);
+		void drawImmediate(sp<Image> image, SpriteData &data);
+		void drawImmediate(sp<RGBImage> image, RGBData *rdata, SpriteData &data);
+		void drawImmediate(sp<PaletteImage> image, IndexData *idata, SpriteData &data);
+		void drawImmediate(sp<Surface> image, SurfaceData *sdata, SpriteData &data);
+		void drawImmediateExecute(const SpriteData &data);
 		void flushCache();
 		void flushImmediate();
+
+		void resetFrame();
 
 	public:
 		RendererImpl();

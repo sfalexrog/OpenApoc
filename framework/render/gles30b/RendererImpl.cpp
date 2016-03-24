@@ -7,15 +7,18 @@
 #include "GLImageData.h"
 #include "Texture.h"
 #include "FBOData.h"
+#include "framework/trace.h"
 
 #include <string>
+
+const GLbitfield bufferMapFlags = gl::MAP_WRITE_BIT | gl::MAP_UNSYNCHRONIZED_BIT | gl::MAP_INVALIDATE_RANGE_BIT | gl::MAP_FLUSH_EXPLICIT_BIT;
 
 namespace OpenApoc
 {
 	// Shader programs for images. Note the absence of version string - it is appended
 	// in the Program class constructor.
 	static const char* CachedProgram_vertexSource = {
-		"layout(location = 0) in vec2 position;												  \n"
+		"layout(location = 0) in vec3 position;												  \n"
 		"layout(location = 1) in vec3 texcoord_in;											  \n"
 		"layout(location = 2) in int paletteIdx_in;											  \n"
 		"out vec3 texcoord;																	  \n"
@@ -25,11 +28,11 @@ namespace OpenApoc
 		"void main() {																		  \n"
 		"	paletteIdx = paletteIdx_in;														  \n"
 		"	texcoord = texcoord_in;															  \n"
-		"   vec2 tmpPos = position * 2.0;"
+		"   vec2 tmpPos = position.xy * 2.0;"
 		"   tmpPos.x /= screenSize.x;"
 		"   tmpPos.y /= screenSize.y;"
-		"   if (flipY) { gl_Position = vec4(tmpPos.x - 1.0, 1.0 - tmpPos.y, 0.0, 1.0); } \n"
-		"   else { gl_Position = vec4(tmpPos.x - 1.0, tmpPos.y - 1.0, 0.0, 1.0); }\n"
+		"   if (flipY) { gl_Position = vec4(tmpPos.x - 1.0, 1.0 - tmpPos.y, position.z, 1.0); } \n"
+		"   else { gl_Position = vec4(tmpPos.x - 1.0, tmpPos.y - 1.0, position.z, 1.0); }\n"
 		"} 																					  \n"
 	};
 
@@ -53,14 +56,14 @@ namespace OpenApoc
 		"	else																					  \n"
 		"	{																						  \n"
 		"		uint idx = texelFetch(texIdxCache, ivec3(texcoord.x, texcoord.y, texcoord.z), 0).r;	  \n"
-		"		if (idx == 0u) discard;																  \n"
+		"		//if (idx == 0u) discard;																  \n"
 		"		out_colour = texelFetch(palette, ivec2(idx, paletteIdx), 0);						  \n"
 		"	}																						  \n"
 		"}																							  \n"
 	};
 
 	static const char* ImmediateProgram_vertexSource = {
-		"layout(location = 0) in vec2 position;												  \n"
+		"layout(location = 0) in vec3 position;												  \n"
 		"layout(location = 1) in vec3 texcoord_in;											  \n"
 		"layout(location = 2) in int paletteIdx_in;											  \n"
 		"out vec2 texcoord;																	  \n"
@@ -70,11 +73,11 @@ namespace OpenApoc
 		"void main() {																		  \n"
 		"	paletteIdx = paletteIdx_in;														  \n"
 		"	texcoord = texcoord_in.xy;													      \n"
-		"   vec2 tmpPos = position * 2.0;"
+		"   vec2 tmpPos = position.xy * 2.0;"
 		"   tmpPos.x /= screenSize.x;"
 		"   tmpPos.y /= screenSize.y;"
-		"   if (flipY) { gl_Position = vec4(tmpPos.x - 1.0, 1.0 - tmpPos.y, 0.0, 1.0); } \n"
-		"   else { gl_Position = vec4(tmpPos.x - 1.0, tmpPos.y - 1.0, 0.0, 1.0); }\n"
+		"   if (flipY) { gl_Position = vec4(tmpPos.x - 1.0, 1.0 - tmpPos.y, position.z, 1.0); } \n"
+		"   else { gl_Position = vec4(tmpPos.x - 1.0, tmpPos.y - 1.0, position.z, 1.0); }\n"
 		"} 																					  \n"
 	};
 
@@ -98,7 +101,7 @@ namespace OpenApoc
 		"	else																					  \n"
 		"	{																						  \n"
 		"		uint idx = texelFetch(texIdx, ivec2(texcoord.x, texcoord.y), 0).r;	  \n"
-		"		if (idx == 0u) discard;																  \n"
+		"		//if (idx == 0u) discard;																  \n"
 		"		out_colour = texelFetch(palette, ivec2(idx, paletteIdx), 0);						  \n"
 		"	}																						  \n"
 		"}																							  \n"
@@ -554,7 +557,8 @@ namespace OpenApoc
 			GLImageData *imageData = static_cast<GLImageData*>(img->rendererPrivateData.get());
 			if (!imageData)
 			{
-				img->rendererPrivateData.reset(new GLImageData(img));
+				imageData = new GLImageData(img);
+				img->rendererPrivateData.reset(imageData);
 			}
 			// Mark "large" images as uncacheable
 			if (!isCacheable)
@@ -658,31 +662,34 @@ namespace OpenApoc
 			data.vertex[i].texCoord = imageData->texelCoords[i];
 			data.vertex[i].paletteIdx = paletteIdx;
 		}
-
+		Vec3<float> positionOrdered(position.x, position.y, _primOrder);
 		if (angle != 0.0f)
 		{
-			data.vertex[0].position = Vec2<float>(0.0f, 0.0f);
-			data.vertex[1].position = Vec2<float>(size.x, 0.0f);
-			data.vertex[2].position = Vec2<float>(0.0f, size.y);
-			data.vertex[3].position = Vec2<float>(size.x, size.y);
+			data.vertex[0].position = Vec3<float>(0.0f, 0.0f, 0.0f);
+			data.vertex[1].position = Vec3<float>(size.x, 0.0f, 0.0f);
+			data.vertex[2].position = Vec3<float>(0.0f, size.y, 0.0f);
+			data.vertex[3].position = Vec3<float>(size.x, size.y, 0.0f);
 			auto rotMatrix = glm::rotate(angle, Vec3<float>(0.0f, 0.0f, 1.0f));
+			Vec3<float> centerOrdered(center.x, center.y, 0.0f);
 			for (auto &v : data.vertex)
 			{
-				v.position -= center;
+				v.position -= centerOrdered;
 				auto transformed = rotMatrix * glm::vec4(v.position.x, v.position.y, 0.0f, 1.0f);
 				v.position.x = transformed.x;
 				v.position.y = transformed.y;
-				v.position += center;
-				v.position += position;
+				v.position.z = positionOrdered.z;
+				v.position += centerOrdered;
+				v.position += positionOrdered;
 			}
 		}
 		else
 		{
-			data.vertex[0].position = position;
-			data.vertex[1].position = position + Vec2<float>(size.x, 0.0f);
-			data.vertex[2].position = position + Vec2<float>(0.0f, size.y);
-			data.vertex[3].position = position + Vec2<float>(size.x, size.y);
+			data.vertex[0].position = positionOrdered;
+			data.vertex[1].position = positionOrdered + Vec3<float>(size.x, 0.0f, 0.0f);
+			data.vertex[2].position = positionOrdered + Vec3<float>(0.0f, size.y, 0.0f);
+			data.vertex[3].position = positionOrdered + Vec3<float>(size.x, size.y, 0.0f);
 		}
+		_primOrder += 1.0 / 65535.0;
 		return data;
 	}
 
@@ -716,6 +723,25 @@ namespace OpenApoc
 			return false;
 			break;
 		}
+
+		// Try and cache images that are in the same owningSet
+		auto owningSet = image->owningSet.lock();
+		if (owningSet)
+		{
+			for (auto &img : owningSet->images)
+			{
+				switch (data->ImageTag)
+				{
+					case GLImageData::IMG_INDEX:
+						_idxCache->putImage(img);
+						break;
+					case GLImageData::IMG_RGBA:
+						_rgbaCache->putImage(img);
+						break;
+				}
+			}
+		}
+
 		return data->getCacheState() == CacheState::CACHE_CACHED;
 	}
 
@@ -723,7 +749,7 @@ namespace OpenApoc
 	/**
 	 *	Cache size limits
 	 */
-	static const int INDEX_TEXTURE_MULTIPLIER = 2;
+	static const int INDEX_TEXTURE_MULTIPLIER = 4;
 	static const int MAX_PALETTE_SIZE = 256;
 	static const int MAX_PALETTES_COUNT = 1024;
 	// Number of cached vertices; each primitive takes 4 vertices, so it's a grand total of 16380 cached primitives.
@@ -765,6 +791,9 @@ namespace OpenApoc
 #else
 		gl::Enable(gl::PRIMITIVE_RESTART_FIXED_INDEX);
 #endif
+		gl::Enable(gl::DEPTH_TEST);
+		gl::DepthFunc(gl::GREATER);
+		gl::ClearDepthf(0.0f);
 		error = gl::GetError(); assert(error == 0);
 
 		// Create default rendering surface
@@ -788,8 +817,8 @@ namespace OpenApoc
 
 		gl::BufferData(gl::ARRAY_BUFFER, sizeof(VertexData) * MAX_CACHED_VERTICES, nullptr, gl::STREAM_DRAW);
 		_mappedVertices = reinterpret_cast<VertexData*>(gl::MapBufferRange(
-			gl::ARRAY_BUFFER, 0, sizeof(VertexData) * MAX_CACHED_VERTICES, 
-			gl::MAP_WRITE_BIT | gl::MAP_INVALIDATE_RANGE_BIT | gl::MAP_INVALIDATE_BUFFER_BIT | gl::MAP_FLUSH_EXPLICIT_BIT));
+			gl::ARRAY_BUFFER, 0, sizeof(VertexData) * MAX_CACHED_VERTICES,
+		    bufferMapFlags));
 
 		gl::GenBuffers(1, &elementsVBO);
 		gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, elementsVBO);
@@ -815,9 +844,9 @@ namespace OpenApoc
 		gl::EnableVertexAttribArray(2);
 		error = gl::GetError(); assert(error == 0);
 
-		gl::VertexAttribPointer(0, 2, gl::FLOAT, gl::FALSE_, sizeof(VertexData), 0);
-		gl::VertexAttribPointer(1, 3, gl::FLOAT, gl::FALSE_, sizeof(VertexData), reinterpret_cast<void*>(sizeof(Vec2<float>)));
-		gl::VertexAttribIPointer(2, 1, gl::INT, sizeof(VertexData), reinterpret_cast<void*>(sizeof(Vec2<float>) + sizeof(Vec3<float>)));
+		gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE_, sizeof(VertexData), 0);
+		gl::VertexAttribPointer(1, 3, gl::FLOAT, gl::FALSE_, sizeof(VertexData), reinterpret_cast<void*>(sizeof(Vec3<float>)));
+		gl::VertexAttribIPointer(2, 1, gl::INT, sizeof(VertexData), reinterpret_cast<void*>(sizeof(Vec3<float>) + sizeof(Vec3<float>)));
 		error = gl::GetError(); assert(error == 0);
 
 		_mappedBegin = 0;
@@ -826,6 +855,8 @@ namespace OpenApoc
 		_mappedEnd = MAX_CACHED_VERTICES;
 		_elemOffset = 0;
 		_elemCount = 0;
+
+		_primOrder = 0.0f;
 
 		defaultSurface = mksp<Surface>(Vec2<int>(viewport[2], viewport[3]));
 		defaultSurface->rendererPrivateData.reset(new GLImageData(defaultSurface, true));
@@ -851,13 +882,13 @@ namespace OpenApoc
 	{
 		if (cacheImage(image))
 		{
-			SpriteData data = transform(image, position, image->size);
+			SpriteData&& data = transform(image, position, image->size);
 			enqueue(data);
 			if (_mappedCurrent == _mappedEnd) flushCache();
 		}
 		else
 		{
-			SpriteData data = transform(image, position, image->size);
+			SpriteData&& data = transform(image, position, image->size);
 			flushCache();
 			drawImmediate(image, data);
 		}
@@ -867,6 +898,7 @@ namespace OpenApoc
 
 	void RendererImpl::setPalette(sp<Palette> p)
 	{
+		//return;
 		if (!p->rendererPrivateData)
 		{
 			p->rendererPrivateData.reset(new GLImageData(p));
@@ -878,6 +910,7 @@ namespace OpenApoc
 
 	void RendererImpl::drawRotated(sp<Image> i, Vec2<float> center, Vec2<float> position, float angle)
 	{
+		//return;
 		if (!i->rendererPrivateData)
 		{
 			i->rendererPrivateData.reset(new GLImageData(i));
@@ -900,6 +933,7 @@ namespace OpenApoc
 
 	void RendererImpl::drawScaled(sp<Image> i, Vec2<float> position, Vec2<float> size, Renderer::Scaler scaler)
 	{
+		//return;
 		if (!i->rendererPrivateData)
 		{
 			i->rendererPrivateData.reset(new GLImageData(i));
@@ -930,7 +964,7 @@ namespace OpenApoc
 		flushCache();
 	}
 
-	void RendererImpl::drawImmediate(sp<Image> image, SpriteData data)
+	void RendererImpl::drawImmediate(sp<Image> image, SpriteData &data)
 	{
 		GLImageData *gdata = static_cast<GLImageData*>(image->rendererPrivateData.get());
 		switch (gdata->ImageTag)
@@ -947,7 +981,7 @@ namespace OpenApoc
 		}
 	}
 
-	void RendererImpl::drawImmediate(sp<RGBImage> image, RGBData *rdata, SpriteData data)
+	void RendererImpl::drawImmediate(sp<RGBImage> image, RGBData *rdata, SpriteData &data)
 	{
 		_scratchRGBATexture->uploadImage(image, Vec2<int>(0, 0));
 		auto error = gl::GetError();
@@ -963,7 +997,7 @@ namespace OpenApoc
 		error = gl::GetError(); assert(error == 0);
 	}
 
-	void RendererImpl::drawImmediate(sp<PaletteImage> image, IndexData *idata, SpriteData data)
+	void RendererImpl::drawImmediate(sp<PaletteImage> image, IndexData *idata, SpriteData &data)
 	{
 		_scratchIndexTexture->uploadImage(image, Vec2<int>(0, 0));
 		auto error = gl::GetError();
@@ -978,16 +1012,16 @@ namespace OpenApoc
 		error = gl::GetError(); assert(error == 0);
 	}
 
-	void RendererImpl::drawImmediate(sp<Surface> image, SurfaceData *sdata, SpriteData data)
+	void RendererImpl::drawImmediate(sp<Surface> image, SurfaceData *sdata, SpriteData &data)
 	{
 		assert(_mappedCurrent == 0);
 		auto error = gl::GetError();
 		assert(error == 0);
 
 		data.vertex[0].texCoord = Vec3<float>(0, 0, 0);
-		data.vertex[1].texCoord = Vec3<float>(image->size.x - 1, 0, 0);
-		data.vertex[2].texCoord = Vec3<float>(0, image->size.y - 1, 0);
-		data.vertex[3].texCoord = Vec3<float>(image->size.x - 1, image->size.y - 1, 0);
+		data.vertex[1].texCoord = Vec3<float>(image->size.x, 0, 0);
+		data.vertex[2].texCoord = Vec3<float>(0, image->size.y, 0);
+		data.vertex[3].texCoord = Vec3<float>(image->size.x, image->size.y, 0);
 
 		sdata->fboData->tex->bind(1);
 		if (PaletteDataExt::paletteTexture)
@@ -997,8 +1031,9 @@ namespace OpenApoc
 		error = gl::GetError(); assert(error == 0);
 	}
 
-	void RendererImpl::drawImmediateExecute(SpriteData data)
+	void RendererImpl::drawImmediateExecute(const SpriteData &data)
 	{
+		TRACE_FN;
 		auto error = gl::GetError();
 		assert(error == 0);
 		gl::UseProgram(_immediateProgram->prog);
@@ -1029,7 +1064,7 @@ namespace OpenApoc
 			_mapOffset = 0;
 			_elemOffset = 0;
 		}
-		_mappedVertices = (VertexData*)gl::MapBufferRange(gl::ARRAY_BUFFER, sizeof(VertexData) * _mapOffset, sizeof(VertexData) * _mappedEnd, gl::MAP_WRITE_BIT | gl::MAP_INVALIDATE_RANGE_BIT | gl::MAP_FLUSH_EXPLICIT_BIT);
+		_mappedVertices = (VertexData*)gl::MapBufferRange(gl::ARRAY_BUFFER, sizeof(VertexData) * _mapOffset, sizeof(VertexData) * _mappedEnd, bufferMapFlags);
 		error = gl::GetError(); assert(error == 0);
 	}
 
@@ -1040,6 +1075,7 @@ namespace OpenApoc
 	 */
 	void RendererImpl::flushCache()
 	{
+		TRACE_FN;
 		// Do not perform empty flushes
 		if (_mappedCurrent == 0) return;
 		sp<CachingProgram> program = std::static_pointer_cast<CachingProgram>(_cachingProgram);
@@ -1075,7 +1111,12 @@ namespace OpenApoc
 			_mapOffset = 0;
 			_elemOffset = 0;
 		}
-		_mappedVertices = (VertexData*) gl::MapBufferRange(gl::ARRAY_BUFFER, sizeof(VertexData) * _mapOffset, sizeof(VertexData) * _mappedEnd, gl::MAP_WRITE_BIT | gl::MAP_INVALIDATE_RANGE_BIT | gl::MAP_FLUSH_EXPLICIT_BIT);
+		_mappedVertices = (VertexData*) gl::MapBufferRange(gl::ARRAY_BUFFER, sizeof(VertexData) * _mapOffset, sizeof(VertexData) * _mappedEnd, bufferMapFlags);
+	}
+
+	void RendererImpl::resetFrame()
+	{
+		_primOrder = 0.0f;
 	}
 	
 }

@@ -37,7 +37,6 @@ namespace OpenApoc
 	struct RGBData
 	{
 		CacheState::CachedState cachedState;
-		Vec2<int> cachePos;
 		Vec2<float> size;
 		sp<Texture> tex;
 	};
@@ -51,7 +50,6 @@ namespace OpenApoc
 	struct IndexData
 	{
 		CacheState::CachedState cachedState;
-		Vec3<int> cachePos;
 		Vec2<float> size;
 		sp<Texture> tex;
 	};
@@ -85,7 +83,7 @@ namespace OpenApoc
 		};
 
 		// Coordinates order: top left, top right, bottom left, bottom right
-		std::array<Vec3<int>, 4> texelCoords;
+		std::array<Vec3<float>, 4> texelCoords;
 
 		GLImageData(sp<Image> parent);
 		GLImageData(sp<Surface> parent, bool defaultFbo = false);

@@ -26,8 +26,8 @@ namespace OpenApoc
 		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 0);
+		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
 		display_flags |= SDL_WINDOW_OPENGL;
 		return true;
@@ -183,6 +183,9 @@ namespace OpenApoc
 		SDL_GL_GetAttribute(SDL_GL_BLUE_SIZE, &bitsBlue);
 		SDL_GL_GetAttribute(SDL_GL_ALPHA_SIZE, &bitsAlpha);
 		LogInfo("  RGBA bits: %d-%d-%d-%d", bitsRed, bitsGreen, bitsBlue, bitsAlpha);
+		int bitsDepth;
+		SDL_GL_GetAttribute(SDL_GL_DEPTH_SIZE, &bitsDepth);
+		LogInfo("  Depth bits: %d", bitsDepth);
 		auto functionsLoaded = gl::sys::LoadFunctions();
 		if (!functionsLoaded)
 		{
@@ -220,6 +223,7 @@ namespace OpenApoc
 
 	void Renderer::swapBuffers() { 
 		pimpl->flush();
+		pimpl->resetFrame();
 		SDL_GL_SwapWindow(pimpl->window); 
 	}
 
