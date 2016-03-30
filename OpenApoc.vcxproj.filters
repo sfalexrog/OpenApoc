@@ -16,6 +16,15 @@
     <Filter Include="Source Files\EGLContext">
       <UniqueIdentifier>{6e7c9232-b09a-4a01-b4c3-0b07ffc09341}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GLES30b">
+      <UniqueIdentifier>{0657211c-35b4-4880-aa66-8cd86e26be4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GLES30b\gl32">
+      <UniqueIdentifier>{57425457-4201-4694-b304-ff11c63712b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GLES30b\gldefs">
+      <UniqueIdentifier>{a512b3ca-933e-4326-bd57-88ce13354816}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game\apocresources\apocfont.cpp">
@@ -184,9 +193,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="game\city\buildingscreen.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\render\gl20\ogl_2_0_renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="game\base\base.cpp">
@@ -434,6 +440,27 @@
     </ClCompile>
     <ClCompile Include="game\ufopaedia\ufopaediaview.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\render\gles30b\RendererImpl.cpp">
+      <Filter>Source Files\GLES30b</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\render\gles30b\Texture.cpp">
+      <Filter>Source Files\GLES30b</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\render\gles30b\FBOData.cpp">
+      <Filter>Source Files\GLES30b</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\render\gles30b\gles3loader.cpp">
+      <Filter>Source Files\GLES30b</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\render\gles30b\gles3renderer.cpp">
+      <Filter>Source Files\GLES30b</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\render\gles30b\GLImageData.cpp">
+      <Filter>Source Files\GLES30b</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\render\gles30b\GLState.cpp">
+      <Filter>Source Files\GLES30b</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -794,6 +821,30 @@
     <ClInclude Include="game\ufopaedia\ufopaediaview.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="framework\render\gles30b\GLState.h">
+      <Filter>Source Files\GLES30b</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\render\gles30b\RendererImpl.h">
+      <Filter>Source Files\GLES30b</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\render\gles30b\Texture.h">
+      <Filter>Source Files\GLES30b</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\render\gles30b\FBOData.h">
+      <Filter>Source Files\GLES30b</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\render\gles30b\gles3loader.h">
+      <Filter>Source Files\GLES30b</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\render\gles30b\GLImageData.h">
+      <Filter>Source Files\GLES30b</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\render\gles30b\gl32\gl_core_3_2.hpp">
+      <Filter>Source Files\GLES30b\gl32</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\render\gles30b\gldefs\platformdefs.h">
+      <Filter>Source Files\GLES30b\gldefs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="apocicon.rc">
@@ -818,9 +869,6 @@
     <None Include="framework\render\gles20\egl.inl">
       <Filter>Source Files\EGLContext</Filter>
     </None>
-    <None Include="framework\render\gles20\ogles_2_0_renderer.cpp">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="framework\render\gles20\EGLContext.cpp">
       <Filter>Source Files</Filter>
     </None>
@@ -828,5 +876,14 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="packages.config" />
+    <None Include="framework\render\gles30b\gl32\gl_core_3_2.inl">
+      <Filter>Source Files\GLES30b\gl32</Filter>
+    </None>
+    <None Include="framework\render\gles30b\gldefs\gl3.h.enum.inl">
+      <Filter>Source Files\GLES30b\gldefs</Filter>
+    </None>
+    <None Include="framework\render\gles30b\gldefs\gl3.h.inl">
+      <Filter>Source Files\GLES30b\gldefs</Filter>
+    </None>
   </ItemGroup>
 </Project>

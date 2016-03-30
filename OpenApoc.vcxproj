@@ -129,7 +129,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;ERROR_DIALOG;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;ERROR_DIALOG;OPENAPOC_GL32_RENDER;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -161,7 +161,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;ERROR_DIALOG;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;ERROR_DIALOG;OPENAPOC_GL32_RENDER;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -196,7 +196,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;ERROR_DIALOG;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;ERROR_DIALOG;OPENAPOC_GL32_RENDER;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -223,7 +223,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;ERROR_DIALOG;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;ERROR_DIALOG;OPENAPOC_GL32_RENDER;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -251,7 +251,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;ERROR_DIALOG;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;ERROR_DIALOG;OPENAPOC_GL32_RENDER;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader />
@@ -281,7 +281,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;ERROR_DIALOG;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;ERROR_DIALOG;OPENAPOC_GL32_RENDER;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>
@@ -329,8 +329,14 @@
     <ClCompile Include="framework\palette.cpp" />
     <ClCompile Include="framework\physfs_fs.cpp" />
     <ClCompile Include="framework\renderer.cpp" />
-    <ClCompile Include="framework\render\gl20\ogl_2_0_renderer.cpp" />
-    <ClCompile Include="framework\render\gl30\ogl_3_0_renderer.cpp" />
+    <None Include="framework\render\gl30\ogl_3_0_renderer.cpp" />
+    <ClCompile Include="framework\render\gles30b\FBOData.cpp" />
+    <ClCompile Include="framework\render\gles30b\gles3loader.cpp" />
+    <ClCompile Include="framework\render\gles30b\gles3renderer.cpp" />
+    <ClCompile Include="framework\render\gles30b\GLImageData.cpp" />
+    <ClCompile Include="framework\render\gles30b\GLState.cpp" />
+    <ClCompile Include="framework\render\gles30b\RendererImpl.cpp" />
+    <ClCompile Include="framework\render\gles30b\Texture.cpp" />
     <ClCompile Include="game\rules\doodad_type.cpp" />
     <ClCompile Include="game\ufopaedia\ufopaediacategoryview.cpp" />
     <ClCompile Include="game\ufopaedia\ufopaediaview.cpp" />
@@ -346,7 +352,6 @@
     <ClCompile Include="tools\extractors\extract_vehicles.cpp" />
     <ClCompile Include="tools\extractors\extract_vehicle_equipment.cpp" />
     <None Include="framework\render\gles20\EGLContext.cpp" />
-    <None Include="framework\render\gles20\ogles_2_0_renderer.cpp" />
     <ClCompile Include="framework\serialize.cpp" />
     <ClCompile Include="framework\sound.cpp" />
     <ClCompile Include="framework\sound\null_backend.cpp" />
@@ -411,6 +416,9 @@
     <ClCompile Include="game\general\ingameoptions.cpp" />
     <ClCompile Include="game\tileview\voxel.cpp" />
     <ClCompile Include="game\apocresources\loftemps.cpp" />
+    <None Include="framework\render\gles30b\gl32\gl_core_3_2.inl" />
+    <None Include="framework\render\gles30b\gldefs\gl3.h.enum.inl" />
+    <None Include="framework\render\gles30b\gldefs\gl3.h.inl" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -444,6 +452,14 @@
     <ClInclude Include="game\ufopaedia.h" />
     <ClInclude Include="game\ufopaedia\ufopaediacategoryview.h" />
     <ClInclude Include="game\ufopaedia\ufopaediaview.h" />
+    <ClInclude Include="framework\render\gles30b\FBOData.h" />
+    <ClInclude Include="framework\render\gles30b\gl32\gl_core_3_2.hpp" />
+    <ClInclude Include="framework\render\gles30b\gldefs\platformdefs.h" />
+    <ClInclude Include="framework\render\gles30b\gles3loader.h" />
+    <ClInclude Include="framework\render\gles30b\GLImageData.h" />
+    <ClInclude Include="framework\render\gles30b\GLState.h" />
+    <ClInclude Include="framework\render\gles30b\RendererImpl.h" />
+    <ClInclude Include="framework\render\gles30b\Texture.h" />
     <ClInclude Include="tools\extractors\common\audio.h" />
     <ClInclude Include="tools\extractors\common\baselayout.h" />
     <ClInclude Include="tools\extractors\common\canonstring.h" />
