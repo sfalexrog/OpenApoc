@@ -46,16 +46,16 @@ namespace OpenApoc
 		"uniform mediump sampler2D palette;															  \n"
 		"out vec4 out_colour;																		  \n"
 		"void main() {																				  \n"
+		"   ivec3 texSize = textureSize(texRGBACache, 0);										      \n"
+		"   vec3 normCoord = vec3((2.0 * texcoord.x + 1.0) / (2.0 * float(texSize.x)),				  \n"
+		"           (2.0 * texcoord.y + 1.0) / (2.0 * float(texSize.y)), texcoord.z);				  \n"
 		"	if (paletteIdx < 0)																		  \n"
 		"	{																						  \n"
-		"       ivec3 texSize = textureSize(texRGBACache, 0);										  \n"
-		"       vec3 normCoord = vec3((2.0 * texcoord.x + 1.0) / (2.0 * float(texSize.x)),	          \n"
-		"           (2.0 * texcoord.y + 1.0) / (2.0 * float(texSize.y)), texcoord.z);				  \n"
 		"		out_colour = texture(texRGBACache, normCoord);										  \n"
 		"	}																						  \n"
 		"	else																					  \n"
 		"	{																						  \n"
-		"		uint idx = texelFetch(texIdxCache, ivec3(texcoord.x, texcoord.y, texcoord.z), 0).r;	  \n"
+		"		uint idx = texelFetch(texIdxCache, ivec3((2.0 * texcoord.x + 1.0) / 2.0, (2.0 * texcoord.y + 1.0) / 2.0, texcoord.z), 0).r;	  \n"
 		"		//if (idx == 0u) discard;																  \n"
 		"		out_colour = texelFetch(palette, ivec2(idx, paletteIdx), 0);						  \n"
 		"	}																						  \n"
@@ -91,16 +91,16 @@ namespace OpenApoc
 		"uniform mediump sampler2D palette;															  \n"
 		"out vec4 out_colour;																		  \n"
 		"void main() {																				  \n"
+		"   ivec2 texSize = textureSize(texRGBA, 0);										  \n"
+		"   vec2 normCoord = vec2((2.0 * texcoord.x + 1.0) / (2.0 * float(texSize.x)),				  \n"
+		"           (2.0 * texcoord.y + 1.0) / (2.0 * float(texSize.y)));				  \n"
 		"	if (paletteIdx < 0)																		  \n"
 		"	{																						  \n"
-		"       ivec2 texSize = textureSize(texRGBA, 0);										  \n"
-		"       vec2 normCoord = vec2((2.0 * texcoord.x + 1.0) / (2.0 * float(texSize.x)), \n"
-		"           (2.0 * texcoord.y + 1.0) / (2.0 * float(texSize.y)));\n"
 		"		out_colour = texture(texRGBA, normCoord);										  \n"
 		"	}																						  \n"
 		"	else																					  \n"
 		"	{																						  \n"
-		"		uint idx = texelFetch(texIdx, ivec2(texcoord.x, texcoord.y), 0).r;	  \n"
+		"		uint idx = texelFetch(texIdx, ivec2((2.0 * texcoord.x + 1.0) / 2.0, (2.0 * texcoord.y + 1.0) / 2.0), 0).r;	  \n"
 		"		//if (idx == 0u) discard;																  \n"
 		"		out_colour = texelFetch(palette, ivec2(idx, paletteIdx), 0);						  \n"
 		"	}																						  \n"
@@ -780,12 +780,14 @@ namespace OpenApoc
 		// check if these parameters are working
 		gl::Enable(gl::PRIMITIVE_RESTART);
 		gl::PrimitiveRestartIndex(PRIMITIVE_RESTART_INDEX);
+		gl::ClearDepth(0.0);
 #else
 		gl::Enable(gl::PRIMITIVE_RESTART_FIXED_INDEX);
+		gl::ClearDepthf(0.0f);
 #endif
 		gl::Enable(gl::DEPTH_TEST);
 		gl::DepthFunc(gl::GREATER);
-		gl::ClearDepthf(0.0f);
+
 		error = gl::GetError(); assert(error == 0);
 
 		// Create default rendering surface
@@ -1011,9 +1013,9 @@ namespace OpenApoc
 		assert(error == 0);
 
 		data.vertex[0].texCoord = Vec3<float>(0, 0, 0);
-		data.vertex[1].texCoord = Vec3<float>(image->size.x, 0, 0);
-		data.vertex[2].texCoord = Vec3<float>(0, image->size.y, 0);
-		data.vertex[3].texCoord = Vec3<float>(image->size.x, image->size.y, 0);
+		data.vertex[1].texCoord = Vec3<float>(image->size.x - 1, 0, 0);
+		data.vertex[2].texCoord = Vec3<float>(0, image->size.y - 1, 0);
+		data.vertex[3].texCoord = Vec3<float>(image->size.x - 1, image->size.y - 1, 0);
 
 		sdata->fboData->tex->bind(1);
 		if (PaletteDataExt::paletteTexture)
