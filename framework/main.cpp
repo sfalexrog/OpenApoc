@@ -67,12 +67,15 @@ int main(int argc, char *argv[])
 			UString ruleset = fw->Settings->getString("GameRules");
 			fw->gamecore.reset(new GameCore());
 			fw->gamecore->Load(ruleset);
+
+			UString outputPath = Framework::getInstance().Settings->getString("Resource.LocalDataDir");
+
 			std::map<UString, InitialGameStateExtractor::Difficulty> difficultyOutputFiles = {
-			    {"data/difficulty1", InitialGameStateExtractor::Difficulty::DIFFICULTY_1},
-			    {"data/difficulty2", InitialGameStateExtractor::Difficulty::DIFFICULTY_2},
-			    {"data/difficulty3", InitialGameStateExtractor::Difficulty::DIFFICULTY_3},
-			    {"data/difficulty4", InitialGameStateExtractor::Difficulty::DIFFICULTY_4},
-			    {"data/difficulty5", InitialGameStateExtractor::Difficulty::DIFFICULTY_5},
+			    {outputPath + "/difficulty1", InitialGameStateExtractor::Difficulty::DIFFICULTY_1},
+			    {outputPath + "/difficulty2", InitialGameStateExtractor::Difficulty::DIFFICULTY_2},
+			    {outputPath + "/difficulty3", InitialGameStateExtractor::Difficulty::DIFFICULTY_3},
+			    {outputPath + "/difficulty4", InitialGameStateExtractor::Difficulty::DIFFICULTY_4},
+			    {outputPath + "/difficulty5", InitialGameStateExtractor::Difficulty::DIFFICULTY_5},
 			};
 
 			for (auto &dpair : difficultyOutputFiles)
