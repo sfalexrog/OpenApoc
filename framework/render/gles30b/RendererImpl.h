@@ -30,7 +30,7 @@ namespace OpenApoc
 	class RendererImpl
 	{
 	private:
-		friend class Renderer;
+		friend class RenderThread;
 		SDL_Window *window;
 		SDL_GLContext context;
 

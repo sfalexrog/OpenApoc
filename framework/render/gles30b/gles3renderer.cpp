@@ -3,13 +3,16 @@
 #include "framework/image.h"
 #include "framework/logger.h"
 
-#include "gles3loader.h"
 #include "RendererImpl.h"
 #include <SDL.h>
 #include "Texture.h"
 
+#include "RenderThread.h"
+
 namespace OpenApoc
 {
+
+	static up<RenderThread> renderThread;
 
 	bool Renderer::preWindowCreateHook(int &display_flags)
 	{
@@ -42,6 +45,9 @@ namespace OpenApoc
 	 */
 	static void populateLimits(SDL_Window *win)
 	{
+		// We'll just stick to the "pre-defined" limits for now, since there's no easy way to
+		// determine what's the largest possible texture on GLES right now.
+#if 0
 		LogInfo("Trying to find the memory limits by stress-testing the system");
 		SDL_GLContext testContext = SDL_GL_CreateContext(win);
 		LogInfo("Querying OpenGL for maximum texture sizes...");
@@ -142,7 +148,7 @@ namespace OpenApoc
 				SDL_GL_DeleteContext(testContext);
 			}
 		}
-
+#endif
 	}
 
 	Renderer::Renderer(SDL_Window *win)
@@ -186,79 +192,69 @@ namespace OpenApoc
 		int bitsDepth;
 		SDL_GL_GetAttribute(SDL_GL_DEPTH_SIZE, &bitsDepth);
 		LogInfo("  Depth bits: %d", bitsDepth);
-		auto functionsLoaded = gl::sys::LoadFunctions();
-		if (!functionsLoaded)
-		{
-			LogError("Failed to load GL functions");
-		}
-		LogInfo("  GL vendor: %s", gl::GetString(gl::VENDOR));
-		LogInfo("  GL version: %s", gl::GetString(gl::VERSION));
-		LogInfo("  GL renderer: %s", gl::GetString(gl::RENDERER));
-		LogInfo("  GLSL version: %s", gl::GetString(gl::SHADING_LANGUAGE_VERSION));
-		//SDL_GL_DeleteContext(ctx);
-		//populateLimits(win);
-		//ctx = SDL_GL_CreateContext(win);
-		SDL_GL_MakeCurrent(win, ctx); // for good measure?
 		Texture::Limits::MAX_TEXTURE_WIDTH = 1024;
 		Texture::Limits::MAX_TEXTURE_HEIGHT = 512;
 		Texture::Limits::MAX_TEXTURE_DEPTH = 4;
-		SDL_GL_SetSwapInterval(0);
-		pimpl.reset(new RendererImpl());
-		pimpl->window = win;
-		pimpl->context = ctx;
-		LogWarning("(not actually a warning, just flushing logs)");
+		// Transfer the context and window to the rendering thread
+		renderThread.reset(new RenderThread(win, ctx));
+		// We no longer own the Context, so all GL|ES setup will be done
+		// in the rendering thread
+		
+		//SDL_GL_DeleteContext(ctx);
+		//populateLimits(win);
+		//ctx = SDL_GL_CreateContext(win);
 	}
 
 	Renderer::~Renderer()
 	{
-		auto ctxCopy = pimpl->context;
-		auto winCopy = pimpl->window;
+		renderThread.reset();
 		pimpl.reset();
-		SDL_GL_MakeCurrent(winCopy, nullptr);
-		SDL_GL_DeleteContext(ctxCopy);
 	}
 
-	void Renderer::setSurface(sp<Surface> s) { pimpl->setSurface(s); }
-	sp<Surface> Renderer::getSurface() { return pimpl->getSurface(); }
+	void Renderer::setSurface(sp<Surface> s) { renderThread->setSurface(s); }
+	sp<Surface> Renderer::getSurface() { return renderThread->getSurface(); }
 
 	void Renderer::swapBuffers() { 
-		pimpl->flush();
-		pimpl->resetFrame();
-		SDL_GL_SwapWindow(pimpl->window); 
+		renderThread->swapBuffers();
 	}
 
-	void Renderer::clear(Colour c) { pimpl->clear(c); }
-	void Renderer::setPalette(sp<Palette> p) { pimpl->setPalette(p); }
-	sp<Palette> Renderer::getPalette() { return pimpl->getPalette(); }
-	void Renderer::draw(sp<Image> i, Vec2<float> position) { pimpl->draw(i, position); }
+	void Renderer::clear(Colour c) { renderThread->clear(c); }
+	void Renderer::setPalette(sp<Palette> p) { renderThread->setPalette(p); }
+	sp<Palette> Renderer::getPalette() { return renderThread->getPalette(); }
+	void Renderer::draw(sp<Image> i, Vec2<float> position) { renderThread->draw(i, position); }
 	void Renderer::drawRotated(sp<Image> i, Vec2<float> center, Vec2<float> position, float angle)
 	{
-		pimpl->drawRotated(i, center, position, angle);
+		renderThread->drawRotated(i, center, position, angle);
 	}
 	void Renderer::drawScaled(sp<Image> i, Vec2<float> position, Vec2<float> size, Scaler scaler)
 	{
-		pimpl->drawScaled(i, position, size, scaler);
+		renderThread->drawScaled(i, position, size, scaler);
 	}
 	void Renderer::drawTinted(sp<Image> i, Vec2<float> position, Colour tint)
 	{
-		pimpl->drawTinted(i, position, tint);
+		renderThread->drawTinted(i, position, tint);
 	}
 	void Renderer::drawFilledRect(Vec2<float> position, Vec2<float> size, Colour c)
 	{
-		pimpl->drawFilledRect(position, size, c);
+		renderThread->drawFilledRect(position, size, c);
 	}
 	void Renderer::drawRect(Vec2<float> position, Vec2<float> size, Colour c, float thickness)
 	{
-		pimpl->drawRect(position, size, c, thickness);
+		renderThread->drawRect(position, size, c, thickness);
 	}
 	void Renderer::drawLine(Vec2<float> p1, Vec2<float> p2, Colour c, float thickness)
 	{
-		pimpl->drawLine(p1, p2, c, thickness);
+		renderThread->drawLine(p1, p2, c, thickness);
 	}
-	void Renderer::flush() { pimpl->flush(); }
+	void Renderer::flush() { renderThread->flush(); }
 	UString Renderer::getName() { return "GLES3.0b C[r]ashing Renderer"; }
 
-	sp<Surface> Renderer::getDefaultSurface() { return pimpl->getDefaultSurface(); }
+	void Renderer::waitForRender()
+	{
+		renderThread->waitForRender();
+	}
+
+	sp<Surface> Renderer::getDefaultSurface() { return renderThread->getDefaultSurface(); }
 
 }
 

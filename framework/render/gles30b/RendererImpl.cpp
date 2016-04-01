@@ -630,7 +630,8 @@ namespace OpenApoc
 		}
 		_mappedCurrent += 4;
 		_elemCount += 5;
-		if (_mappedCurrent >= _mappedEnd)
+		// Flush every 4096 or so vertices (so that the GPU always has some work to do)
+		if (_mappedCurrent >= 4096)
 		{
 			flushCache();
 		}

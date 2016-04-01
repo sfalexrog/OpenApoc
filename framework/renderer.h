@@ -64,6 +64,8 @@ class Renderer
 	void flush();
 	UString getName();
 
+	void waitForRender();
+
 	sp<Surface> getDefaultSurface();
 };
 
