@@ -31,6 +31,12 @@
 
 #endif /*OPENAPOC_GLES*/
 
+#ifdef __ANDROID__
+// FIXME: A hack to set the working directory on Android
+#include <boost/filesystem.hpp>
+#include <unistd.h>
+#endif
+
 using namespace OpenApoc;
 
 namespace
@@ -237,6 +243,34 @@ Framework::Framework(const UString programName, const std::vector<UString> cmdli
 		LogInfo("Adding \"%s\" to translation domains", domain.c_str());
 		gen.add_messages_domain(domain.str());
 	}
+
+#ifdef __ANDROID__
+    // FIXME: This should not even appear here, BUT since a LOT of (recent) code
+	// bypasses the PhysFS entirely and just assumes we're running from a location
+	// that contains a 'data' subdirectory with all the required resources
+	// (which might be the case on desktops, but very, very much NOT the case on mobile
+	// devices), and since by default an Android's process has its working directory
+	// set to the filesystem root? (not sure about that, but that's not the point),
+	// we'll have to change the working directory to the one actually containing the
+	// 'data' subfolder. This code assumes we're getting a Resource.LocalDataDir
+	// parameter which should point to the 'data' subfolder itself, so we have to use
+	// the parent directory, hence the use of boost::filesystem for this small task.
+	// This is very much wrong since we *assume* the current path ends in 'data', and anything
+	// else will fail spectacularly.
+	//
+	// TODO: get rid of this hack and just use IFile wrappers everywhere.
+	// Which would hopefully enable us to read from assets transparently, without the need to
+	// unpack them first.
+	//
+	// tl;dr: why do we even have two or possibly more ways to access a file what is this even
+	{
+		boost::filesystem::path dataPath(Settings->getString("Resource.LocalDataDir").str());
+		auto dataParent = dataPath.parent_path();
+		LogInfo("Setting working directory to \"%s\"", dataParent.c_str());
+		chdir(dataParent.c_str());
+	};
+
+#endif
 
 	std::locale loc = gen(desiredLanguageName.str());
 	std::locale::global(loc);
@@ -784,6 +818,10 @@ void Framework::Display_Initialise()
 
 	p->registeredRenderers["GL_3_0"].reset(getGL30RendererFactory());
 	p->registeredRenderers["GL_2_0"].reset(getGL20RendererFactory());
+#ifdef __ANDROID__
+	p->registeredRenderers["GLES_2_0"].reset(getGL20RendererFactory());
+	p->registeredRenderers["GLES_3_0"].reset(getGL30RendererFactory());
+#endif
 
 	for (auto &rendererName : Settings->getString("Visual.Renderers").split(':'))
 	{
