@@ -1011,6 +1011,9 @@ class OGLES20RendererFactory : public OpenApoc::RendererFactory
 	}
 };
 
-OpenApoc::RendererRegister<OGLES20RendererFactory> register_at_load_gles_2_0_renderer("GLES_2_0");
-
 }; // anonymous namespace
+
+namespace OpenApoc
+{
+RendererFactory *getGL20RendererFactory() { return new OGLES20RendererFactory(); }
+} // namespace OpenApoc
