@@ -7,6 +7,9 @@
 #include "library/strings.h"
 
 #include "framework/serialize.h"
+// Load files using physfs read/write interfaces
+#include "framework/framework.h"
+#include "framework/fs.h"
 
 //#define MINIZ_HEADER_FILE_ONLY
 #include "dependencies/miniz/miniz.c"
@@ -200,65 +203,116 @@ static bool writeDir(const UString &name, const std::map<UString, std::string> &
 
 static bool readDir(const UString &name, std::map<UString, std::string> &contents)
 {
+
+	up<char[]> manifestData;
+	uintmax_t manifestSize;
+
+	UString manifestPathStr;
+
 	boost::filesystem::path basePath = name.str();
-	if (!boost::filesystem::is_directory(basePath))
+
+	bool readFromPhysFs = false;
+	if (boost::filesystem::is_directory(basePath))
 	{
-		LogInfo("Path \"%s\" not a directory, not reading DirArchive", name.c_str());
-		return false;
+		auto manifestPath = basePath;
+		manifestPath /= "openapoc_manifest.xml";
+		manifestPathStr = manifestPath.string();
+		boost::filesystem::ifstream manifestInStream(manifestPath, std::ios::in | std::ios::binary);
+		if (!manifestInStream)
+		{
+			LogError("Failed to open manifest \"%s\"", manifestPathStr.c_str());
+			return false;
+		}
+		manifestSize = boost::filesystem::file_size(manifestPath);
+
+		LogInfo("Reading %llu bytes from manifest \"%s\"", (unsigned long long)manifestSize,
+				manifestPath.string().c_str());
+
+		manifestData.reset(new char[manifestSize]);
+		manifestInStream.read(manifestData.get(), manifestSize);
+
+		if (!manifestInStream)
+		{
+			LogError("Failed to read %llu bytes from manifest \"%s\"", (unsigned long long)manifestSize,
+					 manifestPathStr.c_str());
+			return false;
+		}
 	}
-	auto manifestPath = basePath;
-	manifestPath /= "openapoc_manifest.xml";
-	boost::filesystem::ifstream manifestInStream(manifestPath, std::ios::in | std::ios::binary);
-	if (!manifestInStream)
+	else
 	{
-		LogError("Failed to open manifest \"%s\"", manifestPath.string().c_str());
-		return false;
-	}
-	auto manifestSize = boost::filesystem::file_size(manifestPath);
+		LogInfo("Path \"%s\" not a local directory, will retry with PhysFS", name.c_str());
+		readFromPhysFs = true;
+		auto fsManifest = Framework::getInstance().data->fs.open(name + "/openapoc_manifest.xml");
+		if (!fsManifest)
+		{
+			LogWarning("Could not find \"%s\" in PhysFS mounted archives", name.c_str());
+			return false;
+		}
+		manifestSize = fsManifest.size();
+		manifestPathStr = fsManifest.fileName();
+		LogInfo("Reading %llu bytes from manifest \"%s\"", (unsigned long long) manifestSize,
+			fsManifest.fileName().c_str());
 
-	LogInfo("Reading %llu bytes from manifest \"%s\"", (unsigned long long)manifestSize,
-	        manifestPath.string().c_str());
-
-	up<char[]> manifestData(new char[manifestSize]);
-	manifestInStream.read(manifestData.get(), manifestSize);
-
-	if (!manifestInStream)
-	{
-		LogError("Failed to read %llu bytes from manifest \"%s\"", (unsigned long long)manifestSize,
-		         manifestPath.string().c_str());
-		return false;
+		// FIXME: Check for proper read?
+		manifestData = fsManifest.readAll();
 	}
 
 	auto manifestContents = readManifest(std::string(manifestData.get(), manifestSize));
 
 	if (manifestContents.empty())
 	{
-		LogError("Manfest \"%s\" contains no entries", manifestPath.string().c_str());
+		LogError("Manfest \"%s\" contains no entries", manifestPathStr.c_str());
 		return false;
 	}
 
 	for (auto &p : manifestContents)
 	{
-		auto fullPath = basePath;
-		fullPath /= p.first.str();
-		boost::filesystem::ifstream inStream(fullPath, std::ios::in | std::ios::binary);
-		if (!inStream)
+		up<char[]> data;
+		uintmax_t size;
+
+		// FIXME: Deduplicate code, maybe by making IFIle an std::ifstream derivative?
+		if (!readFromPhysFs)
 		{
-			LogError("Failed to open file \"%s\" for reading", fullPath.string().c_str());
-			return false;
+			auto fullPath = basePath;
+			fullPath /= p.first.str();
+			boost::filesystem::ifstream inStream(fullPath, std::ios::in | std::ios::binary);
+			if (!inStream)
+			{
+				LogError("Failed to open file \"%s\" for reading", fullPath.string().c_str());
+				return false;
+			}
+			size = boost::filesystem::file_size(fullPath);
+			LogInfo("Reading %llu bytes from \"%s\"", (unsigned long long)size,
+					fullPath.string().c_str());
+			data.reset(new char[size]);
+			inStream.read(data.get(), size);
+			if (!inStream)
+			{
+				LogError("Failed to read %llu bytes from \"%s\"", (unsigned long long)size,
+						 fullPath.string().c_str());
+				return false;
+			}
 		}
-		auto size = boost::filesystem::file_size(fullPath);
-		LogInfo("Reading %llu bytes from \"%s\"", (unsigned long long)size,
-		        fullPath.string().c_str());
-		up<char[]> data(new char[size]);
-
-		inStream.read(data.get(), size);
-
-		if (!inStream)
+		else
 		{
-			LogError("Failed to read %llu bytes from \"%s\"", (unsigned long long)size,
-			         fullPath.string().c_str());
-			return false;
+			auto fullPath = name + "/" + p.first;
+			auto inStream = Framework::getInstance().data->fs.open(fullPath);
+			if (!inStream)
+			{
+				LogError("Failed to open file \"%s\" for reading", fullPath.c_str());
+			}
+			size = inStream.size();
+			LogInfo("Reading %llu bytes from \"%s\"", (unsigned long long)size,
+					fullPath.c_str());
+			data.reset(new char[size]);
+			inStream.read(data.get(), size);
+			if (!inStream)
+			{
+				LogError("Failed to read %llu bytes from \"%s\"", (unsigned long long)size,
+						 fullPath.c_str());
+				return false;
+			}
+
 		}
 
 		std::string fileContents(data.get(), size);
@@ -270,13 +324,13 @@ static bool readDir(const UString &name, std::map<UString, std::string> &content
 			if (sha1Sum != expectedSha1Sum)
 			{
 				LogError("File \"%s\" has incorrect checksum \"%s\", expected \"%s\"",
-				         fullPath.string().c_str(), sha1Sum.c_str(), expectedSha1Sum.c_str());
+				         p.first.c_str(), sha1Sum.c_str(), expectedSha1Sum.c_str());
 				// Don't return false, as we can allow the user to continue?
 			}
 		}
 		else
 		{
-			LogWarning("Skipping missing checksum for file \"%s\"", fullPath.string().c_str());
+			LogWarning("Skipping missing checksum for file \"%s\"", p.first.c_str());
 		}
 		contents[p.first] = std::move(fileContents);
 	}
@@ -288,6 +342,7 @@ static bool writePack(const UString &name, const std::map<UString, std::string> 
 {
 	mz_zip_archive archive = {0};
 
+	// FIXME: Shouldn't we write to our writing folder?
 	auto path = name + ".zip";
 
 	bool ret = false;
@@ -327,11 +382,27 @@ static bool readPack(const UString &name, std::map<UString, std::string> &conten
 
 	auto path = name + ".zip";
 
+	auto fsFile = Framework::getInstance().data->fs.open(path);
+	if (!fsFile)
+	{
+		LogError("Failed to init zip file \"%s\" for reading: bad file", path.c_str());
+		return false;
+	}
+
+	size_t fileSize = fsFile.size();
+	// FIXME: We're reading the whole file, which might or might not be suboptimal for our needs
+	up<char[]> fileData(new char[fileSize]);
+	fsFile.read(fileData.get(), fileSize);
+	if (!fsFile)
+	{
+		LogError("Failed to read zip file \"%s\": buffer underrun", path.c_str());
+	}
+
 	bool ret = false;
 
-	if (!mz_zip_reader_init_file(&archive, path.c_str(), 0))
+	if (!mz_zip_reader_init_mem(&archive, fileData.get(), fileSize, 0))
 	{
-		LogError("Failed to init zip file \"%s\" for reading", path.c_str());
+		LogError("Failed to init zip file \"%s\" for reading: malformed archive", path.c_str());
 		return false;
 	}
 
