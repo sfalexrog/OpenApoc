@@ -10,13 +10,15 @@
 
 #ifndef _WIN32
 #define _CRT_SECURE_NO_WARNINGS
-#ifdef ANDROID
+#ifdef __ANDROID__
 #define be16toh(x) htobe16(x)
 #define be32toh(x) htobe32(x)
 #define be64toh(x) htobe64(x)
 #define le16toh(x) htole16(x)
 #define le32toh(x) htole32(x)
 #define le64toh(x) htole64(x)
+// APK archiver!
+#include "framework/platform/android/archiver_apk.h"
 #endif
 #include <endian.h>
 #else
@@ -230,6 +232,10 @@ IFile::~IFile() {}
 
 FileSystem::FileSystem(std::vector<UString> paths)
 {
+	// Add system-specific archivers here
+#ifdef __ANDROID__
+    registerAPKArchiver();
+#endif
 	// Paths are supplied in inverse-search order (IE the last in 'paths' should be the first
 	// searched)
 	for (auto &p : paths)
