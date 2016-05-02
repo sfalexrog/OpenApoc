@@ -29,12 +29,23 @@ class Image : public ResObject
 	virtual ~Image();
 	Vec2<unsigned int> size;
 
-	std::unique_ptr<RendererImageData> rendererPrivateData;
+	sp<RendererImageData> rendererPrivateData;
 	bool dirty;
 	Rect<unsigned int> bounds;
 
 	wp<ImageSet> owningSet;
 	unsigned indexInSet;
+};
+
+class LazyImage : public Image
+{
+  private:
+	sp<Image> realImage;
+
+  public:
+	LazyImage();
+	virtual ~LazyImage() = default;
+	sp<Image> &getRealImage();
 };
 
 // A surface is an image you can render to. No SW locking is allowed!
@@ -55,7 +66,8 @@ class PaletteImage : public Image
 	PaletteImage(Vec2<unsigned int> size, uint8_t initialIndex = 0);
 	~PaletteImage();
 	sp<RGBImage> toRGBImage(sp<Palette> p);
-	static void blit(sp<PaletteImage> src, Vec2<unsigned int> offset, sp<PaletteImage> dst);
+	static void blit(sp<PaletteImage> src, sp<PaletteImage> dst,
+	                 Vec2<unsigned int> srcOffset = {0, 0}, Vec2<unsigned int> dstOffset = {0, 0});
 
 	void CalculateBounds();
 };
@@ -98,8 +110,8 @@ class RGBImage : public Image
 	RGBImage(Vec2<unsigned int> size, Colour initialColour = Colour(0, 0, 0, 0));
 	~RGBImage();
 	void saveBitmap(const UString &filename);
-	static void blit(sp<RGBImage> src, Vec2<unsigned int> srcOffset, sp<RGBImage> dst,
-	                 Vec2<unsigned int> dstOffset);
+	static void blit(sp<RGBImage> src, sp<RGBImage> dst, Vec2<unsigned int> srcOffset = {0, 0},
+	                 Vec2<unsigned int> dstOffset = {0, 0});
 };
 
 class RGBImageLock

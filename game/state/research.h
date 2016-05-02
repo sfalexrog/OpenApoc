@@ -11,6 +11,7 @@ class Base;
 class ResearchDependency;
 class ItemDependency;
 class Agent;
+class Lab;
 
 class ProjectDependencies
 {
@@ -30,6 +31,7 @@ class ResearchTopic : public StateObject<ResearchTopic>
 	{
 		BioChem,
 		Physics,
+		Engineering,
 	};
 	static const std::map<Type, UString> TypeMap;
 	enum class LabSize
@@ -45,6 +47,7 @@ class ResearchTopic : public StateObject<ResearchTopic>
 	unsigned man_hours_progress;
 	Type type;
 	LabSize required_lab_size;
+	StateRef<Lab> current_lab;
 
 	unsigned score;
 	bool started;
@@ -88,13 +91,19 @@ class Lab : public StateObject<Lab>
 	ResearchTopic::Type type;
 	StateRef<ResearchTopic> current_project;
 	std::list<StateRef<Agent>> assigned_agents;
+
+	static void setResearch(StateRef<Lab> lab, StateRef<ResearchTopic> topic);
+
+	int getTotalSkill() const;
 };
 
 class ResearchState
 {
   public:
 	ResearchState();
+	unsigned int num_labs_created;
 	std::map<UString, sp<ResearchTopic>> topics;
+	std::map<UString, sp<Lab>> labs;
 };
 
 } // namespace OpenApoc

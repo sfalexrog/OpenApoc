@@ -28,7 +28,7 @@ Base::Base(GameState &state, StateRef<Building> building) : building(building)
 	}
 	else
 	{
-		buildFacility(type, building->base_layout->baseLift, true);
+		buildFacility(state, type, building->base_layout->baseLift, true);
 	}
 }
 
@@ -45,63 +45,36 @@ sp<Facility> Base::getFacility(Vec2<int> pos) const
 	return nullptr;
 }
 
-void Base::startingBase(GameState &state)
+static void randomlyPlaceFacility(GameState &state, Base &base, StateRef<FacilityType> facility)
 {
-	// Figure out positions available for placement
-	std::vector<Vec2<int>> positions;
-	for (int x = 0; x < SIZE; ++x)
+	auto positionDistribution = std::uniform_int_distribution<int>(0, base.SIZE);
+	while (true)
 	{
-		for (int y = 0; y < SIZE; ++y)
+		auto position = Vec2<int>{positionDistribution(state.rng), positionDistribution(state.rng)};
+		if (base.canBuildFacility(facility, position, true) == Base::BuildError::NoError)
 		{
-			if (corridors[x][y] && getFacility({x, y}) == nullptr)
-			{
-				// FIXME: Store free positions for every possible size?
-				positions.push_back({x, y});
-			}
+			base.buildFacility(state, facility, position, true);
+			return;
 		}
 	}
+}
 
-	// Randomly fill them with facilities
+void Base::startingBase(GameState &state)
+{
+	// Place large facilites first, as they're more likely to not fit...
 	for (auto &facilityTypePair : state.initial_facilities)
 	{
-		auto type = facilityTypePair.first;
-		auto count = facilityTypePair.second;
-		StateRef<FacilityType> facility = {&state, type};
-		while (count > 0)
-		{
-			if (positions.size() < facility->size * facility->size)
-			{
-				LogError("Can't place all starting facilities in building %s",
-				         building->name.c_str());
-				return;
-			}
-
-			auto facilityPos = std::uniform_int_distribution<int>(0, positions.size() - 1);
-			Vec2<int> random;
-			BuildError error;
-			do
-			{
-				random = positions[facilityPos(state.rng)];
-				error = canBuildFacility(facility, random, true);
-			} while (error != BuildError::NoError); // Try harder
-
-			buildFacility(facility, random, true);
-
-			// Clear used positions
-			for (auto pos = positions.begin(); pos != positions.end();)
-			{
-				if (getFacility(*pos) != nullptr)
-				{
-					pos = positions.erase(pos);
-				}
-				else
-				{
-					++pos;
-				}
-			}
-
-			count--;
-		}
+		StateRef<FacilityType> facility = {&state, facilityTypePair.first};
+		if (facility->size < 2)
+			continue;
+		randomlyPlaceFacility(state, *this, facility);
+	}
+	for (auto &facilityTypePair : state.initial_facilities)
+	{
+		StateRef<FacilityType> facility = {&state, facilityTypePair.first};
+		if (facility->size > 1)
+			continue;
+		randomlyPlaceFacility(state, *this, facility);
 	}
 }
 
@@ -146,7 +119,7 @@ Base::BuildError Base::canBuildFacility(StateRef<FacilityType> type, Vec2<int> p
 	return BuildError::NoError;
 }
 
-void Base::buildFacility(StateRef<FacilityType> type, Vec2<int> pos, bool free)
+void Base::buildFacility(GameState &state, StateRef<FacilityType> type, Vec2<int> pos, bool free)
 {
 	if (canBuildFacility(type, pos, free) == BuildError::NoError)
 	{
@@ -180,18 +153,40 @@ void Base::buildFacility(StateRef<FacilityType> type, Vec2<int> pos, bool free)
 			switch (type->capacityType)
 			{
 				case FacilityType::Capacity::Chemistry:
-					facility->lab = mksp<Lab>();
-					facility->lab->size = size;
-					facility->lab->type = ResearchTopic::Type::BioChem;
+				{
+					auto lab = mksp<Lab>();
+					lab->size = size;
+					lab->type = ResearchTopic::Type::BioChem;
+					auto id = UString::format("%s%u", Lab::getPrefix().c_str(),
+					                          state.research.num_labs_created++);
+					state.research.labs[id] = lab;
+					facility->lab = {&state, id};
 					break;
+				}
 				case FacilityType::Capacity::Physics:
-					facility->lab = mksp<Lab>();
-					facility->lab->size = size;
-					facility->lab->type = ResearchTopic::Type::Physics;
+				{
+					auto lab = mksp<Lab>();
+					lab->size = size;
+					lab->type = ResearchTopic::Type::Physics;
+					auto id = UString::format("%s%u", Lab::getPrefix().c_str(),
+					                          state.research.num_labs_created++);
+					state.research.labs[id] = lab;
+					facility->lab = {&state, id};
 					break;
+				}
 				case FacilityType::Capacity::Workshop:
-					// TODO: Engineering 'labs'
+				{
+					auto lab = mksp<Lab>();
+					lab->size = size;
+					lab->type = ResearchTopic::Type::Engineering;
+					auto id = UString::format("%s%u", Lab::getPrefix().c_str(),
+					                          state.research.num_labs_created++);
+					state.research.labs[id] = lab;
+					facility->lab = {&state, id};
 					break;
+				}
+				// TODO: Engineering 'labs'
+				break;
 			}
 		}
 	}
@@ -208,11 +203,22 @@ Base::BuildError Base::canDestroyFacility(Vec2<int> pos) const
 	{
 		return BuildError::Occupied;
 	}
+	if (facility->lab)
+	{
+		if (facility->lab->current_project)
+		{
+			return BuildError::Occupied;
+		}
+		if (!facility->lab->assigned_agents.empty())
+		{
+			return BuildError::Occupied;
+		}
+	}
 	// TODO: Check if facility is in use
 	return BuildError::NoError;
 }
 
-void Base::destroyFacility(Vec2<int> pos)
+void Base::destroyFacility(GameState &state, Vec2<int> pos)
 {
 	if (canDestroyFacility(pos) == BuildError::NoError)
 	{
@@ -221,6 +227,17 @@ void Base::destroyFacility(Vec2<int> pos)
 		{
 			if (*f == facility)
 			{
+				if (facility->lab)
+				{
+					auto id = facility->lab.id;
+					if (facility->lab->current_project)
+					{
+						facility->lab->current_project->current_lab = "";
+						facility->lab->current_project = "";
+					}
+					facility->lab = "";
+					state.research.labs.erase(id);
+				}
 				facilities.erase(f);
 				break;
 			}

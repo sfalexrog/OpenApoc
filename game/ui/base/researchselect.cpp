@@ -32,8 +32,47 @@ void ResearchSelect::Begin()
 			title->SetText(tr("Select Unknown Project"));
 			break;
 	}
+	this->redrawResearchList();
 
 	auto research_list = form->FindControlTyped<ListBox>("LIST");
+	research_list->AlwaysEmitSelectionEvents = true;
+
+	research_list->addCallback(FormEventType::ListBoxChangeSelected, [this](Event *e) {
+		LogInfo("Research selection change");
+		auto list = std::static_pointer_cast<ListBox>(e->Forms().RaisedBy);
+		auto topic = list->GetSelectedData<ResearchTopic>();
+		if (topic->current_lab)
+		{
+			LogInfo("Topic already in progress");
+			return;
+		}
+		Lab::setResearch({state.get(), this->lab}, {state.get(), topic});
+		this->redrawResearchList();
+	});
+
+	research_list->addCallback(FormEventType::ListBoxChangeHover, [this](Event *e) {
+		LogInfo("Research selection change");
+		auto list = std::static_pointer_cast<ListBox>(e->Forms().RaisedBy);
+		auto topic = list->GetHoveredData<ResearchTopic>();
+		auto title = this->form->FindControlTyped<Label>("TEXT_SELECTED_TITLE");
+		auto description = this->form->FindControlTyped<Label>("TEXT_SELECTED_DESCRIPTION");
+		if (topic)
+		{
+			title->SetText(tr(topic->name));
+			description->SetText(tr(topic->description));
+		}
+		else
+		{
+			title->SetText("");
+			description->SetText("");
+		}
+	});
+}
+
+void ResearchSelect::redrawResearchList()
+{
+	auto research_list = form->FindControlTyped<ListBox>("LIST");
+	research_list->Clear();
 	research_list->ItemSize = 20;
 	research_list->ItemSpacing = 1;
 
@@ -66,6 +105,37 @@ void ResearchSelect::Begin()
 		auto topic_name = control->createChild<Label>((r.second->name), ui().GetFont("SMALFONT"));
 		topic_name->Size = {200, 20};
 		topic_name->Location = {6, 0};
+
+		int skill_total = 0;
+		if (r.second->current_lab)
+		{
+			skill_total = r.second->current_lab->getTotalSkill();
+		}
+		auto skill_total_label = control->createChild<Label>(UString::format("%d", skill_total),
+		                                                     ui().GetFont("SMALFONT"));
+		skill_total_label->Size = {50, 20};
+		skill_total_label->Location = {328, 0};
+		skill_total_label->TextHAlign = HorizontalAlignment::Right;
+
+		UString labSize;
+		switch (r.second->required_lab_size)
+		{
+			case ResearchTopic::LabSize::Small:
+				labSize = tr("Small");
+				break;
+			case ResearchTopic::LabSize::Large:
+				labSize = tr("Large");
+				break;
+			default:
+				labSize = tr("UNKNOWN");
+				break;
+		}
+
+		auto lab_size_label = control->createChild<Label>(labSize, ui().GetFont("SMALFONT"));
+		lab_size_label->Size = {100, 20};
+		lab_size_label->Location = {439, 0};
+
+		control->SetData(r.second);
 
 		research_list->AddItem(control);
 	}

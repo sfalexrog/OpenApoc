@@ -1,4 +1,5 @@
 #include "game/state/gamestate.h"
+#include "framework/trace.h"
 #include "game/state/base/base.h"
 #include "game/state/base/facility.h"
 #include "game/state/city/building.h"
@@ -44,7 +45,9 @@ GameState::~GameState()
 	{
 		for (auto &f : b.second->facilities)
 		{
-			f->lab = nullptr;
+			if (f->lab)
+				f->lab->current_project = "";
+			f->lab = "";
 		}
 	}
 	for (auto &org : this->organisations)
@@ -185,6 +188,7 @@ void GameState::startGame()
 
 	auto base = mksp<Base>(*this, StateRef<Building>{this, bld});
 	base->startingBase(*this);
+	base->name = "Base " + Strings::FromInteger(this->player_bases.size() + 1);
 	this->player_bases[Base::getPrefix() + Strings::FromInteger(this->player_bases.size() + 1)] =
 	    base;
 	bld->owner = this->getPlayer();
@@ -248,14 +252,18 @@ bool GameState::canTurbo() const
 
 void GameState::update(unsigned int ticks)
 {
+	Trace::start("GameState::update::cities");
 	for (auto &c : this->cities)
 	{
 		c.second->update(*this, ticks);
 	}
+	Trace::end("GameState::update::cities");
+	Trace::start("GameState::update::vehicles");
 	for (auto &v : this->vehicles)
 	{
 		v.second->update(*this, ticks);
 	}
+	Trace::end("GameState::update::vehicles");
 	this->time += ticks;
 }
 

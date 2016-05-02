@@ -52,7 +52,7 @@ namespace
 #else
 #warning RENDERERS not set - using default list
 #endif
-#define RENDERERS "GL_3_0:GL_2_0"
+#define RENDERERS "GLES_3_0:GL_3_0:GL_2_0"
 #endif
 
 static std::map<UString, UString> defaultConfig = {
@@ -361,14 +361,14 @@ Framework &Framework::getInstance()
 	return *instance;
 }
 
-void Framework::Run(sp<Stage> initialStage)
+void Framework::Run(sp<Stage> initialStage, size_t frameCount)
 {
 	if (!createWindow)
 	{
 		LogError("Trying to run framework without window");
 		return;
 	}
-	int frame = 0;
+	size_t frame = 0;
 	TRACE_FN;
 	LogInfo("Program loop started");
 
@@ -431,6 +431,7 @@ void Framework::Run(sp<Stage> initialStage)
 			}
 			{
 				TraceObj flipObj("Flip");
+				this->renderer->flush();
 #ifndef OPENAPOC_GLES
 				SDL_GL_SwapWindow(p->window);
 #else
@@ -441,6 +442,11 @@ void Framework::Run(sp<Stage> initialStage)
 #endif
 #endif
 			}
+		}
+		if (frameCount && frame == frameCount)
+		{
+			LogWarning("Quitting hitting frame count limit of %llu", (unsigned long long)frame);
+			p->quitProgram = true;
 		}
 	}
 }
@@ -558,7 +564,14 @@ void Framework::TranslateSDLEvents()
 				fwE->Keyboard().Modifiers = e.key.keysym.mod;
 				PushEvent(fwE);
 				break;
-			// FIXME: handle SDL_TEXTINPUT?
+			case SDL_TEXTINPUT:
+				fwE = new TextEvent();
+				fwE->Text().Input = e.text.text;
+				PushEvent(fwE);
+				break;
+			case SDL_TEXTEDITING:
+				// FIXME: Do nothing?
+				break;
 			case SDL_MOUSEMOTION:
 				fwE = new MouseEvent(EVENT_MOUSE_MOVE);
 				fwE->Mouse().X = e.motion.x;
@@ -816,6 +829,7 @@ void Framework::Display_Initialise()
 	SDL_GL_MakeCurrent(p->window, p->context); // for good measure?
 	SDL_ShowCursor(SDL_DISABLE);
 
+	p->registeredRenderers["GLES_3_0"].reset(getGLES30RendererFactory());
 	p->registeredRenderers["GL_3_0"].reset(getGL30RendererFactory());
 	p->registeredRenderers["GL_2_0"].reset(getGL20RendererFactory());
 #ifdef __ANDROID__
@@ -989,5 +1003,9 @@ sp<Stage> Framework::Stage_GetPrevious() { return p->ProgramStages.Previous(); }
 sp<Stage> Framework::Stage_GetPrevious(sp<Stage> From) { return p->ProgramStages.Previous(From); }
 
 Vec2<int> Framework::getCursorPosition() { return this->cursor->getPosition(); }
+
+void Framework::Text_StartInput() { SDL_StartTextInput(); }
+
+void Framework::Text_StopInput() { SDL_StopTextInput(); }
 
 }; // namespace OpenApoc

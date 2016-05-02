@@ -115,6 +115,14 @@ void serializeIn(const GameState *state, sp<SerializationNode> node, sp<T> &ptr)
 }
 
 template <>
+void serializeIn<LazyImage>(const GameState *state, sp<SerializationNode> node, sp<LazyImage> &ptr)
+{
+	if (!node)
+		return;
+	ptr = std::static_pointer_cast<LazyImage>(fw().data->load_image(node->getValue(), true));
+}
+
+template <>
 void serializeIn<Image>(const GameState *state, sp<SerializationNode> node, sp<Image> &ptr)
 {
 	if (!node)
@@ -704,6 +712,7 @@ template <> void serializeIn(const GameState *state, sp<SerializationNode> node,
 	serializeIn(state, node->getNode("man_hours_progress"), r.man_hours_progress);
 	serializeIn(state, node->getNode("type"), r.type);
 	serializeIn(state, node->getNode("required_lab_size"), r.required_lab_size);
+	serializeIn(state, node->getNode("current_lab"), r.current_lab);
 	serializeIn(state, node->getNode("score"), r.score);
 	serializeIn(state, node->getNode("started"), r.started);
 	serializeIn(state, node->getNode("dependencies"), r.dependencies);
@@ -787,6 +796,8 @@ template <> void serializeIn(const GameState *state, sp<SerializationNode> node,
 	if (!node)
 		return;
 	serializeIn(state, node->getNode("topics"), r.topics);
+	serializeIn(state, node->getNode("labs"), r.labs);
+	serializeIn(state, node->getNode("num_labs_created"), r.num_labs_created);
 }
 
 void serializeIn(const GameState *state, sp<SerializationNode> node, GameState &s)
@@ -878,6 +889,14 @@ template <typename T> void serializeOut(sp<SerializationNode> node, const sp<T> 
 	if (ptr)
 	{
 		serializeOut(node->addNode("sp"), *ptr);
+	}
+}
+
+template <> void serializeOut<LazyImage>(sp<SerializationNode> node, const sp<LazyImage> &ptr)
+{
+	if (ptr != nullptr)
+	{
+		node->setValue(ptr->path);
 	}
 }
 
@@ -1309,6 +1328,7 @@ template <> void serializeOut(sp<SerializationNode> node, const ResearchTopic &r
 	serializeOut(node->addNode("man_hours_progress"), r.man_hours_progress);
 	serializeOut(node->addNode("type"), r.type);
 	serializeOut(node->addNode("required_lab_size"), r.required_lab_size);
+	serializeOut(node->addNode("current_lab"), r.current_lab);
 	serializeOut(node->addNode("score"), r.score);
 	serializeOut(node->addNode("started"), r.started);
 	serializeOut(node->addNode("dependencies"), r.dependencies);
@@ -1382,6 +1402,8 @@ template <> void serializeOut(sp<SerializationNode> node, const AgentGenerator &
 template <> void serializeOut(sp<SerializationNode> node, const ResearchState &r)
 {
 	serializeOut(node->addNode("topics"), r.topics);
+	serializeOut(node->addNode("labs"), r.labs);
+	serializeOut(node->addNode("num_labs_created"), r.num_labs_created);
 }
 
 void serializeOut(sp<SerializationNode> node, const GameState &state)

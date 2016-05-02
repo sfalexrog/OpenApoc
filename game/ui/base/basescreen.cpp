@@ -4,59 +4,39 @@
 #include "framework/framework.h"
 #include "framework/image.h"
 #include "game/state/base/facility.h"
+#include "game/ui/base/basegraphics.h"
 #include "game/ui/base/basescreen.h"
 #include "game/ui/base/researchscreen.h"
 #include "game/ui/base/vequipscreen.h"
 #include "game/ui/general/messagebox.h"
-#include "library/sp.h"
 
 namespace OpenApoc
 {
 
-const int BaseScreen::TILE_SIZE = 32;
-const int BaseScreen::MINI_SIZE = 4;
 const Vec2<int> BaseScreen::NO_SELECTION = {-1, -1};
 
-// key is North South West East (true = occupied, false = vacant)
-const std::unordered_map<std::vector<bool>, int> BaseScreen::TILE_CORRIDORS = {
-    {{true, false, false, false}, 4}, {{false, false, false, true}, 5},
-    {{true, false, false, true}, 6},  {{false, true, false, false}, 7},
-    {{true, true, false, false}, 8},  {{false, true, false, true}, 9},
-    {{true, true, false, true}, 10},  {{false, false, true, false}, 11},
-    {{true, false, true, false}, 12}, {{false, false, true, true}, 13},
-    {{true, false, true, true}, 14},  {{false, true, true, false}, 15},
-    {{true, true, true, false}, 16},  {{false, true, true, true}, 17},
-    {{true, true, true, true}, 18}};
-
-int BaseScreen::getCorridorSprite(Vec2<int> pos) const
-{
-	if (pos.x < 0 || pos.y < 0 || pos.x >= Base::SIZE || pos.y >= Base::SIZE ||
-	    !base->getCorridors()[pos.x][pos.y])
-	{
-		return 0;
-	}
-	bool north = pos.y > 0 && base->getCorridors()[pos.x][pos.y - 1];
-	bool south = pos.y < Base::SIZE - 1 && base->getCorridors()[pos.x][pos.y + 1];
-	bool west = pos.x > 0 && base->getCorridors()[pos.x - 1][pos.y];
-	bool east = pos.x < Base::SIZE - 1 && base->getCorridors()[pos.x + 1][pos.y];
-	return TILE_CORRIDORS.at({north, south, west, east});
-}
-
 BaseScreen::BaseScreen(sp<GameState> state, StateRef<Base> base)
-    : Stage(), form(ui().GetForm("FORM_BASESCREEN")), base(base), selection(-1, -1),
-      dragFacility(nullptr), drag(false), baseView(nullptr), selGraphic(nullptr), selText(nullptr),
-      buildTime(nullptr), state(state)
+    : Stage(), form(ui().GetForm("FORM_BASESCREEN")), base(base), selection(NO_SELECTION),
+      drag(false), state(state)
 {
 }
 
 BaseScreen::~BaseScreen() {}
 
+void BaseScreen::ChangeBase(sp<Base> newBase)
+{
+	base = {state.get(), newBase};
+	form->FindControlTyped<TextEdit>("TEXT_BASE_NAME")->SetText(base->name);
+	form->FindControlTyped<Graphic>("GRAPHIC_MINIMAP")
+	    ->SetImage(BaseGraphics::drawMinimap(state, base->building));
+}
+
 void BaseScreen::Begin()
 {
-	form->FindControlTyped<Label>("TEXT_FUNDS")->SetText(state->getPlayerBalance());
-	form->FindControlTyped<TextEdit>("TEXT_BASE_NAME")->SetText(base->name);
+	ChangeBase(base);
 
-	buildTime = form->FindControlTyped<Label>("TEXT_BUILD_TIME");
+	form->FindControlTyped<Label>("TEXT_FUNDS")->SetText(state->getPlayerBalance());
+
 	baseView = form->FindControlTyped<Graphic>("GRAPHIC_BASE_VIEW");
 	selText = form->FindControlTyped<Label>("TEXT_SELECTED_FACILITY");
 	selGraphic = form->FindControlTyped<Graphic>("GRAPHIC_SELECTED_FACILITY");
@@ -78,14 +58,24 @@ void BaseScreen::Begin()
 		}
 		statsValues.push_back(value);
 	}
-	for (int i = 0; i < 8; i++)
+	int b = 0;
+	for (auto &pair : state->player_bases)
 	{
-		auto viewName = UString::format("BUTTON_BASE_%d", i + 1);
+		auto &viewBase = pair.second;
+		auto viewName = UString::format("BUTTON_BASE_%d", ++b);
 		auto view = form->FindControlTyped<GraphicButton>(viewName);
 		if (!view)
 		{
 			LogError("Failed to find UI control matching \"%s\"", viewName.c_str());
 		}
+		view->SetData(viewBase);
+		auto viewImage =
+		    BaseGraphics::drawMiniBase(viewBase, BaseGraphics::FacilityHighlight::Construction);
+		view->SetImage(viewImage);
+		view->SetDepressedImage(viewImage);
+		view->addCallback(FormEventType::ButtonClick, [this](Event *e) {
+			this->ChangeBase(e->Forms().RaisedBy->GetData<Base>());
+		});
 		miniViews.push_back(view);
 	}
 
@@ -103,37 +93,25 @@ void BaseScreen::Begin()
 		facilities->AddItem(graphic);
 	}
 
-	{
-		this->minimap_image = mksp<RGBImage>(Vec2<unsigned int>{100, 100});
-		RGBImageLock l(this->minimap_image);
-		std::map<Vec2<int>, int> minimap_image_z;
-		for (auto &pair : state->cities["CITYMAP_HUMAN"]->initial_tiles)
-		{
-			auto &pos = pair.first;
-			Vec2<int> pos2d = {pos.x, pos.y};
-			auto &tile = pair.second;
-			auto it = minimap_image_z.find(pos2d);
-			if (it == minimap_image_z.end() || it->second < pos.z)
-			{
-				if (tile->minimap_colour.a == 0)
-					continue;
-				minimap_image_z[pos2d] = pos.z;
-				l.set(pos2d, tile->minimap_colour);
-			}
-		}
-
-		// Set the bounds of the current base to be a red block
-		for (int y = this->base->building->bounds.p0.y; y < this->base->building->bounds.p1.y; y++)
-		{
-			for (int x = this->base->building->bounds.p0.x; x < this->base->building->bounds.p1.x;
-			     x++)
-			{
-				l.set({x, y}, {255, 0, 0, 255});
-			}
-		}
-	}
-
-	this->form->FindControlTyped<Graphic>("MINIMAP")->SetImage(this->minimap_image);
+	form->FindControlTyped<GraphicButton>("BUTTON_OK")
+	    ->addCallback(FormEventType::ButtonClick,
+	                  [this](Event *e) { this->stageCmd.cmd = StageCmd::Command::POP; });
+	form->FindControlTyped<GraphicButton>("BUTTON_BASE_EQUIPVEHICLE")
+	    ->addCallback(FormEventType::ButtonClick, [this](Event *e) {
+		    // FIXME: If you don't have any vehicles this button should do nothing
+		    this->stageCmd.cmd = StageCmd::Command::PUSH;
+		    this->stageCmd.nextStage = mksp<VEquipScreen>(state);
+		});
+	form->FindControlTyped<GraphicButton>("BUTTON_BASE_RES_AND_MANUF")
+	    ->addCallback(FormEventType::ButtonClick, [this](Event *e) {
+		    // FIXME: If you don't have any facilities this button should do nothing
+		    this->stageCmd.cmd = StageCmd::Command::PUSH;
+		    this->stageCmd.nextStage = mksp<ResearchScreen>(state, this->base);
+		});
+	form->FindControlTyped<TextEdit>("TEXT_BASE_NAME")
+	    ->addCallback(FormEventType::TextEditFinish, [this](Event *e) {
+		    this->base->name = std::dynamic_pointer_cast<TextEdit>(e->Forms().RaisedBy)->GetText();
+		});
 }
 
 void BaseScreen::Pause() {}
@@ -162,45 +140,12 @@ void BaseScreen::EventOccurred(Event *e)
 
 	if (e->Type() == EVENT_FORM_INTERACTION)
 	{
-		if (e->Forms().EventFlag == FormEventType::ButtonClick)
-		{
-			if (e->Forms().RaisedBy->Name == "BUTTON_OK")
-			{
-				stageCmd.cmd = StageCmd::Command::POP;
-				return;
-			}
-			else if (e->Forms().RaisedBy->Name == "BUTTON_BASE_EQUIPVEHICLE")
-			{
-				// FIXME: If you don't have any vehicles this button should do nothing
-				stageCmd.cmd = StageCmd::Command::PUSH;
-				stageCmd.nextStage = mksp<VEquipScreen>(state);
-				return;
-			}
-			else if (e->Forms().RaisedBy->Name == "BUTTON_BASE_RES_AND_MANUF")
-			{
-				// FIXME: If you don't have any facilities this button should do nothing
-				stageCmd.cmd = StageCmd::Command::PUSH;
-				stageCmd.nextStage = mksp<ResearchScreen>(state, this->base);
-				return;
-			}
-		}
-
-		if (e->Forms().EventFlag == FormEventType::TextEditFinish)
-		{
-			if (e->Forms().RaisedBy->Name == "TEXT_BASE_NAME")
-			{
-				auto name = form->FindControlTyped<TextEdit>("TEXT_BASE_NAME");
-				base->name = name->GetText();
-				return;
-			}
-		}
-
 		if (e->Forms().RaisedBy == baseView)
 		{
 			if (e->Forms().EventFlag == FormEventType::MouseMove)
 			{
 				selection = {e->Forms().MouseInfo.X, e->Forms().MouseInfo.Y};
-				selection /= TILE_SIZE;
+				selection /= BaseGraphics::TILE_SIZE;
 				if (!drag)
 				{
 					selFacility = base->getFacility(selection);
@@ -259,7 +204,7 @@ void BaseScreen::EventOccurred(Event *e)
 					switch (error)
 					{
 						case Base::BuildError::NoError:
-							base->buildFacility(dragFacility, selection);
+							base->buildFacility(*state, dragFacility, selection);
 							form->FindControlTyped<Label>("TEXT_FUNDS")
 							    ->SetText(state->getPlayerBalance());
 							break;
@@ -303,12 +248,12 @@ void BaseScreen::EventOccurred(Event *e)
 					{
 						case Base::BuildError::NoError:
 							stageCmd.cmd = StageCmd::Command::PUSH;
-							stageCmd.nextStage =
-							    mksp<MessageBox>(tr("Destroy facility"), tr("Are you sure?"),
-							                     MessageBox::ButtonOptions::YesNo, [this] {
-								                     this->base->destroyFacility(this->selection);
-								                     this->selFacility = nullptr;
-								                 });
+							stageCmd.nextStage = mksp<MessageBox>(
+							    tr("Destroy facility"), tr("Are you sure?"),
+							    MessageBox::ButtonOptions::YesNo, [this] {
+								    this->base->destroyFacility(*this->state, this->selection);
+								    this->selFacility = nullptr;
+								});
 							break;
 						case Base::BuildError::Occupied:
 							stageCmd.cmd = StageCmd::Command::PUSH;
@@ -357,7 +302,7 @@ void BaseScreen::EventOccurred(Event *e)
 	}
 	else if (selection != NO_SELECTION)
 	{
-		int sprite = getCorridorSprite(selection);
+		int sprite = BaseGraphics::getCorridorSprite(base, selection);
 		auto image = UString::format(
 		    "PCK:xcom3/UFODATA/BASE.PCK:xcom3/UFODATA/BASE.TAB:%d:xcom3/UFODATA/BASE.PCX", sprite);
 		if (sprite != 0)
@@ -385,7 +330,19 @@ void BaseScreen::Render()
 	fw().renderer->drawFilledRect({0, 0}, fw().Display_GetSize(), Colour{0, 0, 0, 128});
 	form->Render();
 	RenderBase();
-	RenderMiniBase();
+
+	// Highlight selected base
+	for (auto &view : miniViews)
+	{
+		auto viewBase = view->GetData<Base>();
+		if (base == viewBase)
+		{
+			Vec2<int> pos = form->Location + view->Location - 2;
+			Vec2<int> size = view->Size + 4;
+			fw().renderer->drawRect(pos, size, Colour{255, 0, 0});
+			break;
+		}
+	}
 }
 
 bool BaseScreen::IsTransition() { return false; }
@@ -394,105 +351,13 @@ void BaseScreen::RenderBase()
 {
 	const Vec2<int> BASE_POS = form->Location + baseView->Location;
 
-	// Draw grid
-	sp<Image> grid = fw().data->load_image(
-	    "PCK:xcom3/UFODATA/BASE.PCK:xcom3/UFODATA/BASE.TAB:0:xcom3/UFODATA/BASE.PCX");
-	Vec2<int> i;
-	for (i.x = 0; i.x < Base::SIZE; i.x++)
-	{
-		for (i.y = 0; i.y < Base::SIZE; i.y++)
-		{
-			Vec2<int> pos = BASE_POS + i * TILE_SIZE;
-			fw().renderer->draw(grid, pos);
-		}
-	}
-
-	// Draw corridors
-	for (i.x = 0; i.x < Base::SIZE; i.x++)
-	{
-		for (i.y = 0; i.y < Base::SIZE; i.y++)
-		{
-			int sprite = getCorridorSprite(i);
-			if (sprite != 0)
-			{
-				Vec2<int> pos = BASE_POS + i * TILE_SIZE;
-				auto image = UString::format(
-				    "PCK:xcom3/UFODATA/BASE.PCK:xcom3/UFODATA/BASE.TAB:%d:xcom3/UFODATA/BASE.PCX",
-				    sprite);
-				fw().renderer->draw(fw().data->load_image(image), pos);
-			}
-		}
-	}
-
-	// Draw facilities
-	sp<Image> circleS = fw().data->load_image(
-	    "PCK:xcom3/UFODATA/BASE.PCK:xcom3/UFODATA/BASE.TAB:25:xcom3/UFODATA/BASE.PCX");
-	sp<Image> circleL = fw().data->load_image(
-	    "PCK:xcom3/UFODATA/BASE.PCK:xcom3/UFODATA/BASE.TAB:26:xcom3/UFODATA/BASE.PCX");
-	buildTime->Visible = true;
-	for (auto &facility : base->getFacilities())
-	{
-		sp<Image> sprite = facility->type->sprite;
-		Vec2<int> pos = BASE_POS + facility->pos * TILE_SIZE;
-		if (facility->buildTime == 0)
-		{
-			fw().renderer->draw(sprite, pos);
-		}
-		else
-		{
-			// Fade out facility
-			fw().renderer->drawTinted(sprite, pos, Colour(255, 255, 255, 128));
-			// Draw construction overlay
-			if (facility->type->size == 1)
-			{
-				fw().renderer->draw(circleS, pos);
-			}
-			else
-			{
-				fw().renderer->draw(circleL, pos);
-			}
-			// Draw time remaining
-			buildTime->Size = {TILE_SIZE, TILE_SIZE};
-			buildTime->Size *= facility->type->size;
-			buildTime->Location = pos;
-			buildTime->SetText(Strings::FromInteger(facility->buildTime));
-			buildTime->Render();
-		}
-	}
-	buildTime->Visible = false;
-
-	// Draw doors
-	sp<Image> doorLeft = fw().data->load_image(
-	    "PCK:xcom3/UFODATA/BASE.PCK:xcom3/UFODATA/BASE.TAB:2:xcom3/UFODATA/BASE.PCX");
-	sp<Image> doorBottom = fw().data->load_image(
-	    "PCK:xcom3/UFODATA/BASE.PCK:xcom3/UFODATA/BASE.TAB:3:xcom3/UFODATA/BASE.PCX");
-	for (auto &facility : base->getFacilities())
-	{
-		for (int y = 0; y < facility->type->size; y++)
-		{
-			Vec2<int> tile = facility->pos + Vec2<int>{-1, y};
-			if (getCorridorSprite(tile) != 0)
-			{
-				Vec2<int> pos = BASE_POS + tile * TILE_SIZE;
-				fw().renderer->draw(doorLeft, pos + Vec2<int>{TILE_SIZE / 2, 0});
-			}
-		}
-		for (int x = 0; x < facility->type->size; x++)
-		{
-			Vec2<int> tile = facility->pos + Vec2<int>{x, facility->type->size};
-			if (getCorridorSprite(tile) != 0)
-			{
-				Vec2<int> pos = BASE_POS + tile * TILE_SIZE;
-				fw().renderer->draw(doorBottom, pos - Vec2<int>{0, TILE_SIZE / 2});
-			}
-		}
-	}
+	BaseGraphics::renderBase(BASE_POS, base);
 
 	// Draw selection
 	if (selection != NO_SELECTION)
 	{
 		Vec2<int> pos = selection;
-		Vec2<int> size = {TILE_SIZE, TILE_SIZE};
+		Vec2<int> size = {BaseGraphics::TILE_SIZE, BaseGraphics::TILE_SIZE};
 		if (drag && dragFacility)
 		{
 			size *= dragFacility->size;
@@ -502,7 +367,7 @@ void BaseScreen::RenderBase()
 			pos = selFacility->pos;
 			size *= selFacility->type->size;
 		}
-		pos = BASE_POS + pos * TILE_SIZE;
+		pos = BASE_POS + pos * BaseGraphics::TILE_SIZE;
 		fw().renderer->drawRect(pos, size, Colour{255, 255, 255});
 	}
 
@@ -513,63 +378,15 @@ void BaseScreen::RenderBase()
 		Vec2<int> pos;
 		if (selection == NO_SELECTION)
 		{
-			pos = mousePos - Vec2<int>{TILE_SIZE / 2, TILE_SIZE / 2} * dragFacility->size;
+			pos = mousePos -
+			      Vec2<int>{BaseGraphics::TILE_SIZE, BaseGraphics::TILE_SIZE} / 2 *
+			          dragFacility->size;
 		}
 		else
 		{
-			pos = BASE_POS + selection * TILE_SIZE;
+			pos = BASE_POS + selection * BaseGraphics::TILE_SIZE;
 		}
 		fw().renderer->draw(facility, pos);
-	}
-}
-
-void BaseScreen::RenderMiniBase()
-{
-	const Vec2<int> BASE_POS = form->Location + miniViews[0]->Location;
-
-	// Draw corridors
-	Vec2<int> i;
-	for (i.x = 0; i.x < Base::SIZE; i.x++)
-	{
-		for (i.y = 0; i.y < Base::SIZE; i.y++)
-		{
-			int sprite = getCorridorSprite(i);
-			if (sprite != 0)
-			{
-				sprite -= 3;
-			}
-			Vec2<int> pos = BASE_POS + i * MINI_SIZE;
-			auto image = UString::format(
-			    "RAW:xcom3/UFODATA/MINIBASE.DAT:4:4:%d:xcom3/UFODATA/BASE.PCX", sprite);
-			fw().renderer->draw(fw().data->load_image(image), pos);
-		}
-	}
-
-	// Draw facilities
-	sp<Image> normal =
-	    fw().data->load_image("RAW:xcom3/UFODATA/MINIBASE.DAT:4:4:16:xcom3/UFODATA/BASE.PCX");
-	sp<Image> highlighted =
-	    fw().data->load_image("RAW:xcom3/UFODATA/MINIBASE.DAT:4:4:17:xcom3/UFODATA/BASE.PCX");
-	sp<Image> selected =
-	    fw().data->load_image("RAW:xcom3/UFODATA/MINIBASE.DAT:4:4:18:xcom3/UFODATA/BASE.PCX");
-	for (auto &facility : base->getFacilities())
-	{
-		sp<Image> sprite = (facility->buildTime == 0) ? normal : highlighted;
-		for (i.x = 0; i.x < facility->type->size; i.x++)
-		{
-			for (i.y = 0; i.y < facility->type->size; i.y++)
-			{
-				Vec2<int> pos = BASE_POS + (facility->pos + i) * MINI_SIZE;
-				fw().renderer->draw(sprite, pos);
-			}
-		}
-	}
-
-	// Draw selection
-	{
-		Vec2<int> pos = BASE_POS - 2;
-		Vec2<int> size = miniViews[0]->Size + 4;
-		fw().renderer->drawRect(pos, size, Colour{255, 0, 0});
 	}
 }
 

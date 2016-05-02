@@ -7,11 +7,7 @@
 #include "game/ui/general/difficultymenu.h"
 #include "game/ui/general/loadingscreen.h"
 #include "game/ui/general/optionsmenu.h"
-#ifdef _WIN32
-#define OPENAPOC_VERSION "UNKNOWN"
-#else
 #include "version.h"
-#endif
 
 namespace OpenApoc
 {
@@ -77,7 +73,7 @@ void MainMenu::EventOccurred(Event *e)
 			// FIXME: Save game selector
 			auto state = mksp<GameState>();
 			UString savePath = "save";
-			auto loadTask = fw().threadPool->enqueue([state, savePath]() -> void {
+			auto loadTask = fw().threadPool->enqueue([state, savePath]() {
 				if (state->loadGame(savePath) == false)
 				{
 					LogError("Failed to load '%s'", savePath.c_str());
