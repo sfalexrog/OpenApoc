@@ -159,9 +159,6 @@ public:
         delete aio;
         delete io;
     }
-
-
-
 };
 
 // FIXME: Should this really be a class? If yes, then maybe make it nicer?
@@ -210,7 +207,7 @@ public:
         std::ignore = io; // We don't care much for that 'io' struct
         UString filenameStr(filename); // Convert to UString for easier compares
         // Ignore incorrect magics
-        BAIL_IF_MACRO((filenameStr != "thisfile.apkfs"), PHYSFS_ERR_UNSUPPORTED, NULL);
+        BAIL_IF_MACRO((filenameStr != "assets.apkfs"), PHYSFS_ERR_UNSUPPORTED, NULL);
         // Android assets are read-only
         BAIL_IF_MACRO(forWrite, PHYSFS_ERR_READ_ONLY, NULL);
         return &getInstance();

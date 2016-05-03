@@ -19,8 +19,11 @@
 #define le64toh(x) htole64(x)
 // APK archiver!
 #include "framework/platform/android/archiver_apk.h"
+
 #endif
 #include <endian.h>
+
+
 #else
 /* Windows is always little endian? */
 static inline uint16_t le16toh(uint16_t val) { return val; }
@@ -235,6 +238,15 @@ FileSystem::FileSystem(std::vector<UString> paths)
 	// Add system-specific archivers here
 #ifdef __ANDROID__
     registerAPKArchiver();
+	char buf[128] = {0};
+	LogWarning("Force-mounting assets");
+	//PHYSFS_mountIo(__PHYSFS_createMemoryIo(buf, 128, nullptr), "assets.apkfs", "/", 0);
+	if (!PHYSFS_mountMemory(buf, 128, nullptr, "assets.apkfs", "/", 0))
+	{
+		LogError("Could not monunt APKFS!");
+	}
+	PHYSFS_enumerateFilesCallback("/", [](void *data, const char *origdir, const char *fname) -> void
+									{ LogInfo("Found file %s in %s", fname, origdir);}, nullptr);
 #endif
 	// Paths are supplied in inverse-search order (IE the last in 'paths' should be the first
 	// searched)
