@@ -833,8 +833,8 @@ void Framework::Display_Initialise()
 	p->registeredRenderers["GL_3_0"].reset(getGL30RendererFactory());
 	p->registeredRenderers["GL_2_0"].reset(getGL20RendererFactory());
 #ifdef __ANDROID__
-	p->registeredRenderers["GLES_2_0"].reset(getGL20RendererFactory());
-	p->registeredRenderers["GLES_3_0"].reset(getGL30RendererFactory());
+	//p->registeredRenderers["GLES_2_0"].reset(getGL20RendererFactory());
+	//p->registeredRenderers["GLES_3_0"].reset(getGL30RendererFactory());
 #endif
 
 	for (auto &rendererName : Settings->getString("Visual.Renderers").split(':'))
