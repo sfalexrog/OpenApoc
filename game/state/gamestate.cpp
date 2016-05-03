@@ -264,6 +264,12 @@ void GameState::update(unsigned int ticks)
 		v.second->update(*this, ticks);
 	}
 	Trace::end("GameState::update::vehicles");
+	Trace::start("GameState::update::labs");
+	for (auto &lab : this->research.labs)
+	{
+		Lab::update(ticks, {this, lab.second}, shared_from_this());
+	}
+	Trace::end("GameState::update::labs");
 	this->time += ticks;
 }
 
