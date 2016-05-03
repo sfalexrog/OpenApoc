@@ -14,7 +14,9 @@
 #ifdef _WIN64
 typedef signed long long int ssize_t;
 #else
+#ifndef ANDROID // That's already taken care of
 typedef signed long int ssize_t;
+#endif
 #endif
 
 #define IN_GLES_WRAP_H

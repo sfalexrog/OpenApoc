@@ -3,6 +3,8 @@
 #define GLESWRAP_GLES3
 #include "gleswrap.h"
 
+#if 0
+
 #if defined(GLESWRAP_PLATFORM_WGL)
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -34,6 +36,10 @@
 
 #if defined(GLESWRAP_PLATFORM_DLFCN)
 #include <dlfcn.h>
+#endif
+#else
+#include <SDL.h>
+#undef GLESWRAP_PLATFORM_EGL
 #endif
 
 #include <cassert>
@@ -120,6 +126,10 @@ class gles3::gles3_loader
 			func_pointer = reinterpret_cast<T>(eglGetProcAddress(full_proc_name.c_str()));
 			if (func_pointer)
 				return true;
+#else
+            func_pointer = reinterpret_cast<T>(SDL_GL_GetProcAddress(full_proc_name.c_str()));
+			if (func_pointer)
+				return true;
 #endif
 		}
 		else
@@ -141,6 +151,10 @@ class gles3::gles3_loader
 				if (func_pointer)
 					return true;
 			}
+#else
+			func_pointer = reinterpret_cast<T>(SDL_GL_GetProcAddress(full_proc_name.c_str()));
+			if (func_pointer)
+				return true;
 #endif
 		}
 		return false;
@@ -178,9 +192,11 @@ bool gles3::supported(bool desktop_extension, std::string lib_name)
 		}
 		// Remove the 'OpenGL ES ' prefix - 10 chars
 		version_string = version_string.substr(10, version_string.npos);
+		LogWarning("Version string (cut): %s", version_string.c_str());
 		// Then check the version in 'x.y' format
-		auto major_version = version_string.substr(1, 1);
-		int major_version_int = stoi(major_version);
+		auto major_version = version_string.substr(0, 1);
+		//int major_version_int = stoi(major_version);
+		int major_version_int = major_version == "3" ? 3 : 2;
 		// We don't actually care about the minor version here
 		if (major_version_int >= 3)
 		{
