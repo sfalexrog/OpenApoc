@@ -9,6 +9,14 @@
 // We're exploiting the build system a bit, this generally should not be possible otherwise.
 #define __PHYSICSFS_INTERNAL__
 #include <physfs_internal.h>
+// physfs_internal.h #defines malloc & co to invalid values to discourage their direct use in physfs,
+// but this then conflicts with some standard library headers that happen to use malloc()
+// themselves.
+// Noticed on x86 android build using ndk 11c w/gcc 4.9
+#undef malloc
+#undef realloc
+#undef free
+
 
 // for SDL_AndroidGetVM
 #include <SDL.h>
