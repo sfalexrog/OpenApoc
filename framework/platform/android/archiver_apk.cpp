@@ -283,30 +283,33 @@ public:
 
     static int apkStat(void *opaque, const char *filename, PHYSFS_Stat *stat)
     {
+        AAsset *asset = AAssetManager_open(manager, filename, AASSET_MODE_UNKNOWN);
+        if (asset)
+        {
+            stat->filesize = (PHYSFS_sint64)AAsset_getLength64(asset);
+            AAsset_close(asset);
+            stat->filetype = PHYSFS_FILETYPE_REGULAR;
+            stat->modtime = 0;
+            stat->createtime = 0;
+            stat->accesstime = 0;
+            stat->readonly = 1;
+
+            return 1;
+        }
         AAssetDir *tryDir = AAssetManager_openDir(manager, filename);
         bool isDir = AAssetDir_getNextFileName(tryDir) != 0;
         AAssetDir_close(tryDir);
-        AAsset *asset = AAssetManager_open(manager, filename, AASSET_MODE_UNKNOWN);
-        if ((!isDir) && (!asset))
-            return 0;
         if (isDir)
         {
             stat->filesize = 0;
             stat->filetype = PHYSFS_FILETYPE_DIRECTORY;
+            stat->modtime = 0;
+            stat->createtime = 0;
+            stat->accesstime = 0;
+            stat->readonly = 1;
+            return 1;
         }
-        else
-        {
-            stat->filesize = (PHYSFS_sint64) AAsset_getLength64(asset);
-            AAsset_close(asset);
-            stat->filetype = PHYSFS_FILETYPE_REGULAR;
-        }
-
-        stat->modtime = 0;
-        stat->createtime = 0;
-        stat->accesstime = 0;
-        stat->readonly = 1;
-
-        return 1;
+        return 0;
     }
 
     static void apkCloseArchive(void *opaque)
