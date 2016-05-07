@@ -9,6 +9,14 @@
 // We're exploiting the build system a bit, this generally should not be possible otherwise.
 #define __PHYSICSFS_INTERNAL__
 #include <physfs_internal.h>
+// physfs_internal.h #defines malloc & co to invalid values to discourage their direct use in physfs,
+// but this then conflicts with some standard library headers that happen to use malloc()
+// themselves.
+// Noticed on x86 android build using ndk 11c w/gcc 4.9
+#undef malloc
+#undef realloc
+#undef free
+
 
 // for SDL_AndroidGetVM
 #include <SDL.h>
@@ -283,30 +291,33 @@ public:
 
     static int apkStat(void *opaque, const char *filename, PHYSFS_Stat *stat)
     {
+        AAsset *asset = AAssetManager_open(manager, filename, AASSET_MODE_UNKNOWN);
+        if (asset)
+        {
+            stat->filesize = (PHYSFS_sint64)AAsset_getLength64(asset);
+            AAsset_close(asset);
+            stat->filetype = PHYSFS_FILETYPE_REGULAR;
+            stat->modtime = 0;
+            stat->createtime = 0;
+            stat->accesstime = 0;
+            stat->readonly = 1;
+
+            return 1;
+        }
         AAssetDir *tryDir = AAssetManager_openDir(manager, filename);
         bool isDir = AAssetDir_getNextFileName(tryDir) != 0;
         AAssetDir_close(tryDir);
-        AAsset *asset = AAssetManager_open(manager, filename, AASSET_MODE_UNKNOWN);
-        if ((!isDir) && (!asset))
-            return 0;
         if (isDir)
         {
             stat->filesize = 0;
             stat->filetype = PHYSFS_FILETYPE_DIRECTORY;
+            stat->modtime = 0;
+            stat->createtime = 0;
+            stat->accesstime = 0;
+            stat->readonly = 1;
+            return 1;
         }
-        else
-        {
-            stat->filesize = (PHYSFS_sint64) AAsset_getLength64(asset);
-            AAsset_close(asset);
-            stat->filetype = PHYSFS_FILETYPE_REGULAR;
-        }
-
-        stat->modtime = 0;
-        stat->createtime = 0;
-        stat->accesstime = 0;
-        stat->readonly = 1;
-
-        return 1;
+        return 0;
     }
 
     static void apkCloseArchive(void *opaque)
