@@ -717,6 +717,7 @@ void Control::pushFormEvent(FormEventType type, Event *parentEvent)
 		case FormEventType::TextChanged:
 		case FormEventType::CheckBoxSelected:
 		case FormEventType::CheckBoxDeSelected:
+		case FormEventType::TextEditFinish:
 		{
 			event = new FormsEvent();
 			if (parentEvent)
@@ -728,7 +729,6 @@ void Control::pushFormEvent(FormEventType type, Event *parentEvent)
 			fw().PushEvent(event);
 			break;
 		}
-
 		default:
 			LogError("Unexpected event type %d", (int)type);
 	}

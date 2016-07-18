@@ -242,8 +242,9 @@ void TextEdit::SetText(const UString &Text)
 
 void TextEdit::RaiseEvent(FormEventType Type)
 {
-	std::ignore = Type;
-	this->pushFormEvent(FormEventType::TextChanged, nullptr);
+//	std::ignore = Type;
+	pushFormEvent(Type, nullptr);
+	//this->pushFormEvent(FormEventType::TextChanged, nullptr);
 }
 
 sp<BitmapFont> TextEdit::GetFont() const { return font; }
