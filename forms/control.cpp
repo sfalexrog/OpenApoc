@@ -698,6 +698,16 @@ void Control::pushFormEvent(FormEventType type, Event *parentEvent)
 			fw().PushEvent(event);
 			break;
 		}
+		// Input event special
+		case FormEventType::TextInput:
+		{
+			event = new FormsEvent();
+			event->Forms().RaisedBy = shared_from_this();
+			event->Forms().EventFlag = type;
+			event->Forms().Input = parentEvent->Text();
+			fw().PushEvent(event);
+			break;
+		}
 		// Forms events fall-through
 		case FormEventType::ButtonClick:
 		case FormEventType::CheckBoxChange:
